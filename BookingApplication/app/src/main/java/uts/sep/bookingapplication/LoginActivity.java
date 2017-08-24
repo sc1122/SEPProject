@@ -11,11 +11,5 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    private boolean typeOfUser(String username) {
-        if (username.contains("tut"))
-            return true;
-        else
-            return false;
-    }
 
 }
