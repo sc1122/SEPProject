@@ -1,7 +1,9 @@
 package uts.sep.bookingapplication;
 
 /**
- * Created by seant on 24/08/2017.
+ * Created by Sean Crimmins on 24/08/2017.
+ * Class which handles the reading of data from a .CSV file
+ * Places the read data into a new array list
  */
 
 import java.io.InputStream;
