@@ -18,7 +18,7 @@ private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemS
 public boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch(item.getItemId()){
         case R.id.navigation_home:
-        mTextMessage.setText(R.string.title_home);
+        mTextMessage.setText(R.string.placeholder);
         return true;
         case R.id.navigation_dashboard:
         mTextMessage.setText(R.string.title_dashboard);
@@ -36,7 +36,6 @@ public boolean onNavigationItemSelected(@NonNull MenuItem item){
 protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studentmenu);
-
         mTextMessage=(TextView)findViewById(R.id.message);
         BottomNavigationView navigation=(BottomNavigationView)findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
