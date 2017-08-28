@@ -22,17 +22,33 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/placeholder" />
+            android:textSize="18dp"
+            android:text="@string/home_placeholder"
+            android:visibility="gone"/>
 
-        <ScrollView
+        <ListView
+            android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:divider="@android:color/background_light"
+            android:dividerHeight="15dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
+        <include layout="@layout/content_makebooking" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/newBooking"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:paddingBottom="20dp"
+            android:paddingRight="20dp"
+            android:tint="@android:color/background_light"
+            app:backgroundTint="@android:color/black"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/background_dark"
+            app:srcCompat="@drawable/ic_calendar_add" />
 
     </FrameLayout>
 

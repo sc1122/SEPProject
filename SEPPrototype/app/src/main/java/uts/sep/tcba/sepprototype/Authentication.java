@@ -3,6 +3,7 @@ package uts.sep.tcba.sepprototype;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -24,11 +25,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +74,8 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    InputMethodManager imm = (InputMethodManager) mPasswordView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
                     attemptLogin();
                     return true;
                 }
@@ -302,7 +302,7 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
 
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 return false;
             }
@@ -323,10 +323,12 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
                 startActivity(new Intent(Authentication.this, StudentMenu.class));
-                //finish();
+                TextView id = (TextView) findViewById(R.id.IDnumber);
+                TextView pw = (TextView) findViewById(R.id.password);
+                id.setText("");
+                pw.setText("");
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

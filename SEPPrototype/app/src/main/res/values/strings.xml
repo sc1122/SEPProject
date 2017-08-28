@@ -13,9 +13,12 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_authentication._student_menu">Main Menu Student</string>
+    <string name="title_activity_studentmenu">Consulation Booker - Caleb Adra</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="placeholder">No bookings to show</string>
+    <string name="home_placeholder">No bookings to show</string>
+    <string name="subjects_placeholder">Not enrolled in any subjects</string>
+    <string name="notifications_placeholder">No new notifications</string>
+    <string name="title_activity_makebooking">Make a Booking</string>
 </resources>
