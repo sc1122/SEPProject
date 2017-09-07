@@ -7,7 +7,7 @@ public class User {
     public String firstName;
     public String lastName;
     public LinkedList<Integer> subjects;
-    public boolean Student;
+    public boolean isStudent;
 
     public User() {
 
@@ -21,8 +21,8 @@ public class User {
         return ID;
     }
 
-    public boolean getStudent() {
-        return Student;
+    public boolean isStudent() {
+        return isStudent;
     }
 
     public String getFirstName() {
