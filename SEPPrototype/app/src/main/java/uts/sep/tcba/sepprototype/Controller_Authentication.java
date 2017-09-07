@@ -36,7 +36,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via ID/password.
  */
-public class Authentication extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class Controller_Authentication extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -75,7 +75,7 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
                     InputMethodManager imm = (InputMethodManager) mPasswordView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
                     attemptLogin();
                     return true;
                 }
@@ -87,6 +87,8 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
         mIdSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) mPasswordView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
                 attemptLogin();
             }
         });
@@ -265,7 +267,7 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(Authentication.this,
+                new ArrayAdapter<>(Controller_Authentication.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mIdView.setAdapter(adapter);
@@ -302,7 +304,7 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
 
             try {
                 // Simulate network access.
-                Thread.sleep(500);
+                Thread.sleep(800);
             } catch (InterruptedException e) {
                 return false;
             }
@@ -324,7 +326,7 @@ public class Authentication extends AppCompatActivity implements LoaderCallbacks
             mAuthTask = null;
             showProgress(false);
             if (success) {
-                startActivity(new Intent(Authentication.this, StudentMenu.class));
+                startActivity(new Intent(Controller_Authentication.this, Controller_StudentMenu.class));
                 TextView id = (TextView) findViewById(R.id.IDnumber);
                 TextView pw = (TextView) findViewById(R.id.password);
                 id.setText("");

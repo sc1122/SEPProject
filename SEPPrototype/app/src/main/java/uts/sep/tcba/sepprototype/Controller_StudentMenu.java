@@ -17,7 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.ArrayList;
 
-public class StudentMenu extends AppCompatActivity{
+public class Controller_StudentMenu extends AppCompatActivity{
 
 private TextView mTextMessage;
 private ListView listView;
@@ -97,7 +97,7 @@ private ArrayAdapter adapter;
                 textView.setMinHeight(0); // Min Height
                 textView.setMinimumHeight(0); // Min Height
                 textView.setHeight(200); // Height
-                textView.setTextSize(18);
+                textView.setTextSize(16);
                 return view;
             }
         };
@@ -108,8 +108,8 @@ private ArrayAdapter adapter;
         newBookingButton = (FloatingActionButton) findViewById(R.id.newBooking);
         newBookingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(StudentMenu.this, MakeBooking.class);
-                intent.putExtra("caller", "StudentMenu");
+                Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class);
+                intent.putExtra("caller", "Controller_StudentMenu");
                 startActivityForResult(intent, 1);
             }
         });
@@ -117,9 +117,9 @@ private ArrayAdapter adapter;
 
     public void populateData() {
         bookings.clear();
-        bookings.add("12/09/2017 14:00 - Dr Atif Qureshi (48440)\nFEIT Learning Precinct, Building 11 Level 5");
+        bookings.add("12/09/2017 14:00 - Dr. Qureshi (48440)\nFEIT Learning Precinct, Building 11 Level 5");
         bookings.add("14/09/2017 11:00 - Cam Reeves (41900)\nBuilding 11 Level B1, Room 401");
-        bookings.add("20/09/2017 13:30 - Dr. Tom McBride (31281)\nFEIT Learning Precinct, Building 11 Level 5");
+        bookings.add("01/10/2017 13:30 - Dr. McBride (31281)\nFEIT Learning Precinct, Building 11 Level 5");
         bookings.add("21/10/2017 11:00 - Cam Reeves (41900)\nBuilding 11 Level B1, Room 401");
         subjects.clear();
         subjects.add("Fundamentals of Security (41900)");
@@ -129,7 +129,7 @@ private ArrayAdapter adapter;
 
     @Override
     public void onBackPressed(){
-        AlertDialog alertDialog = new AlertDialog.Builder(StudentMenu.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(Controller_StudentMenu.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage("Would you like to log out?");
 

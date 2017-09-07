@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="uts.sep.tcba.sepprototype.MakeBooking">
+    tools:context="uts.sep.tcba.sepprototype.Controller_MakeBooking">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -77,22 +77,22 @@
                     android:padding="20dp"/>
 
                 <EditText
+                    android:id="@+id/subject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Subject Number"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:padding="20dp" />
+
+                <EditText
                     android:id="@+id/tutor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:hint="Tutor"
-                    android:padding="20dp"/>
-
-                <EditText
-                    android:id="@+id/subject"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="number"
-                    android:maxLength="5"
-                    android:hint="Subject Number"
                     android:padding="20dp"/>
 
                 <EditText

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "846913624407",
+    "firebase_url": "https://tutorconsultationbooker-sep.firebaseio.com",
+    "project_id": "tutorconsultationbooker-sep",
+    "storage_bucket": "tutorconsultationbooker-sep.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846913624407:android:d405d6059890772f",
+        "android_client_info": {
+          "package_name": "uts.sep.tcba.sepprototype"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846913624407-2b1er8fijlphrc2mksbmkp477fd6prj0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uts.sep.tcba.sepprototype",
+            "certificate_hash": "8f79db4692fbfb70c62b0b1ddba877e1a13abe6c"
+          }
+        },
+        {
+          "client_id": "846913624407-t1em4pvnevk4qabkun0f1jo24psrpm25.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuYcwNOL98y6OMW8xSbAn22LSEihvnQhg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846913624407-t1em4pvnevk4qabkun0f1jo24psrpm25.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

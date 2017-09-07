@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
-public class MakeBooking extends AppCompatActivity {
+public class Controller_MakeBooking extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

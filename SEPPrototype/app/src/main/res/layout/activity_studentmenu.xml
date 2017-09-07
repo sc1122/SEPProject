@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".StudentMenu">
+    tools:context=".Controller_StudentMenu">
 
     <FrameLayout
         android:id="@+id/content"
@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:divider="@android:color/background_light"
+            android:layout_margin="10dp"
             android:dividerHeight="15dp" />
 
         <include layout="@layout/content_makebooking" />
@@ -41,9 +42,7 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:paddingBottom="20dp"
-            android:paddingRight="20dp"
+            android:layout_margin="10dp"
             android:tint="@android:color/background_light"
             app:backgroundTint="@android:color/black"
             app:fabSize="normal"
