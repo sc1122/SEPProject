@@ -2,8 +2,12 @@ package uts.sep.tcba.sepprototype;
 
 public class Student extends User {
 
-    public Student() {
 
+    private User student;
+
+
+    public Student(User user) {
+        student = Student.this;
     }
 
     public void selectTimeslot() {
@@ -15,6 +19,7 @@ public class Student extends User {
     }
 
     public void viewTutAvailability() {
+        student.getSubjects();
 
     }
 
