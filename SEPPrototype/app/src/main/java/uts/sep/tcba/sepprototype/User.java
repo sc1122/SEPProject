@@ -1,6 +1,9 @@
 package uts.sep.tcba.sepprototype;
 
 import java.util.LinkedList;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firebase_core.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.FirebaseApp;
@@ -16,15 +19,17 @@ public class User {
     public String lastName;
     public LinkedList<Integer> subjects;
     public boolean isStudent;
-
+    private FirebaseDatabase userDatabase;
+    private DatabaseReference userReference;
 
     public User() {
-
     }
 
 
     public User(int ID) {
         //database to populate/initialise
+        userDatabase = FirebaseDatabase.getInstance();
+        userReference = userDatabase.getReference(firstName);
     }
 
     public int getID() {
