@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "846913624407-fnbdq5v4ci5m93melve9sh5vpn6fboqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uts.sep.tcba.sepprototype",
+            "certificate_hash": "057a3719dc1208a5be80b96d15e96eb343eeb9e3"
+          }
+        },
+        {
           "client_id": "846913624407-2b1er8fijlphrc2mksbmkp477fd6prj0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

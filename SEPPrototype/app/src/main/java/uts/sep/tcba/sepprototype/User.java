@@ -1,6 +1,14 @@
 package uts.sep.tcba.sepprototype;
 
 import java.util.LinkedList;
+import com.google.firebase.firebase_core.*;
+import com.google.firebase.auth.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.analytics.*;
+import com.google.firebase.iid.*;
+import com.google.firebase.provider.*;
+import com.google.firebase.*;
+
 
 public class User {
     public int ID;
@@ -9,9 +17,11 @@ public class User {
     public LinkedList<Integer> subjects;
     public boolean isStudent;
 
+
     public User() {
 
     }
+
 
     public User(int ID) {
         //database to populate/initialise
@@ -40,4 +50,5 @@ public class User {
     public void cancelConsultation() {
 
     }
+
 }
