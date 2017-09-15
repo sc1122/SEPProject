@@ -2,7 +2,7 @@ package uts.sep.tcba.sepprototype;
 
 public class Tutor extends User {
 
-    public Tutor() {
+    public Tutor(User user) {
 
     }
 

@@ -9,8 +9,7 @@ public class Student extends User {
 
 
     public Student(User user) {
-        student = Student.this;
-        studentSubjects = Student.this.getSubjects();
+
     }
 
     public void selectTimeslot() {

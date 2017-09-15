@@ -26,10 +26,10 @@ public class User {
     }
 
 
-    public User(int ID) {
+    public User(String userID) {
         //database to populate/initialise
         userDatabase = FirebaseDatabase.getInstance();
-        userReference = userDatabase.getReference(firstName);
+        userReference = userDatabase.getReference(userID);
     }
 
     public int getID() {
