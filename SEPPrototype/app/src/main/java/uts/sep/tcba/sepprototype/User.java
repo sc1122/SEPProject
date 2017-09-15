@@ -17,7 +17,7 @@ public class User {
     public int ID;
     public String firstName;
     public String lastName;
-    public LinkedList<Integer> subjects;
+    public LinkedList<String> subjects;
     public boolean isStudent;
     private FirebaseDatabase userDatabase;
     private DatabaseReference userReference;
@@ -48,7 +48,7 @@ public class User {
         return lastName;
     }
 
-    public LinkedList<Integer> getSubjects() {
+    public LinkedList<String> getSubjects() {
         return subjects;
     }
 

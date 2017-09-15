@@ -22,4 +22,15 @@ public class Tutor extends User {
 
     }
 
+    public LinkedList<Availabilities> getAvailability(){return availability;}
+
+    public LinkedList<String> getAvailableDates(){
+        LinkedList<String> availDates = new LinkedList<String>();
+        int i = 0;
+        for(Availabilities available : availability){
+            availDates.set(i, available.getAvailDate());
+        }
+        return availDates;
+    }
+
 }

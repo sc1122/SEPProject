@@ -35,7 +35,7 @@
                 android:layout_marginRight="30px"
                 android:layout_marginTop="10px"
                 android:layout_weight="1"
-                android:text="Save" />
+                android:text="Submit booking" />
         </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
@@ -58,51 +58,72 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <EditText
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Subject Number:"
+                    android:padding="10px"/>
+
+                <Spinner
+                    android:id="@+id/subject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Subject Number"
+                    android:background="@android:drawable/btn_dropdown"
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:spinnerMode="dropdown"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Consultation Date:"
+                    android:padding="10px"/>
+
+                <Spinner
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="date"
                     android:hint="Date"
-                    android:padding="20dp"/>
+                    android:background="@android:drawable/btn_dropdown"
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:spinnerMode="dropdown"/>
 
-                <EditText
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Consultation Time:"
+                    android:padding="10px"/>
+
+                <Spinner
                     android:id="@+id/time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="time"
                     android:hint="Time"
-                    android:padding="20dp"/>
+                    android:background="@android:drawable/btn_dropdown"
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:spinnerMode="dropdown"/>
 
-                <EditText
-                    android:id="@+id/subject"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Subject Number"
-                    android:inputType="number"
-                    android:maxLength="5"
-                    android:padding="20dp" />
-
-                <EditText
+                <TextView
                     android:id="@+id/tutor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textPersonName"
                     android:hint="Tutor"
-                    android:padding="20dp"/>
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"/>
 
-                <EditText
+                <TextView
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textPersonName"
                     android:hint="Location"
-                    android:padding="20dp"/>
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"/>
 
             </LinearLayout>
         </ScrollView>
