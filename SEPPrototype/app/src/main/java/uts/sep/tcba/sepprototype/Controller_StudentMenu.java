@@ -15,6 +15,8 @@ import android.widget.*;
 import android.util.Log;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 
 public class Controller_StudentMenu extends AppCompatActivity{
@@ -26,6 +28,7 @@ private ArrayList<String> bookings = new ArrayList<String>();
 private ArrayList<String> subjects = new ArrayList<String>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
+private FirebaseAuth mAuth;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -143,6 +146,8 @@ private ArrayAdapter adapter;
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        mAuth = FirebaseAuth.getInstance();
+                        mAuth.signOut();
                         finish();
                     }
                 });
@@ -152,7 +157,6 @@ private ArrayAdapter adapter;
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
-                Log.e("HAPPY", "something");
                 String booking = data.getStringExtra("result");
                 bookings.add(booking);
                 pageList.add(booking);

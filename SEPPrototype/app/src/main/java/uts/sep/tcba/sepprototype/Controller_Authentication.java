@@ -49,34 +49,34 @@ public class Controller_Authentication extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
+
     public String ID;
     public String password;
+    public String userPath;
 
     public void getCreds() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + ID);
-        Log.d("TEST", ref.toString());
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("TEST", dataSnapshot.toString());
-//                if (dataSnapshot.child("Email").exists()) {
-//                    String email = dataSnapshot.child("Email").getValue().toString();
-//                    Log.d("TESTING", email);
-//                    login(email);
-//                } else {
-//                    mIdView.setError("Invalid ID");
-//                    mIdView.requestFocus();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("SHIT", "FUCKED");
-//            }
-//        });
-        login("123@student.uts.edu.au");
+        userPath = "Users/" + ID;
+        DatabaseReference ref = database.getReference(userPath);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("TEST", dataSnapshot.toString());
+                if (dataSnapshot.child("Email").exists()) {
+                    String email = dataSnapshot.child("Email").getValue().toString();
+                    Log.d("TESTING", email);
+                    login(email);
+                } else {
+                    mIdView.setError("Invalid ID");
+                    mIdView.requestFocus();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
     }
 
     public void login(String email) {
@@ -95,7 +95,10 @@ public class Controller_Authentication extends AppCompatActivity {
                             TextView pw = (TextView) findViewById(R.id.password);
                             id.setText("");
                             pw.setText("");
-                            startActivity(new Intent(Controller_Authentication.this, Controller_StudentMenu.class));
+                            Log.d("MEMES" , mAuth.getCurrentUser().getEmail());
+                            Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
+                            intent.putExtra("user", userPath);
+                            startActivity(intent);
                         }
                     }
                 });
