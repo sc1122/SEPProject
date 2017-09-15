@@ -19,8 +19,8 @@ public class User {
     public String lastName;
     public LinkedList<String> subjects;
     public boolean isStudent;
-    private FirebaseDatabase userDatabase;
-    private DatabaseReference userReference;
+    //private FirebaseDatabase userDatabase;
+    //private DatabaseReference userReference;
 
     public User() {
     }
@@ -28,8 +28,8 @@ public class User {
 
     public User(String userID) {
         //database to populate/initialise
-        userDatabase = FirebaseDatabase.getInstance();
-        userReference = userDatabase.getReference(userID);
+        //userDatabase = FirebaseDatabase.getInstance();
+        //userReference = userDatabase.getReference(userID);
     }
 
     public int getID() {

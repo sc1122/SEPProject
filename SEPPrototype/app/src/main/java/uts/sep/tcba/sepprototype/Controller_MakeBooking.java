@@ -51,7 +51,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
         User user = new User();
         Tutor tutor = new Tutor(user);
         Student student = new Student(user);
-        Availabilities content = tutor.getAvailability().getFirst();
+        Availabilities content = new Availabilities(tutor);
+                //tutor.getAvailability().getFirst();
         //Above code to be pulled from database on future iterations
         setSubjectList(student);
         setDateList(tutor);

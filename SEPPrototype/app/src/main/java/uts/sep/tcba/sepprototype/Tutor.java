@@ -6,8 +6,7 @@ public class Tutor extends User {
 
     private LinkedList<Availabilities> availability;
 
-    public Tutor(User user) {
-        availability.add(new Availabilities(Tutor.this));
+    public Tutor(User user){
     }
 
     public void addAvailability() {
@@ -18,8 +17,7 @@ public class Tutor extends User {
 
     }
 
-    public void setStudentAvailability() {
-
+    public void setAvailability() {
     }
 
     public LinkedList<Availabilities> getAvailability(){return availability;}

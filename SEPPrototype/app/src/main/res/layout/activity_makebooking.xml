@@ -68,7 +68,6 @@
                     android:id="@+id/subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Subject Number"
                     android:background="@android:drawable/btn_dropdown"
                     android:padding="20dp"
                     android:layout_marginBottom="20dp"
@@ -84,7 +83,6 @@
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Date"
                     android:background="@android:drawable/btn_dropdown"
                     android:padding="20dp"
                     android:layout_marginBottom="20dp"
@@ -101,7 +99,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Time"
                     android:background="@android:drawable/btn_dropdown"
                     android:padding="20dp"
                     android:layout_marginBottom="20dp"
@@ -111,7 +108,6 @@
                     android:id="@+id/tutor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
                     android:hint="Tutor"
                     android:padding="20dp"
                     android:layout_marginBottom="20dp"/>
@@ -120,11 +116,9 @@
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
                     android:hint="Location"
                     android:padding="20dp"
                     android:layout_marginBottom="20dp"/>
-
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
