@@ -33,25 +33,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.Manifest.permission.READ_CONTACTS;
-
 /**
  * A login screen that offers login via ID/password.
  */
-public class Controller_Authentication extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "123:hello"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+public class Controller_Authentication extends AppCompatActivity {
 
     // UI references.
     private AutoCompleteTextView mIdView;
@@ -59,25 +49,53 @@ public class Controller_Authentication extends AppCompatActivity implements Load
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    public String ID;
+    public String password;
 
-    public void login() {
+    public void getCreds() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Users/" + ID);
+        Log.d("TEST", ref.toString());
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("TEST", dataSnapshot.toString());
+//                if (dataSnapshot.child("Email").exists()) {
+//                    String email = dataSnapshot.child("Email").getValue().toString();
+//                    Log.d("TESTING", email);
+//                    login(email);
+//                } else {
+//                    mIdView.setError("Invalid ID");
+//                    mIdView.requestFocus();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.d("SHIT", "FUCKED");
+//            }
+//        });
+        login("123@student.uts.edu.au");
+    }
+
+    public void login(String email) {
         mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase
-        String email = "newuser@email.com";
-        String password = "password";
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("YES", "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
+                        Log.d("IMPORTANT", "signInWithEmail:onComplete:" + task.isSuccessful());
                         if (!task.isSuccessful()) {
-                            Log.w("NO", "signInWithEmail:failed", task.getException());
-                            Toast.makeText(Controller_Authentication.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Log.d("AUTHFAIL", "signInWithEmail:failed", task.getException());
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                            mPasswordView.requestFocus();
+                        } else {
+                            TextView id = (TextView) findViewById(R.id.IDnumber);
+                            TextView pw = (TextView) findViewById(R.id.password);
+                            id.setText("");
+                            pw.setText("");
+                            startActivity(new Intent(Controller_Authentication.this, Controller_StudentMenu.class));
                         }
                     }
                 });
@@ -86,11 +104,9 @@ public class Controller_Authentication extends AppCompatActivity implements Load
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        login();
         setContentView(R.layout.activity_authentication);
         // Set up the login form.
         mIdView = (AutoCompleteTextView) findViewById(R.id.IDnumber);
-        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -120,28 +136,20 @@ public class Controller_Authentication extends AppCompatActivity implements Load
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mIdView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String ID = mIdView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        ID = mIdView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -153,6 +161,16 @@ public class Controller_Authentication extends AppCompatActivity implements Load
             cancel = true;
         }
 
+        if (password.length() < 6) {
+            if (TextUtils.isEmpty(password)) {
+                mPasswordView.setError(getString(R.string.error_field_required));
+            } else {
+                mPasswordView.setError("Password is too short");
+            }
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -160,9 +178,10 @@ public class Controller_Authentication extends AppCompatActivity implements Load
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(ID, password);
-            mAuthTask.execute((Void) null);
+            //showProgress(true);
+            Log.d("ID IS", ID);
+            Log.d("PASSWORD IS", password);
+            getCreds();
         }
     }
 
@@ -200,122 +219,6 @@ public class Controller_Authentication extends AppCompatActivity implements Load
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(Controller_Authentication.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mIdView.setAdapter(adapter);
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mID;
-        private final String mPassword;
-
-        UserLoginTask(String ID, String password) {
-            mID =ID;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(800);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mID)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-            if (success) {
-                startActivity(new Intent(Controller_Authentication.this, Controller_StudentMenu.class));
-                TextView id = (TextView) findViewById(R.id.IDnumber);
-                TextView pw = (TextView) findViewById(R.id.password);
-                id.setText("");
-                pw.setText("");
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-
-
     }
 }
 
