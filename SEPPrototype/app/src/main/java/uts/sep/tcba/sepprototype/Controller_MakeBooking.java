@@ -33,6 +33,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
         });
     }
 
+    /*
+    Method which collates the booking details and saves in the database
+    TODO: Create booking use cases use this method!
+     */
     public String getDetails(){
 
 
@@ -48,11 +52,11 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: set up listeners to hide date->time until the preceding list has a selection
      */
     private void setContent(){
-        User user = new User();
-        Tutor tutor = new Tutor(user);
-        Student student = new Student(user);
-        Availabilities content = new Availabilities(tutor);
-                //tutor.getAvailability().getFirst();
+        User tutorUser = new User();
+        Tutor tutor = new Tutor(tutorUser);
+        User stuUser = new User();
+        Student student = new Student(stuUser);
+        Availabilities content = new Availabilities();
         //Above code to be pulled from database on future iterations
         setSubjectList(student);
         setDateList(tutor);

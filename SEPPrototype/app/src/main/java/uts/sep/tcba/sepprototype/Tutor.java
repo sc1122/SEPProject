@@ -7,6 +7,8 @@ public class Tutor extends User {
     private LinkedList<Availabilities> availability;
 
     public Tutor(User user){
+        availability = new LinkedList<Availabilities>();
+        availability.add(new Availabilities());
     }
 
     public void addAvailability() {
@@ -22,12 +24,13 @@ public class Tutor extends User {
 
     public LinkedList<Availabilities> getAvailability(){return availability;}
 
+    /*
+    Returns list of strings of all available dates
+     */
     public LinkedList<String> getAvailableDates(){
         LinkedList<String> availDates = new LinkedList<String>();
-        int i = 0;
-        for(Availabilities available : availability){
-            availDates.set(i, available.getAvailDate());
-        }
+        for(Availabilities available : availability)
+            availDates.add(available.getAvailDate());
         return availDates;
     }
 

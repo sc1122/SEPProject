@@ -23,6 +23,7 @@ public class User {
     //private DatabaseReference userReference;
 
     public User() {
+        subjects = new LinkedList<String>();
     }
 
 

@@ -16,9 +16,11 @@ public class Availabilities {
     private int studentLimit;
     private String location;
 
-    public Availabilities(Tutor tutor){
-        //in full implementation, pull records entered into database to here
-        //Currently hard coded
+    public Availabilities(){
+        /*
+        in full implementation, pull records entered into database to here
+        Currently hard coded
+        */
         availDate = "08/10/17";
         startTime = 10.00;
         endTime = 16.00;
