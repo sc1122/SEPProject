@@ -15,6 +15,7 @@ import javax.security.auth.Subject;
 
 public class Controller_MakeBooking extends AppCompatActivity {
 
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,23 +69,23 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
     private void setSubjectList(Student student){
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
-        ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
-        subjectNo.setAdapter(subjectsAdapter);
         subjectNo.setPrompt("Select Subject");
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
+        subjectNo.setAdapter(adapter);
     }
 
     private void setDateList(Tutor tutor){
         Spinner consDate = (Spinner)findViewById(R.id.date);
-        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
-        consDate.setAdapter(datesAdapter);
         consDate.setPrompt("Select Date");
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
+        consDate.setAdapter(adapter);
     }
 
     private void setTimeList(Availabilities availability){
         Spinner consTime = (Spinner)findViewById(R.id.time);
-        ArrayAdapter<String> timesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());
-        consTime.setAdapter(timesAdapter);
         consTime.setPrompt("Select Time");
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());
+        consTime.setAdapter(adapter);
     }
 
     /*
