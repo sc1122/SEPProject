@@ -1,5 +1,6 @@
 package uts.sep.tcba.sepprototype;
 
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 /**
@@ -48,9 +49,10 @@ public class Availabilities {
 
     private String timeDivide(double time) {
         if (String.valueOf(time).endsWith(".30"))
-            return (String.valueOf(time) +" - "+ String.valueOf(time + 0.70));
+            return (String.format("%.2f", time) + " - " + String.format("%.2f", (time+0.7)));
         else
-            return (String.valueOf(time) +" - "+ String.valueOf(time + 0.30));
+            return (String.format("%.2f", time) + " - " + String.format("%.2f",(time+0.3)));
+
     }
 
     public String getAvailDate(){return availDate;}
