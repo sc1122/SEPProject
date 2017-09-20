@@ -70,21 +70,21 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
         subjectNo.setAdapter(subjectsAdapter);
-        subjectNo.setSelection(0);
+        subjectNo.setPrompt("Select Subject");
     }
 
     private void setDateList(Tutor tutor){
         Spinner consDate = (Spinner)findViewById(R.id.date);
         ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
         consDate.setAdapter(datesAdapter);
-        consDate.setSelection(0);
+        consDate.setPrompt("Select Date");
     }
 
     private void setTimeList(Availabilities availability){
         Spinner consTime = (Spinner)findViewById(R.id.time);
         ArrayAdapter<String> timesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());
         consTime.setAdapter(timesAdapter);
-        consTime.setSelection(0);
+        consTime.setPrompt("Select Time");
     }
 
     /*
