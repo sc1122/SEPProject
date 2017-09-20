@@ -34,14 +34,14 @@ public class Availabilities {
     public LinkedList<String> getTimeslots(){
         LinkedList<String> timeSlots = new LinkedList<String>();
         double t = startTime;
-        int i = 0;
         while (t <= endTime) {
-            timeSlots.set(i, timeDivide(t));
-            if(String.valueOf(t).endsWith(".30"))
+            if(String.valueOf(t).endsWith(".30")) {
+                timeSlots.add(timeDivide(t));
                 t += 0.7;
-            else
+            }else {
+                timeSlots.add(timeDivide(t));
                 t += 0.3;
-            ++ i;
+            }
         }
         return timeSlots;
     }
@@ -57,7 +57,7 @@ public class Availabilities {
 
     public int getStudentLimit(){return studentLimit;}
 
-    public String getLocation(){return getLocation();}
+    public String getLocation(){return location;}
 
 
 

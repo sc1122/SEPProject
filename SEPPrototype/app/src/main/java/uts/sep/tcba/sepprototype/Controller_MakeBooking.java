@@ -38,9 +38,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public String getDetails(){
-
-
-
         String booking = "PLACEHOLER";
                 //date.getText().toString() + " " + time.getText().toString() + " - " + tutor.getText().toString() + " (" + subject.getText().toString() + ")\n" + location.getText().toString();
         return booking;
@@ -84,5 +81,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
         ArrayAdapter<String> timesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());
         consTime.setAdapter(timesAdapter);
     }
+
 
 }
