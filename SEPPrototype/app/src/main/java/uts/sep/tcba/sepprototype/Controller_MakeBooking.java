@@ -38,11 +38,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
     /*
     Method which collates the booking details and saves in the database
+    Returns it as a new Booking Object
+    Test here for no. of students exceeding max for booking
     TODO: Create booking use cases use this method!
      */
     public String getDetails(){
         String booking = "PLACEHOLER";
-                //date.getText().toString() + " " + time.getText().toString() + " - " + tutor.getText().toString() + " (" + subject.getText().toString() + ")\n" + location.getText().toString();
         return booking;
     }
 
@@ -97,5 +98,9 @@ public class Controller_MakeBooking extends AppCompatActivity {
         LinkedList<String> subjects = student.getSubjects();
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         //Insert code to set field based on subject choice and selected items
+    }
+
+    private String getSpinnerContent(Spinner spinner){
+        return spinner.getSelectedItem().toString();
     }
 }
