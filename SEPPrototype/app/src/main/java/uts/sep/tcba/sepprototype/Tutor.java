@@ -7,8 +7,11 @@ public class Tutor extends User {
     private LinkedList<Availabilities> availability;
 
     public Tutor(User user){
+        //temporary implementation until availabilities and tutor details are pulled from database
         availability = new LinkedList<Availabilities>();
         availability.add(new Availabilities());
+        firstName = "Joe";
+        lastName = "Hunter";
     }
 
     public void addAvailability() {

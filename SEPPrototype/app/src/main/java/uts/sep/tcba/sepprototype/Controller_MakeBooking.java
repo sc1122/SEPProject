@@ -11,6 +11,8 @@ import android.widget.*;
 
 import java.util.LinkedList;
 
+import javax.security.auth.Subject;
+
 public class Controller_MakeBooking extends AppCompatActivity {
 
 
@@ -82,5 +84,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
         consTime.setAdapter(timesAdapter);
     }
 
-
+    /*
+    Skeleton code of final method when records are pulled from database
+     */
+    private void setList(Student student){
+        LinkedList<String> subjects = student.getSubjects();
+        Spinner subjectNo = (Spinner)findViewById(R.id.subject);
+        //Insert code to set field based on subject choice
+    }
 }

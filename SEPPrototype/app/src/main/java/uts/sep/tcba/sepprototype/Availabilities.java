@@ -36,10 +36,10 @@ public class Availabilities {
         LinkedList<String> timeSlots = new LinkedList<String>();
         double t = startTime;
         while (t <= endTime) {
-            if(String.valueOf(t).endsWith(".30")) {
+            if(String.format("%.2f", t).endsWith(".30")) {
                 timeSlots.add(timeDivide(t));
                 t += 0.7;
-            }else {
+            }else{
                 timeSlots.add(timeDivide(t));
                 t += 0.3;
             }
