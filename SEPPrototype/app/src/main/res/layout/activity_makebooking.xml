@@ -66,6 +66,7 @@
 
                 <Spinner
                     android:id="@+id/subject"
+                    android:hint="Select Subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown"
@@ -81,6 +82,7 @@
 
                 <Spinner
                     android:id="@+id/date"
+                    android:hint="Select Date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown"
@@ -96,6 +98,7 @@
 
                 <Spinner
                     android:id="@+id/time"
+                    android:hint="Select Time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
