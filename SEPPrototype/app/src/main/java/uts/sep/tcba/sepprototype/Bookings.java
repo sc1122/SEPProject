@@ -10,12 +10,13 @@ public class Bookings {
 
     private ObservableList<Booking> bookings = FXCollections.observableArrayList();
 
-    public Bookings(String date, String time, String tutor, String subject, String location) {
+    public Bookings(String date, String time, String tutor, String subject, String location, String desc) {
         this.date = date;
         this.time = time;
         this.tutor = tutor;
         this.subject = subject;
         this.location = location;
+        this.desc = desc;
     }
 
     public Bookings addBooking(String date, String time, String tutor, String subject, String location) {

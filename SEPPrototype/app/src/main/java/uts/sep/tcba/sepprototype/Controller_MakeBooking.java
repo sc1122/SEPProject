@@ -13,12 +13,6 @@ import java.util.LinkedList;
 
 public class Controller_MakeBooking extends AppCompatActivity {
 
-    private Spinner subject;
-    private Spinner date;
-    private Spinner time;
-    private Spinner subject;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,12 +53,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
         TextView location = (TextView) findViewById(R.id.location);
         String consLocation = location.toString();
 
-        //Bookings.addBooking(date, time, tutor, subject, consLocation);
+        EditText description = (EditText) findViewById(R.id.description);
+        String desc = description.toString();
 
+        //Bookings.addBooking(date, time, tutor, subject, consLocation, desc);
 
-
-
-        String booking = date + " " + time + " - " + tutor + " (" + subject + ")" + consLocation;
+        String booking = date + " " + time + " - " + tutor + " (" + subject + ")" + consLocation + "[ " + desc + " ].";
         return booking;
     }
 
@@ -87,6 +81,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
         tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
         TextView location = (TextView) findViewById(R.id.location);
         location.setText(content.getLocation());
+        EditText description = (EditText) findViewById(R.id.description);
+        description.setText("");
     }
 
     private void setSubjectList(Student student){

@@ -104,6 +104,14 @@
                     android:layout_marginBottom="20dp"
                     android:spinnerMode="dropdown"/>
 
+                <EditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Description"
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"/>
+
                 <TextView
                     android:id="@+id/tutor"
                     android:layout_width="match_parent"
