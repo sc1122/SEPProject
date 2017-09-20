@@ -13,6 +13,11 @@ import java.util.LinkedList;
 
 public class Controller_MakeBooking extends AppCompatActivity {
 
+    private Spinner subject;
+    private Spinner date;
+    private Spinner time;
+    private Spinner subject;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +44,27 @@ public class Controller_MakeBooking extends AppCompatActivity {
      */
     public String getDetails(){
 
+        Spinner consDate = (Spinner)findViewById(R.id.date);
+        String date = consDate.getSelectedItem().toString();
+
+        Spinner consTime = (Spinner)findViewById(R.id.time);
+        String time = consTime.getSelectedItem().toString();
+
+        Spinner subjectNo = (Spinner)findViewById(R.id.subject);
+        String subject = subjectNo.getSelectedItem().toString();
+
+        TextView tutorName = (TextView) findViewById(R.id.tutor);
+        String tutor = tutorName.getSelectedItem().toString();
+
+        TextView location = (TextView) findViewById(R.id.location);
+        String consLocation = location.toString();
+
+        //Bookings.addBooking(date, time, tutor, subject, consLocation);
 
 
-        String booking = "PLACEHOLER";
-                //date.getText().toString() + " " + time.getText().toString() + " - " + tutor.getText().toString() + " (" + subject.getText().toString() + ")\n" + location.getText().toString();
+
+
+        String booking = date + " " + time + " - " + tutor + " (" + subject + ")" + consLocation;
         return booking;
     }
 
