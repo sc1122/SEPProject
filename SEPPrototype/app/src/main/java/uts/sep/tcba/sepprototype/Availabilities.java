@@ -48,7 +48,7 @@ public class Availabilities {
     }
 
     private String timeDivide(double time) {
-        if (String.valueOf(time).endsWith(".30"))
+        if (String.format("%.2f", time).endsWith(".30"))
             return (String.format("%.2f", time) + " - " + String.format("%.2f", (time+0.7)));
         else
             return (String.format("%.2f", time) + " - " + String.format("%.2f",(time+0.3)));

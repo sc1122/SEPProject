@@ -86,10 +86,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
     /*
     Skeleton code of final method when records are pulled from database
+    Will result in removal of three respective methods when completed
+    TODO: In future iterations
      */
     private void setList(Student student){
         LinkedList<String> subjects = student.getSubjects();
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
-        //Insert code to set field based on subject choice
+        //Insert code to set field based on subject choice and selected items
     }
 }
