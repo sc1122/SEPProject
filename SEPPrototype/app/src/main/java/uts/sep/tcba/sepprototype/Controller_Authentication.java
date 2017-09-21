@@ -51,38 +51,6 @@ public class Controller_Authentication extends AppCompatActivity {
     private FirebaseAuth mAuth;
     public String ID;
     public String password;
-
-    public void getCreds() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + ID);
-        Log.d("TEST", ref.toString());
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("TEST", dataSnapshot.toString());
-//                if (dataSnapshot.child("Email").exists()) {
-//                    String email = dataSnapshot.child("Email").getValue().toString();
-//                    Log.d("TESTING", email);
-//                    login(email);
-//                } else {
-//                    mIdView.setError("Invalid ID");
-//                    mIdView.requestFocus();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("SHIT", "FUCKED");
-//            }
-//        });
-        login("123@student.uts.edu.au");
-    }
-
-=======
-
-    public String ID;
-    public String password;
     public String userPath;
 
     public void getCreds() {
@@ -110,7 +78,6 @@ public class Controller_Authentication extends AppCompatActivity {
         });
     }
 
->>>>>>> origin/authentication
     public void login(String email) {
         mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase
         mAuth.signInWithEmailAndPassword(email, password)
@@ -127,14 +94,11 @@ public class Controller_Authentication extends AppCompatActivity {
                             TextView pw = (TextView) findViewById(R.id.password);
                             id.setText("");
                             pw.setText("");
-<<<<<<< HEAD
                             startActivity(new Intent(Controller_Authentication.this, Controller_StudentMenu.class));
-=======
-                            Log.d("MEMES" , mAuth.getCurrentUser().getEmail());
+                            Log.d("MEMES", mAuth.getCurrentUser().getEmail());
                             Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
                             intent.putExtra("user", userPath);
                             startActivity(intent);
->>>>>>> origin/authentication
                         }
                     }
                 });
@@ -259,9 +223,4 @@ public class Controller_Authentication extends AppCompatActivity {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
-
->>>>>>> origin/authentication
