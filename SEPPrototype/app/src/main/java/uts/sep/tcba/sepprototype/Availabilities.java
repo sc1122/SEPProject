@@ -1,5 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
+import android.util.Log;
+
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
@@ -55,10 +57,18 @@ public class Availabilities {
 
     }
 
+    public void addAvailability(String availDate,double startTime,double endTime,int studentLimit,String location){
+        this.availDate = availDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.studentLimit = studentLimit;
+        this.location = location;
+    }
+
     public String getAvailDate(){return availDate;}
 
     public int getStudentLimit(){return studentLimit;}
-
+    
     public String getLocation(){return location;}
 
 

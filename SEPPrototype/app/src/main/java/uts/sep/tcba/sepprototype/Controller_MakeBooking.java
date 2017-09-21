@@ -1,9 +1,11 @@
 package uts.sep.tcba.sepprototype;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import javax.security.auth.Subject;
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
+    private Availabilities content = new Availabilities();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +30,11 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = getIntent();
-                String bookingDetails = getDetails();
-                intent.putExtra("result", bookingDetails);
-                setResult(RESULT_OK, intent);
-                finish();
+                    Intent intent = getIntent();
+                    String bookingDetails = getDetails();
+                    intent.putExtra("result", bookingDetails);
+                    setResult(RESULT_OK, intent);
+                    finish();
             }
         });
     }
@@ -57,7 +60,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Tutor tutor = new Tutor(tutorUser);
         User stuUser = new User();
         Student student = new Student(stuUser);
-        Availabilities content = new Availabilities();
+        //Availabilities content = new Availabilities();
         //Above code to be pulled from database on future iterations
         setSubjectList(student);
         setDateList(tutor);
@@ -103,4 +106,23 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private String getSpinnerContent(Spinner spinner){
         return spinner.getSelectedItem().toString();
     }
+
+    /* Eventually, obtain max booked from booking object
+    private boolean isNotFull(){
+        if (content.getStudentBooked() >= content.getStudentLimit()) {
+
+            Log.e("Test", "this was run");
+            AlertDialog fullAlert = new AlertDialog.Builder(Controller_MakeBooking.this).create();
+            fullAlert.setTitle("Alert");
+            fullAlert.setMessage("This session has reached max number of student!");
+
+            fullAlert.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, "Back",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            return false;
+    }
+    */
 }
