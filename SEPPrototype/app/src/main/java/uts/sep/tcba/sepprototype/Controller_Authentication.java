@@ -52,19 +52,16 @@ public class Controller_Authentication extends AppCompatActivity {
 
     public String ID;
     public String password;
-    public String userPath;
 
-    public void getCreds() {
+    public void getUserDetails() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        userPath = "Users/" + ID;
+        String userPath = "Users/" + ID;
         DatabaseReference ref = database.getReference(userPath);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("TEST", dataSnapshot.toString());
                 if (dataSnapshot.child("Email").exists()) {
                     String email = dataSnapshot.child("Email").getValue().toString();
-                    Log.d("TESTING", email);
                     login(email);
                 } else {
                     mIdView.setError("Invalid ID");
@@ -95,9 +92,8 @@ public class Controller_Authentication extends AppCompatActivity {
                             TextView pw = (TextView) findViewById(R.id.password);
                             id.setText("");
                             pw.setText("");
-                            Log.d("MEMES" , mAuth.getCurrentUser().getEmail());
                             Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
-                            intent.putExtra("user", userPath);
+                            intent.putExtra("user", ID);
                             startActivity(intent);
                         }
                     }
@@ -182,9 +178,7 @@ public class Controller_Authentication extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             //showProgress(true);
-            Log.d("ID IS", ID);
-            Log.d("PASSWORD IS", password);
-            getCreds();
+            getUserDetails();
         }
     }
 

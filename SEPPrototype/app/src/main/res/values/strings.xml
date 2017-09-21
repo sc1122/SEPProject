@@ -11,7 +11,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
-    <string name="title_activity_studentmenu">Consulation Booker - Caleb Adra</string>
+    <string name="title_activity_studentmenu">Consulation Booker</string>
     <string name="title_home">Bookings</string>
     <string name="title_dashboard">Subjects</string>
     <string name="title_notifications">Notifications</string>

@@ -15,7 +15,8 @@ import android.widget.*;
 import android.util.Log;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.*;
+import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 
@@ -24,11 +25,12 @@ public class Controller_StudentMenu extends AppCompatActivity{
 private TextView mTextMessage;
 private ListView listView;
 private FloatingActionButton newBookingButton;
-private ArrayList<String> bookings = new ArrayList<String>();
+private ArrayList<Booking> bookings = new ArrayList<Booking>();
 private ArrayList<String> subjects = new ArrayList<String>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
+public User currentUser;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -41,7 +43,9 @@ private FirebaseAuth mAuth;
                     switch(item.getItemId()){
                         case R.id.navigation_home:
                             newBookingButton.setVisibility(View.VISIBLE);
-                            pageList.addAll(bookings);
+                            for (Booking b: bookings) {
+                                pageList.add(b.toString());
+                            }
                             adapter.notifyDataSetChanged();
                             if (bookings.size() > 0) {
                                 mTextMessage.setVisibility(View.GONE);
@@ -69,29 +73,39 @@ private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Activity Initialisation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studentmenu);
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        populateData();
-        pageList = (ArrayList<String>) bookings.clone();
+        // Fetch user from previous activity
+        Intent intent = getIntent();
+        String loggedInUserID = intent.getStringExtra("user");
+        currentUser = new User(loggedInUserID);
 
-        listView = (ListView) findViewById(R.id.list);
-
-        listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Object o = listView.getItemAtPosition(position);
+        // Set a listener for when data is updated/loaded to refresh the view
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Users/" + loggedInUserID);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                refreshUserData();
+                // Populate user bookings
+                getBookings(String.valueOf(currentUser.getID()));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
             }
         });
 
-        // Define a new Adapter to bind data
-        // First parameter - Context, Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written, Fourth - the Array of data
-        //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, pageList);
-        // Assign adapter to ListView
+        // Set ListView UI element to display different lists based on tab selected
+        listView = (ListView) findViewById(R.id.list);
 
+        // Define a new Adapter to bind data to UI list
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pageList) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -105,9 +119,18 @@ private FirebaseAuth mAuth;
             }
         };
 
-
+        // Bind the adapted to the UI list
         listView.setAdapter(adapter);
 
+        // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("HELLO", "WORLD");
+                //Object o = listView.getItemAtPosition(position);  // Create view booking screen and load booking details
+            }
+        });
+
+        // Define the new booking button in the bottom right
         newBookingButton = (FloatingActionButton) findViewById(R.id.newBooking);
         newBookingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -118,16 +141,42 @@ private FirebaseAuth mAuth;
         });
     }
 
-    public void populateData() {
+    public void refreshUserData() {
+        setTitle(getTitle() + " - " + currentUser.getFirstName() + " " + currentUser.getLastName());
+        subjects.addAll(currentUser.getSubjects());
+    }
+
+    public void getBookings(final String ID) {
         bookings.clear();
-        bookings.add("12/09/2017 14:00 - Dr. Qureshi (48440)\nFEIT Learning Precinct, Building 11 Level 5");
-        bookings.add("14/09/2017 11:00 - Cam Reeves (41900)\nBuilding 11 Level B1, Room 401");
-        bookings.add("01/10/2017 13:30 - Dr. McBride (31281)\nFEIT Learning Precinct, Building 11 Level 5");
-        bookings.add("21/10/2017 11:00 - Cam Reeves (41900)\nBuilding 11 Level B1, Room 401");
-        subjects.clear();
-        subjects.add("Fundamentals of Security (41900)");
-        subjects.add("Systems Development Project (31281)");
-        subjects.add("Software Engineering Practice (48440)");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Bookings");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot booking : dataSnapshot.getChildren()) {
+                    Log.d("BOOKING", booking.toString());
+                    if (booking.child("Students").child(ID).exists()) {
+                        Log.d("STUDENT", booking.getValue().toString());
+                        Booking b = new Booking(booking);
+                        bookings.add(b);
+                    } else if (booking.child("Tutor").getValue().toString().equals(ID)) {
+                        Log.d("TUTOR", booking.getValue().toString());
+                        Booking b = new Booking(booking);
+                        bookings.add(b);
+                    }
+                }
+                pageList.clear();
+                for (Booking b: bookings) {
+                    pageList.add(b.toString()); // Display bookings on initial load
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
     }
 
     @Override
@@ -154,11 +203,12 @@ private FirebaseAuth mAuth;
         alertDialog.show();
     }
 
+    // Return method from make booking view
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
                 String booking = data.getStringExtra("result");
-                bookings.add(booking);
+                //bookings.add(booking); // fix this shit
                 pageList.add(booking);
                 adapter.notifyDataSetChanged();
             }
