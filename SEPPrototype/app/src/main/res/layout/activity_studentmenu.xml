@@ -5,8 +5,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Controller_StudentMenu">
+    tools:context=".Controller_StudentMenu"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/content"
