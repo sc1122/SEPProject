@@ -27,7 +27,7 @@ public class User implements Serializable {
                 firstName = dataSnapshot.child("FirstName").getValue().toString();
                 lastName = dataSnapshot.child("LastName").getValue().toString();
                 email = dataSnapshot.child("Email").getValue().toString();
-                extractSubjects(dataSnapshot.child("Subjects").getValue().toString());
+                extractAndAddSubjects(dataSnapshot.child("Subjects").getValue().toString());
                 for (String s: subjects) {
                     Log.d("SUBJECTS", s.toString());
                 }
@@ -60,7 +60,7 @@ public class User implements Serializable {
         return this.subjects;
     }
 
-    public void extractSubjects(String subjectJSON) {
+    public void extractAndAddSubjects(String subjectJSON) {
         subjects.clear();
         subjectJSON = subjectJSON.substring(1, subjectJSON.length()-1);
         String[] subjectsString = subjectJSON.split("=|,");

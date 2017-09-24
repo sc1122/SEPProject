@@ -19,12 +19,15 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
     private Availabilities content = new Availabilities();
+    public User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Bundle bundle = this.getIntent().getExtras();
+        currentUser = (User) bundle.getSerializable("user");
         setSupportActionBar(toolbar);
         setContent();
         Button b = (Button) findViewById(R.id.save);
@@ -56,25 +59,23 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: set up listeners to hide date->time until the preceding list has a selection
      */
     private void setContent(){
-        User tutorUser = new User();
-        Tutor tutor = new Tutor(tutorUser);
-        User stuUser = new User();
-        Student student = new Student(stuUser);
+
         //Availabilities content = new Availabilities();
         //Above code to be pulled from database on future iterations
-        setSubjectList(student);
-        setDateList(tutor);
+        setSubjectList(currentUser);
+        //setDateList(tutor);
         setTimeList(content);
         TextView tutorName = (TextView) findViewById(R.id.tutor);
-        tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
+        //123tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
         TextView location = (TextView) findViewById(R.id.location);
         location.setText(content.getLocation());
     }
 
-    private void setSubjectList(Student student){
+    private void setSubjectList(User user){
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         subjectNo.setPrompt("Select Subject");
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
+        Log.d("HELLO", user.toString());
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, user.getSubjects());
         subjectNo.setAdapter(adapter);
     }
 

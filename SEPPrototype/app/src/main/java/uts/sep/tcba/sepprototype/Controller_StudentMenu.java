@@ -84,6 +84,7 @@ public User currentUser;
         // Fetch user from previous activity
         Intent intent = getIntent();
         String loggedInUserID = intent.getStringExtra("user");
+        String loggedInUserType = intent.getStringExtra("type");
         currentUser = new User(loggedInUserID);
 
         // Set a listener for when data is updated/loaded to refresh the view
@@ -135,7 +136,9 @@ public User currentUser;
         newBookingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class);
-                intent.putExtra("caller", "Controller_StudentMenu");
+                Bundle b = new Bundle();
+                b.putSerializable("user", currentUser);
+                intent.putExtras(b);
                 startActivityForResult(intent, 1);
             }
         });

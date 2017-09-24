@@ -52,6 +52,7 @@ public class Controller_Authentication extends AppCompatActivity {
 
     public String ID;
     public String password;
+    public String userType;
 
     public void getUserDetails() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -62,6 +63,7 @@ public class Controller_Authentication extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("Email").exists()) {
                     String email = dataSnapshot.child("Email").getValue().toString();
+                    userType = dataSnapshot.child("Type").getValue().toString();
                     login(email);
                 } else {
                     mIdView.setError("Invalid ID");
@@ -92,8 +94,10 @@ public class Controller_Authentication extends AppCompatActivity {
                             TextView pw = (TextView) findViewById(R.id.password);
                             id.setText("");
                             pw.setText("");
+
                             Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
                             intent.putExtra("user", ID);
+                            intent.putExtra("type", userType);
                             startActivity(intent);
                         }
                     }
