@@ -149,19 +149,21 @@ public User currentUser;
     public void getBookings(final String ID) {
         bookings.clear();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Bookings");
+        DatabaseReference ref = database.getReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot booking : dataSnapshot.getChildren()) {
+                for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
                     Log.d("BOOKING", booking.toString());
+                    DataSnapshot tutorBooked = dataSnapshot.child("Users").child(booking.child("Tutor").getValue().toString());
+                    String tutorName = tutorBooked.child("FirstName").getValue().toString() + " " + tutorBooked.child("LastName").getValue().toString();
                     if (booking.child("Students").child(ID).exists()) {
                         Log.d("STUDENT", booking.getValue().toString());
-                        Booking b = new Booking(booking);
+                        Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
                     } else if (booking.child("Tutor").getValue().toString().equals(ID)) {
                         Log.d("TUTOR", booking.getValue().toString());
-                        Booking b = new Booking(booking);
+                        Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
                     }
                 }

@@ -24,27 +24,14 @@ public class Booking {
     public int subject;
     public LinkedList<String> students = new LinkedList<String>();
 
-    public Booking(DataSnapshot booking) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + booking.child("Tutor").getValue().toString());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                tutorName = dataSnapshot.child("FirstName").getValue().toString();
-                tutorName = tutorName + " " + dataSnapshot.child("LastName").getValue().toString();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });
+    public Booking(DataSnapshot booking, String tutorName) {
         capacity = booking.child("Capacity").getValue(Integer.class);
         date = booking.child("Date").getValue().toString();
         startTime = booking.child("StartTime").getValue().toString();
         endTime = booking.child("EndTime").getValue().toString();
         location = booking.child("Location").getValue().toString();
         tutorID = booking.child("Tutor").getValue(Integer.class);
+        this.tutorName = tutorName;
         subject = booking.child("Subject").getValue(Integer.class);
         for (DataSnapshot d: booking.child("Students").getChildren()){
             if (d.child("BookingStatus").getValue().toString().equals("Attending")) {
