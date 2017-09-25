@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import com.google.firebase.database.*;
+
 import java.util.LinkedList;
 
 import javax.security.auth.Subject;
@@ -18,18 +20,21 @@ import javax.security.auth.Subject;
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-    private Availabilities content = new Availabilities();
-    public User currentUser;
+    private Availability content = new Availability("date", 12.00, 14.00, 4, "location");
+    public Student currentUser;
+    public Tutor tutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         Bundle bundle = this.getIntent().getExtras();
-        currentUser = (User) bundle.getSerializable("user");
-        setSupportActionBar(toolbar);
+        currentUser = new Student((User) bundle.getSerializable("user"));
         setContent();
+
+        setSupportActionBar(toolbar);
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -59,23 +64,29 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: set up listeners to hide date->time until the preceding list has a selection
      */
     private void setContent(){
-
-        //Availabilities content = new Availabilities();
-        //Above code to be pulled from database on future iterations
         setSubjectList(currentUser);
-        //setDateList(tutor);
+        setDateList(tutor);
         setTimeList(content);
         TextView tutorName = (TextView) findViewById(R.id.tutor);
-        //123tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
+        tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
         TextView location = (TextView) findViewById(R.id.location);
         location.setText(content.getLocation());
     }
 
-    private void setSubjectList(User user){
+    private void setSubjectList(final Student student){
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         subjectNo.setPrompt("Select Subject");
-        Log.d("HELLO", user.toString());
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, user.getSubjects());
+        subjectNo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String subjectSelection = adapterView.getAdapter().getItem(i).toString().substring(0,5);
+                tutor = new Tutor(student.getTutorsForIndex(i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
         subjectNo.setAdapter(adapter);
     }
 
@@ -86,7 +97,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
         consDate.setAdapter(adapter);
     }
 
-    private void setTimeList(Availabilities availability){
+    private void setTimeList(Availability availability){
         Spinner consTime = (Spinner)findViewById(R.id.time);
         consTime.setPrompt("Select Time");
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());

@@ -83,7 +83,7 @@ public User currentUser;
 
         // Fetch user from previous activity
         Intent intent = getIntent();
-        String loggedInUserID = intent.getStringExtra("user");
+        int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
         String loggedInUserType = intent.getStringExtra("type");
         currentUser = new User(loggedInUserID);
 
