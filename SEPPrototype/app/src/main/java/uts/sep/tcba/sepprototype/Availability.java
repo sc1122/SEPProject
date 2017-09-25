@@ -9,9 +9,12 @@ import java.util.LinkedList;
  * Created by seant on 15/09/2017.
  * Class which handles the availabilities of the tutor
  * Done in a linked list of all availabilities
+ * NOTE: THIS WILL NOT BE IMPLEMENTED LIKE THIS, NO NEED FOR LINKEDLIST
+ *       THIS IS A OBJECT TO EMULATE AN AVAILABILITY INTERNALLY
+ *       LINKEDLIST IN THIS CASE IS THE DATASNAPSHOT FROM FIREBASE, NOT LOCAL LINKEDLIST
  */
 
-public class Availabilities {
+public class Availability {
 
     private String availDate;
     private double startTime;
@@ -19,16 +22,23 @@ public class Availabilities {
     private int studentLimit;
     private String location;
 
-    public Availabilities(){
+    public Availability(String date, double sTime, double eTime, int limit, String loc) {
         /*
         in full implementation, pull records entered into database to here
         Currently hard coded
         */
-        availDate = "08/10/17";
-        startTime = 10.00;
-        endTime = 16.00;
-        studentLimit = 3;
+        date = "08/10/17";
+        sTime = 10.00;
+        eTime = 16.00;
+        limit = 3;
         location = "CB11.04.401";
+        /* Oi, can you not just use placeholders and actually do some work :)
+           Remove the above code when values are being passed */
+        availDate = date;
+        startTime = sTime;
+        endTime = eTime;
+        studentLimit = limit;
+        location = loc;
     }
 
     /*
@@ -57,20 +67,16 @@ public class Availabilities {
 
     }
 
-    public void addAvailability(String availDate,double startTime,double endTime,int studentLimit,String location){
-        this.availDate = availDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.studentLimit = studentLimit;
-        this.location = location;
+    public String getAvailDate() {
+        return availDate;
     }
 
-    public String getAvailDate(){return availDate;}
-
-    public int getStudentLimit(){return studentLimit;}
+    public int getStudentLimit() {
+        return studentLimit;
+    }
     
-    public String getLocation(){return location;}
-
-
+    public String getLocation() {
+        return location;
+    }
 
 }
