@@ -20,7 +20,7 @@ import javax.security.auth.Subject;
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-    private Availability content = new Availability("date", 12.00, 14.00, 4, "location");
+    public LinkedList<Availability> availabilities;
     public Student currentUser;
     public Tutor tutor;
 
@@ -66,16 +66,20 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private void setContent(){
         setSubjectList(currentUser);
         setDateList(tutor);
-        setTimeList(content);
+        setTimeList(availabilities);
         TextView tutorName = (TextView) findViewById(R.id.tutor);
-        tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
+        // BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
+        // tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
         TextView location = (TextView) findViewById(R.id.location);
-        location.setText(content.getLocation());
+        // BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
+        //location.setText(selectedAvailability.getLocation());
     }
 
     private void setSubjectList(final Student student){
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         subjectNo.setPrompt("Select Subject");
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
+        subjectNo.setAdapter(adapter);
         subjectNo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -86,22 +90,42 @@ public class Controller_MakeBooking extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
-        subjectNo.setAdapter(adapter);
     }
 
-    private void setDateList(Tutor tutor){
+    private void setDateList(final Tutor tutor){
         Spinner consDate = (Spinner)findViewById(R.id.date);
         consDate.setPrompt("Select Date");
+        /* BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
-        consDate.setAdapter(adapter);
+        consDate.setAdapter(adapter); */
+        consDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                availabilities = tutor.getAvailabilitiesForDate(adapterView.getAdapter().getItem(i).toString());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
     }
 
-    private void setTimeList(Availability availability){
+    private void setTimeList(LinkedList<Availability> availabilities){
         Spinner consTime = (Spinner)findViewById(R.id.time);
         consTime.setPrompt("Select Time");
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, availability.getTimeslots());
+        LinkedList<String> timeslots = new LinkedList<String>();
+        /* BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
+        for (Availability a : availabilities) {
+            timeslots.addAll(a.getTimeslots());
+        } */
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
+        consTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //CODE TO DETERMINE THE AVAILABILITY SELECTED
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
     }
 
     /*

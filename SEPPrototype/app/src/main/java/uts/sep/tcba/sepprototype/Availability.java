@@ -2,6 +2,8 @@ package uts.sep.tcba.sepprototype;
 
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
@@ -22,23 +24,12 @@ public class Availability {
     private int studentLimit;
     private String location;
 
-    public Availability(String date, double sTime, double eTime, int limit, String loc) {
-        /*
-        in full implementation, pull records entered into database to here
-        Currently hard coded
-        */
-        date = "08/10/17";
-        sTime = 10.00;
-        eTime = 16.00;
-        limit = 3;
-        location = "CB11.04.401";
-        /* Oi, can you not just use placeholders and actually do some work :)
-           Remove the above code when values are being passed */
-        availDate = date;
-        startTime = sTime;
-        endTime = eTime;
-        studentLimit = limit;
-        location = loc;
+    public Availability(DataSnapshot ds) {
+        availDate = ds.child("Date").getValue().toString();
+        startTime = Double.parseDouble(ds.child("StartTime").getValue().toString().replace(':','.'));
+        endTime = Double.parseDouble(ds.child("EndTime").getValue().toString().replace(':','.'));
+        studentLimit = ds.child("Capacity").getValue(Integer.class);
+        location = ds.child("Location").getValue().toString();
     }
 
     /*

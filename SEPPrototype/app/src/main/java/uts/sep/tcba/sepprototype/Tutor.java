@@ -1,5 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
+import android.util.Log;
+import com.google.firebase.database.*;
 import java.util.LinkedList;
 
 public class Tutor extends User {
@@ -8,6 +10,7 @@ public class Tutor extends User {
 
     public Tutor(int ID){
         super(ID);
+        fetchAvailabilities();
     }
 
     public Tutor(User user){
@@ -17,6 +20,26 @@ public class Tutor extends User {
         this.subjects = user.getSubjects();
         this.type = user.getType();
         this.email = user.getEmail();
+        fetchAvailabilities();
+    }
+
+    public void fetchAvailabilities() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Users/" + this.getID() + "/Availabilities");
+        Log.d("TUTOR YAY", ref.toString());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    availabilities.add(new Availability(ds));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
     }
 
     public void addAvailability() {
@@ -27,7 +50,9 @@ public class Tutor extends User {
 
     }
 
-    public LinkedList<Availability> getAvailability(){return availabilities;}
+    public LinkedList<Availability> getAvailabilities(){
+        return availabilities;
+    }
 
     /*
     Returns list of strings of all available dates
@@ -37,6 +62,16 @@ public class Tutor extends User {
         for(Availability available : availabilities)
             availDates.add(available.getAvailDate());
         return availDates;
+    }
+
+    public LinkedList<Availability> getAvailabilitiesForDate(String date){
+        LinkedList<Availability> avail = new LinkedList<Availability>();
+        for (Availability a : availabilities) {
+            if (a.getAvailDate().equals(date)) {
+                avail.add(a);
+            }
+        }
+        return avail;
     }
 
 }
