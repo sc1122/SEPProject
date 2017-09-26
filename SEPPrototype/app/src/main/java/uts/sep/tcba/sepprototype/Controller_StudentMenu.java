@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,11 +15,18 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.util.Log;
 import android.widget.AdapterView.OnItemClickListener;
-
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
 
 public class Controller_StudentMenu extends AppCompatActivity{
 
@@ -30,11 +38,10 @@ private ArrayList<String> subjects = new ArrayList<String>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
-public User currentUser;
+public Student currentStudent;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
-
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
                     pageList.clear();
@@ -43,9 +50,7 @@ public User currentUser;
                     switch(item.getItemId()){
                         case R.id.navigation_home:
                             newBookingButton.setVisibility(View.VISIBLE);
-                            for (Booking b: bookings) {
-                                pageList.add(b.toString());
-                            }
+                            refreshBookings();
                             adapter.notifyDataSetChanged();
                             if (bookings.size() > 0) {
                                 mTextMessage.setVisibility(View.GONE);
@@ -70,7 +75,6 @@ public User currentUser;
                 }
             };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -78,6 +82,7 @@ public User currentUser;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studentmenu);
         mTextMessage = (TextView) findViewById(R.id.message);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -85,7 +90,7 @@ public User currentUser;
         Intent intent = getIntent();
         int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
         String loggedInUserType = intent.getStringExtra("type");
-        currentUser = new User(loggedInUserID);
+        currentStudent = new Student(loggedInUserID);
 
         // Set a listener for when data is updated/loaded to refresh the view
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -93,9 +98,12 @@ public User currentUser;
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                refreshUserData();
+                setTitle(getTitle() + " - " + currentStudent.getFirstName() + " " + currentStudent.getLastName() + " (S)");
                 // Populate user bookings
-                getBookings(String.valueOf(currentUser.getID()));
+                getBookings(String.valueOf(currentStudent.getID()));
+                sortBookings();
+                // Populate user subjects
+                subjects.addAll(currentStudent.getSubjects());
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -137,16 +145,38 @@ public User currentUser;
             public void onClick(View v) {
                 Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class);
                 Bundle b = new Bundle();
-                b.putSerializable("user", currentUser);
+                b.putSerializable("user", currentStudent);
                 intent.putExtras(b);
                 startActivityForResult(intent, 1);
             }
         });
     }
 
-    public void refreshUserData() {
-        setTitle(getTitle() + " - " + currentUser.getFirstName() + " " + currentUser.getLastName());
-        subjects.addAll(currentUser.getSubjects());
+    public void refreshBookings() {
+        pageList.clear();
+        for (Booking b: bookings) {
+            pageList.add(b.toString());
+        }
+    }
+
+    public void sortBookings() {
+        Collections.sort(bookings, new Comparator<Booking>() {
+            public int compare(Booking b1, Booking b2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+                try {
+                    Date date1 = formatter.parse(b1.getDate());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(b2.getDate());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+        refreshBookings();
     }
 
     public void getBookings(final String ID) {
@@ -164,16 +194,9 @@ public User currentUser;
                         Log.d("STUDENT", booking.getValue().toString());
                         Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
-                    } else if (booking.child("Tutor").getValue().toString().equals(ID)) {
-                        Log.d("TUTOR", booking.getValue().toString());
-                        Booking b = new Booking(booking, tutorName);
-                        bookings.add(b);
                     }
                 }
-                pageList.clear();
-                for (Booking b: bookings) {
-                    pageList.add(b.toString()); // Display bookings on initial load
-                }
+                sortBookings();
                 adapter.notifyDataSetChanged();
             }
 
@@ -212,10 +235,12 @@ public User currentUser;
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
-                String booking = data.getStringExtra("result");
-                //bookings.add(booking); // fix this shit
-                pageList.add(booking);
+                Bundle bundle = data.getExtras();
+                Booking booking = (Booking) bundle.getSerializable("booking");
+                bookings.add(booking);
+                pageList.add(booking.toString());
                 adapter.notifyDataSetChanged();
+                sortBookings();
             }
         }
     }

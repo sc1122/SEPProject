@@ -26,10 +26,8 @@ public class User implements Serializable {
                 lastName = dataSnapshot.child("LastName").getValue().toString();
                 email = dataSnapshot.child("Email").getValue().toString();
                 extractAndAddSubjects(dataSnapshot.child("Subjects"));
-                for (String s: subjects) {
-                    Log.d("SUBJECTS1", s.toString());
-                }
                 type = dataSnapshot.child("Type").getValue().toString();
+                Log.d("USER OBJECT", "CREATED");
             }
 
             @Override
@@ -37,6 +35,16 @@ public class User implements Serializable {
                 Log.d("RLdatabase", "Failed");
             }
         });
+    }
+
+    public User (DataSnapshot data) {
+        ID = Integer.parseInt(data.getKey());
+        firstName = data.child("FirstName").getValue().toString();
+        lastName = data.child("LastName").getValue().toString();
+        email = data.child("Email").getValue().toString();
+        extractAndAddSubjects(data.child("Subjects"));
+        type = data.child("Type").getValue().toString();
+        Log.d("USER OBJECT", "CREATED");
     }
 
     public int getID() { return this.ID; }

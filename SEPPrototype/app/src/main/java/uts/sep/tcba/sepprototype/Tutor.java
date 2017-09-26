@@ -2,15 +2,22 @@ package uts.sep.tcba.sepprototype;
 
 import android.util.Log;
 import com.google.firebase.database.*;
+
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Tutor extends User {
+public class Tutor extends User implements Serializable {
 
     private LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
     public Tutor(int ID){
         super(ID);
-        fetchAvailabilities();
+        //fetchAvailabilities();
+    }
+
+    public Tutor(DataSnapshot data){
+        super(data);
+        fetchAvailabilities(data);
     }
 
     public Tutor(User user){
@@ -20,11 +27,14 @@ public class Tutor extends User {
         this.subjects = user.getSubjects();
         this.type = user.getType();
         this.email = user.getEmail();
-        fetchAvailabilities();
+        //fetchAvailabilities();
     }
 
-    public void fetchAvailabilities() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+    public void fetchAvailabilities(DataSnapshot data) {
+        for (DataSnapshot ds : data.child("Availabilities").getChildren()) {
+            availabilities.add(new Availability(ds));
+        }
+        /* FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + this.getID() + "/Availabilities");
         Log.d("TUTOR YAY", ref.toString());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -39,7 +49,7 @@ public class Tutor extends User {
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("RLdatabase", "Failed");
             }
-        });
+        });*/
     }
 
     public void addAvailability() {

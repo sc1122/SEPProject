@@ -5,8 +5,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="uts.sep.tcba.sepprototype.Controller_TutorMenu">
+    tools:context=".Controller_TutorMenu"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/content"
@@ -22,7 +22,32 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/title_home" />
+            android:textSize="18dp"
+            android:text="@string/home_placeholder"
+            android:visibility="gone"/>
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:divider="@android:color/background_light"
+            android:layout_margin="10dp"
+            android:dividerHeight="15dp" />
+
+        <include layout="@layout/content_makebooking" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/newAvailability"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
+            android:tint="@android:color/background_light"
+            app:backgroundTint="@android:color/black"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/background_dark"
+            app:srcCompat="@drawable/ic_calendar_add" />
 
     </FrameLayout>
 

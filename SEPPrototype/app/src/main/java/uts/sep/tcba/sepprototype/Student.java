@@ -1,15 +1,22 @@
 package uts.sep.tcba.sepprototype;
 
 import android.util.Log;
+
+import java.io.Serializable;
 import java.util.LinkedList;
 import com.google.firebase.database.*;
 
-public class Student extends User {
+public class Student extends User implements Serializable {
 
     public LinkedList<Integer> tutors = new LinkedList<Integer>();
 
     public Student(int ID) {
         super(ID);
+        fetchTutorsForSubject();
+    }
+
+    public Student(DataSnapshot data){
+        super(data);
         fetchTutorsForSubject();
     }
 

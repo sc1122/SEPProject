@@ -90,31 +90,22 @@ public class Controller_Authentication extends AppCompatActivity {
                             mPasswordView.setError(getString(R.string.error_incorrect_password));
                             mPasswordView.requestFocus();
                         } else {
-                            //If it's a tutor, Go to tutor menu
-//                            if(userType.equalsIgnoreCase("tutor")) {
-//                                Log.d("TUTOR","Tutor logged in");
-//                                TextView id = (TextView) findViewById(R.id.IDnumber);
-//                                TextView pw = (TextView) findViewById(R.id.password);
-//                                id.setText("");
-//                                pw.setText("");
-//
-//                                Intent intent = new Intent(Controller_Authentication.this, Controller_TutorMenu.class);
-//                                intent.putExtra("user", ID);
-//                                intent.putExtra("type", userType);
-//                                startActivity(intent);
-//                            }else{
-//                                //Student menu
-//                                Log.d("STUDENT","Student logged in");
-                                TextView id = (TextView) findViewById(R.id.IDnumber);
-                                TextView pw = (TextView) findViewById(R.id.password);
-                                id.setText("");
-                                pw.setText("");
+                            Intent intent;
+                            if (userType.equals("Tutor")) {
+                                //If it's a tutor, Go to tutor menu
+                                intent = new Intent(Controller_Authentication.this, Controller_TutorMenu.class);
+                            } else {
+                                //If it's a student, Go to student menu
+                                intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
+                            }
 
-                                Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
-                                intent.putExtra("user", ID);
-                                intent.putExtra("type", userType);
-                                startActivity(intent);
-//                            }
+                            TextView id = (TextView) findViewById(R.id.IDnumber);
+                            TextView pw = (TextView) findViewById(R.id.password);
+                            id.setText("");
+                            pw.setText("");
+                            intent.putExtra("user", ID);
+                            intent.putExtra("type", userType);
+                            startActivity(intent);
                         }
                     }
                 });
