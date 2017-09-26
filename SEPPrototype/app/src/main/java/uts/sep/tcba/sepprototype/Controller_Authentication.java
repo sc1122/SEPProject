@@ -64,7 +64,7 @@ public class Controller_Authentication extends AppCompatActivity {
                 if (dataSnapshot.child("Email").exists()) {
                     String email = dataSnapshot.child("Email").getValue().toString();
                     userType = dataSnapshot.child("Type").getValue().toString();
-                    login(email);
+                    login(email, userType);
                 } else {
                     mIdView.setError("Invalid ID");
                     mIdView.requestFocus();
@@ -78,7 +78,7 @@ public class Controller_Authentication extends AppCompatActivity {
         });
     }
 
-    public void login(String email) {
+    public void login(String email, final String userType) {
         mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -90,15 +90,31 @@ public class Controller_Authentication extends AppCompatActivity {
                             mPasswordView.setError(getString(R.string.error_incorrect_password));
                             mPasswordView.requestFocus();
                         } else {
-                            TextView id = (TextView) findViewById(R.id.IDnumber);
-                            TextView pw = (TextView) findViewById(R.id.password);
-                            id.setText("");
-                            pw.setText("");
+                            //If it's a tutor, Go to tutor menu
+//                            if(userType.equalsIgnoreCase("tutor")) {
+//                                Log.d("TUTOR","Tutor logged in");
+//                                TextView id = (TextView) findViewById(R.id.IDnumber);
+//                                TextView pw = (TextView) findViewById(R.id.password);
+//                                id.setText("");
+//                                pw.setText("");
+//
+//                                Intent intent = new Intent(Controller_Authentication.this, Controller_TutorMenu.class);
+//                                intent.putExtra("user", ID);
+//                                intent.putExtra("type", userType);
+//                                startActivity(intent);
+//                            }else{
+//                                //Student menu
+//                                Log.d("STUDENT","Student logged in");
+                                TextView id = (TextView) findViewById(R.id.IDnumber);
+                                TextView pw = (TextView) findViewById(R.id.password);
+                                id.setText("");
+                                pw.setText("");
 
-                            Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
-                            intent.putExtra("user", ID);
-                            intent.putExtra("type", userType);
-                            startActivity(intent);
+                                Intent intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
+                                intent.putExtra("user", ID);
+                                intent.putExtra("type", userType);
+                                startActivity(intent);
+//                            }
                         }
                     }
                 });
