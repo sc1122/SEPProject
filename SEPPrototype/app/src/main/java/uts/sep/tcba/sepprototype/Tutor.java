@@ -4,6 +4,12 @@ import android.util.Log;
 import com.google.firebase.database.*;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class Tutor extends User implements Serializable {
@@ -64,13 +70,37 @@ public class Tutor extends User implements Serializable {
         return availabilities;
     }
 
+    public void sortAvailabilities() {
+        Collections.sort(availabilities, new Comparator<Availability>() {
+            public int compare(Availability a1, Availability a2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+                try {
+                    Date date1 = formatter.parse(a1.getAvailDate());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(a2.getAvailDate());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+    }
+
     /*
     Returns list of strings of all available dates
      */
     public LinkedList<String> getAvailableDates(){
         LinkedList<String> availDates = new LinkedList<String>();
-        for(Availability available : availabilities)
-            availDates.add(available.getAvailDate());
+        LinkedList<String> alreadyAdded = new LinkedList<String>();
+        sortAvailabilities();
+        for (Availability a : availabilities) {
+            if (!availDates.contains(a.getAvailDate())) {
+                availDates.add(a.getAvailDate());
+            }
+        }
         return availDates;
     }
 
