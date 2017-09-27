@@ -149,6 +149,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 String[] times = adapterView.getAdapter().getItem(i).toString().split(" - ");
                 startTime = Double.parseDouble(times[0].replace(':','.'));
                 endTime = Double.parseDouble(times[1].replace(':','.'));
+
+                //TODO: read the number of student from the selected availability
+                TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
+                LinkedList<String> numOfStudent = getDetails().getStudents();
+                studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getStudentLimit());
+
                 TextView loc = (TextView) findViewById(R.id.location);
                 loc.setText(selectedAvailability.getLocation());
             }
