@@ -183,14 +183,15 @@ public Student currentStudent;
         bookings.clear();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                bookings.clear();
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-                    Log.d("BOOKING", booking.toString());
-                    DataSnapshot tutorBooked = dataSnapshot.child("Users").child(booking.child("Tutor").getValue().toString());
+                    String tutorID = booking.child("tutor").getValue().toString();
+                    DataSnapshot tutorBooked = dataSnapshot.child("Users").child(tutorID);
                     String tutorName = tutorBooked.child("FirstName").getValue().toString() + " " + tutorBooked.child("LastName").getValue().toString();
-                    if (booking.child("Students").child(ID).exists()) {
+                    if (booking.child("students").child(ID).exists()) {
                         Log.d("STUDENT", booking.getValue().toString());
                         Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
@@ -205,6 +206,13 @@ public Student currentStudent;
                 Log.d("RLdatabase", "Failed");
             }
         });
+    }
+
+    public void addBookingToFirebase(Booking booking) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
+        DatabaseReference bookingStatus = ref.push();
+        bookingStatus.setValue(booking);
+        bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
     }
 
     @Override
@@ -237,8 +245,7 @@ public Student currentStudent;
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 Booking booking = (Booking) bundle.getSerializable("booking");
-                bookings.add(booking);
-                pageList.add(booking.toString());
+                addBookingToFirebase(booking);
                 adapter.notifyDataSetChanged();
                 sortBookings();
             }

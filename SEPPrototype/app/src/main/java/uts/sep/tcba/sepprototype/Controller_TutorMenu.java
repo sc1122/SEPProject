@@ -190,8 +190,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
                     Log.d("BOOKING", booking.toString());
                     String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
-                    if (booking.child("Tutor").getValue().toString().equals(ID)) {
-                        Log.d("TUTOR", booking.getValue().toString());
+                    if (booking.child("tutor").getValue().toString().equals(ID)) {
                         Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
                     }

@@ -15,65 +15,68 @@ import java.util.LinkedList;
 
 public class Booking implements Serializable {
 
-    public int capacity;
-    public String date;
-    public String startTime;
-    public String endTime;
-    public String location;
-    public int tutorID;
-    public String tutorName;
-    public int subject;
-    public LinkedList<String> students = new LinkedList<String>();
+    private int capacity;
+    private String date;
+    private String startTime;
+    private String endTime;
+    private String location;
+    private int tutor;
+    private String tutorName;
+    private int subject;
+    private LinkedList<String> students = new LinkedList<String>();
+
+    public Booking() {}
 
     public Booking(DataSnapshot booking, String tutorName) {
-        date = booking.child("Date").getValue().toString();
-        startTime = booking.child("StartTime").getValue().toString();
-        endTime = booking.child("EndTime").getValue().toString();
-        location = booking.child("Location").getValue().toString();
-        tutorID = booking.child("Tutor").getValue(Integer.class);
+        this.date = booking.child("date").getValue().toString();
+        this.startTime = booking.child("startTime").getValue().toString();
+        this.endTime = booking.child("endTime").getValue().toString();
+        this.location = booking.child("location").getValue().toString();
+        this.tutor = booking.child("tutor").getValue(Integer.class);
         this.tutorName = tutorName;
-        subject = booking.child("Subject").getValue(Integer.class);
-        capacity = booking.child("Capacity").getValue(Integer.class);
-        for (DataSnapshot d: booking.child("Students").getChildren()){
+        this.subject = booking.child("subject").getValue(Integer.class);
+        this.capacity = booking.child("capacity").getValue(Integer.class);
+        for (DataSnapshot d: booking.child("students").getChildren()){
             if (d.child("BookingStatus").getValue().toString().equals("Attending")) {
-                students.add(d.getKey());
+                this.students.add(d.getKey());
             }
         }
     }
 
-    public Booking(String sTime, String eTime, int sub, Tutor t, Availability a) {
-        date = a.getAvailDate();
-        startTime = sTime;
-        endTime = eTime;
-        location = a.getLocation();
-        tutorID = t.getID();
-        tutorName = t.getFirstName() + " " + t.getLastName();
-        subject = sub;
-        capacity = a.getStudentLimit();
+    public Booking(String sTime, String eTime, int sub, Tutor t, Availability a, Student s) {
+        this.date = a.getAvailDate();
+        this.startTime = sTime;
+        this.endTime = eTime;
+        this.location = a.getLocation();
+        this.tutor = t.getID();
+        this.tutorName = t.getFirstName() + " " + t.getLastName();
+        this.subject = sub;
+        this.capacity = a.getStudentLimit();
+        this.students.add(String.valueOf(s.getID()));
     }
 
     public int getCapacity() {
-        return capacity;
+        return this.capacity;
     }
 
     public String getDate() {
-        return date;
+        return this.date;
     }
 
     public String getStartTime() {
-        return startTime;
+        return this.startTime;
     }
 
     public String getEndTime() {
-        return endTime;
+        return this.endTime;
     }
 
     public String getLocation() {
-        return location;
+        return this.location;
     }
 
-    public int getTutorID() {
-        return tutorID;
+    public int getTutor() {
+        return this.tutor;
     }
 
     public String getTutorName() {
@@ -81,16 +84,17 @@ public class Booking implements Serializable {
     }
 
     public int getSubject() {
-        return subject;
+        return this.subject;
     }
 
+    @Exclude
     public LinkedList<String> getStudents() {
-        return students;
+        return this.students;
     }
 
     @Override
     public String toString(){
-        return date + " " + startTime + " - " + tutorName + " (" + subject + ")\n" + location;
+        return this.date + " " + this.startTime + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
     }
 
 }

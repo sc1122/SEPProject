@@ -61,7 +61,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability);
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser);
         return booking;
     }
 
@@ -141,7 +141,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 String selectedtime = adapterView.getAdapter().getItem(i).toString();
                 for (Availability a : availabilities) {
                     for (String s : a.getTimeslots()) {
-                        if (s.equals(selectedtime)){
+                        if (s.equals(selectedtime)) {
                             selectedAvailability = a;
                         }
                     }
