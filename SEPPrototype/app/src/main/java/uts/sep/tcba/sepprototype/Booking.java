@@ -17,8 +17,8 @@ public class Booking implements Serializable {
 
     private int capacity;
     private String date;
-    private String startTime;
-    private String endTime;
+    private double startTime;
+    private double endTime;
     private String location;
     private int tutor;
     private String tutorName;
@@ -29,8 +29,8 @@ public class Booking implements Serializable {
 
     public Booking(DataSnapshot booking, String tutorName) {
         this.date = booking.child("date").getValue().toString();
-        this.startTime = booking.child("startTime").getValue().toString();
-        this.endTime = booking.child("endTime").getValue().toString();
+        this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
+        this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
         this.location = booking.child("location").getValue().toString();
         this.tutor = booking.child("tutor").getValue(Integer.class);
         this.tutorName = tutorName;
@@ -43,7 +43,7 @@ public class Booking implements Serializable {
         }
     }
 
-    public Booking(String sTime, String eTime, int sub, Tutor t, Availability a, Student s) {
+    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s) {
         this.date = a.getAvailDate();
         this.startTime = sTime;
         this.endTime = eTime;
@@ -64,10 +64,18 @@ public class Booking implements Serializable {
     }
 
     public String getStartTime() {
+        return String.format("%.2f", this.startTime).replace('.',':');
+    }
+
+    public Double DoubleStartTime() {
         return this.startTime;
     }
 
     public String getEndTime() {
+        return String.format("%.2f", this.endTime).replace('.',':');
+    }
+
+    public Double DoubleEndTime() {
         return this.endTime;
     }
 
@@ -94,7 +102,7 @@ public class Booking implements Serializable {
 
     @Override
     public String toString(){
-        return this.date + " " + this.startTime + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
+        return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
     }
 
 }

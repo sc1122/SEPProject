@@ -26,8 +26,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
     public Tutor tutor;
 
     public String date;
-    public String startTime;
-    public String endTime;
+    public double startTime;
+    public double endTime;
     public int subject;
 
     @Override
@@ -147,8 +147,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
                     }
                 }
                 String[] times = adapterView.getAdapter().getItem(i).toString().split(" - ");
-                startTime = times[0];
-                endTime = times[1];
+                startTime = Double.parseDouble(times[0].replace(':','.'));
+                endTime = Double.parseDouble(times[1].replace(':','.'));
                 TextView loc = (TextView) findViewById(R.id.location);
                 loc.setText(selectedAvailability.getLocation());
             }
