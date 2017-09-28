@@ -18,6 +18,7 @@ import java.util.LinkedList;
 
 public class Availability {
 
+    private int id;
     private String availDate;
     private double startTime;
     private double endTime;

@@ -69,6 +69,7 @@ public class Booking implements Serializable {
 
     public Double DoubleStartTime() {
         return this.startTime;
+
     }
 
     public String getEndTime() {

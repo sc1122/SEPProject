@@ -144,11 +144,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
         newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
         newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                /* Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeBooking.class);
+                Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeAvailability.class);
                 Bundle b = new Bundle();
                 b.putSerializable("user", currentTutor);
                 intent.putExtras(b);
-                startActivityForResult(intent, 1); */
+                startActivityForResult(intent, 1);
             }
         });
     }
