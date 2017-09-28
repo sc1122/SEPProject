@@ -30,10 +30,11 @@
                 android:textAlignment="center" />
 
             <TimePicker
-                android:id="@+id/startTIme"
+                android:id="@+id/startTime"
                 android:layout_width="match_parent"
                 android:layout_height="122dp"
-                android:timePickerMode="spinner" />
+                android:timePickerMode="spinner"
+                />
 
             <TextView
                 android:id="@+id/textView3"
