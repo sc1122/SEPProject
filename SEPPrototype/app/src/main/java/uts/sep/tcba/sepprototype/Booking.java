@@ -105,4 +105,11 @@ public class Booking implements Serializable {
         return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
     }
 
+    /*
+    Returns true if the booking is full, returns false otherwise
+     */
+    public boolean isFull(){
+        return (students.size() == capacity);
+    }
+
 }

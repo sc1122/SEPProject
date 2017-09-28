@@ -66,12 +66,11 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     /*
-    following 4 methods generates the content of each of the items in some way
-    TODO: make this more dynamic, changing the time/date based off the subject
+    Following method generates the contents of each spinner by pulling the different availability
+    Objects from firebase
     TODO: set up listeners to hide date->time until the preceding list has a selection
      */
     private void setContent(){
-        // Set initial subject list
         setSubjectList();
     }
 
@@ -161,17 +160,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-    }
-
-    /*
-    Skeleton code of final method when records are pulled from database
-    Will result in removal of three respective methods when completed
-    TODO: In future iterations
-     */
-    private void setList(Student student){
-        LinkedList<String> subjects = student.getSubjects();
-        Spinner subjectNo = (Spinner)findViewById(R.id.subject);
-        //Insert code to set field based on subject choice and selected items
     }
 
     private String getSpinnerContent(Spinner spinner){
