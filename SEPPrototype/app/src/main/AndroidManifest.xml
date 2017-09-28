@@ -35,6 +35,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uts.sep.tcba.sepprototype.Controller_Authentication" />
         </activity>
+        <activity android:name=".Controller_MakeAvailability"></activity>
     </application>
 
 </manifest>
