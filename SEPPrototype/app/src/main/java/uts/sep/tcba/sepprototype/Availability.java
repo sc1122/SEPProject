@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
@@ -17,7 +18,7 @@ import java.util.LinkedList;
  *       LINKEDLIST IN THIS CASE IS THE DATASNAPSHOT FROM FIREBASE, NOT LOCAL LINKEDLIST
  */
 
-public class Availability {
+public class Availability implements Serializable {
 
     private String availDate;
     private double startTime;

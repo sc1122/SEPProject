@@ -55,7 +55,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -95,6 +96,51 @@
                     android:layout_height="122dp"
                     android:timePickerMode="spinner"
                     />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set Maximum Student Capacity"
+                    android:layout_marginTop="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_weight="0.39">
+
+                    <Button
+                        android:id="@+id/removeCapacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:drawableLeft="@mipmap/remove_button"
+                        android:padding="20dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/capacityText"
+                        android:padding="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:text="1"
+                        />
+
+                    <Button
+                        android:id="@+id/addCapacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@mipmap/add_button"
+                        android:padding="20dp"
+                        />
+
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/locationText"

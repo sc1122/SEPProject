@@ -234,8 +234,17 @@ public class Controller_TutorMenu extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
-                //Code to write availability to Firebase
+                Bundle bundle = data.getExtras();
+                Availability availability = (Availability) bundle.getSerializable("availability");
+                addAvailabilityToFirebase(availability);
+                //TODO: Add availability to availability list
             }
         }
+    }
+
+    public void addAvailabilityToFirebase(Availability availability) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
+        DatabaseReference bookingStatus = ref.push();
+        bookingStatus.setValue(availability);
     }
 }
