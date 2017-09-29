@@ -93,22 +93,18 @@
                     android:id="@+id/endTime"
                     android:layout_width="match_parent"
                     android:layout_height="122dp"
-                    android:timePickerMode="spinner" />
+                    android:timePickerMode="spinner"
+                    />
 
                 <EditText
-                    android:id="@+id/editText3"
+                    android:id="@+id/locationText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Enter Location"
                     android:inputType="textMultiLine"
-                    android:textAlignment="center" />
+                    />
 
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Confirm" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
