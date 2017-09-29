@@ -51,7 +51,7 @@ public class Booking implements Serializable {
         this.tutor = t.getID();
         this.tutorName = t.getFirstName() + " " + t.getLastName();
         this.subject = sub;
-        this.capacity = a.getStudentLimit();
+        this.capacity = a.getCapacity();
         this.students.add(String.valueOf(s.getID()));
     }
 

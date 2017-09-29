@@ -35,6 +35,14 @@ public class Availability {
         location = ds.child("Location").getValue().toString();
     }
 
+    public Availability(String date, Double sTime, Double eTime, String loc, int cap) {
+        this.availDate = date;
+        this.startTime = sTime;
+        this.endTime = eTime;
+        this.location = loc;
+        this.capacity = cap;
+    }
+
     /*
     divides the total available time, up into the 30min timeslots for consulatation
      */
