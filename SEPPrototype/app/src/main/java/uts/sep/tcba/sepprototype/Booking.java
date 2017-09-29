@@ -25,8 +25,6 @@ public class Booking implements Serializable {
     private int subject;
     private LinkedList<String> students = new LinkedList<String>();
 
-    public Booking() {}
-
     public Booking(DataSnapshot booking, String tutorName) {
         this.date = booking.child("date").getValue().toString();
         this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
@@ -44,7 +42,7 @@ public class Booking implements Serializable {
     }
 
     public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s) {
-        this.date = a.getAvailDate();
+        this.date = a.getDate();
         this.startTime = sTime;
         this.endTime = eTime;
         this.location = a.getLocation();
