@@ -28,7 +28,7 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
             <Button
-                android:id="@+id/saveAvailable"
+                android:id="@+id/save"
                 style="@style/AppTheme.AppBarOverlay"
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Select Date: "/>
+                    android:text="Select Date"/>
 
                 <CalendarView
                     android:id="@+id/calendarView"
@@ -71,8 +71,8 @@
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Start Time"
-                    android:textAlignment="center" />
+                    android:text="Select Start Time"
+                    />
 
                 <TimePicker
                     android:id="@+id/startTime"
@@ -86,22 +86,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="20dp"
-                    android:text="End Time"
-                    android:textAlignment="center" />
+                    android:text="Select End Time"
+                    />
 
                 <TimePicker
                     android:id="@+id/endTime"
                     android:layout_width="match_parent"
                     android:layout_height="122dp"
                     android:timePickerMode="spinner" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="20dp"
-                    android:text="Location"
-                    android:textAlignment="center" />
 
                 <EditText
                     android:id="@+id/editText3"

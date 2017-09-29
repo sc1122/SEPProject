@@ -68,7 +68,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     /*
     Following method generates the contents of each spinner by pulling the different availability
     Objects from firebase
-    TODO: set up listeners to hide date->time until the preceding list has a selection
+    TODO: set up listeners to hide date->time until the preceding list has a selection, QOL change not needed for project
      */
     private void setContent(){
         setSubjectList();
@@ -161,28 +161,5 @@ public class Controller_MakeBooking extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
     }
-
-    private String getSpinnerContent(Spinner spinner){
-        return spinner.getSelectedItem().toString();
-    }
-
-    /* Eventually, obtain max booked from booking object
-    private boolean isNotFull(){
-        if (content.getStudentBooked() >= content.getStudentLimit()) {
-
-            Log.e("Test", "this was run");
-            AlertDialog fullAlert = new AlertDialog.Builder(Controller_MakeBooking.this).create();
-            fullAlert.setTitle("Alert");
-            fullAlert.setMessage("This session has reached max number of student!");
-
-            fullAlert.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, "Back",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            return false;
-    }
-    */
 
 }
