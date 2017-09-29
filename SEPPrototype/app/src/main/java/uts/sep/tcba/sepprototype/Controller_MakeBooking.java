@@ -90,6 +90,16 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        // Clear fields if no availability for selected subject
+                        Spinner consTime = (Spinner)findViewById(R.id.time);
+                        consTime.setAdapter(null);
+                        TextView loc = (TextView) findViewById(R.id.location);
+                        loc.setText("");
+                        TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
+                        studentAttending.setText("");
+                        //-----------------------------------------------------
+
                         tutor = new Tutor(dataSnapshot);
                         setDateList();
                         TextView tutorName = (TextView) findViewById(R.id.tutor);
@@ -129,7 +139,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
         consTime.setPrompt("Select Time");
         LinkedList<String> timeslots = new LinkedList<String>();
         for (Availability a : availabilities) {
-            timeslots.addAll(a.getTimeslots());
+            timeslots.addAll(a.generateTimeslots());
         }
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
@@ -139,7 +149,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 //CODE TO DETERMINE THE AVAILABILITY SELECTED
                 String selectedtime = adapterView.getAdapter().getItem(i).toString();
                 for (Availability a : availabilities) {
-                    for (String s : a.getTimeslots()) {
+                    for (String s : a.generateTimeslots()) {
                         if (s.equals(selectedtime)) {
                             selectedAvailability = a;
                         }
@@ -149,10 +159,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 startTime = Double.parseDouble(times[0].replace(':','.'));
                 endTime = Double.parseDouble(times[1].replace(':','.'));
 
-                //TODO: read the number of student from the selected availability
+                //TODO: read the number of student from the selected availability (have to rethink how you we're doing this
                 TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
-                LinkedList<String> numOfStudent = getDetails().getStudents();
-                studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getCapacity());
+                //LinkedList<String> numOfStudent = getDetails().getStudents();
+                //studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getCapacity());
 
                 TextView loc = (TextView) findViewById(R.id.location);
                 loc.setText(selectedAvailability.getLocation());

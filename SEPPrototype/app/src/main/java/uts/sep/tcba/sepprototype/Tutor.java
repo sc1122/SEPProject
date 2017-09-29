@@ -75,9 +75,9 @@ public class Tutor extends User implements Serializable {
             public int compare(Availability a1, Availability a2) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
                 try {
-                    Date date1 = formatter.parse(a1.getAvailDate());
+                    Date date1 = formatter.parse(a1.getDate());
                     Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(a2.getAvailDate());
+                    Date date2 = formatter.parse(a2.getDate());
                     Log.d("DATE2", date2.toString());
                     Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
                     return date1.compareTo(date2);
@@ -97,8 +97,8 @@ public class Tutor extends User implements Serializable {
         LinkedList<String> alreadyAdded = new LinkedList<String>();
         sortAvailabilities();
         for (Availability a : availabilities) {
-            if (!availDates.contains(a.getAvailDate())) {
-                availDates.add(a.getAvailDate());
+            if (!availDates.contains(a.getDate())) {
+                availDates.add(a.getDate());
             }
         }
         return availDates;
@@ -107,7 +107,7 @@ public class Tutor extends User implements Serializable {
     public LinkedList<Availability> getAvailabilitiesForDate(String date){
         LinkedList<Availability> avail = new LinkedList<Availability>();
         for (Availability a : availabilities) {
-            if (a.getAvailDate().equals(date)) {
+            if (a.getDate().equals(date)) {
                 avail.add(a);
             }
         }

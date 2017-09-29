@@ -20,24 +20,22 @@ import java.util.LinkedList;
 
 public class Availability implements Serializable {
 
-    private String availDate;
+    private String date;
     private double startTime;
     private double endTime;
     private int capacity;
     private String location;
 
-    public Availability() { }
-
     public Availability(DataSnapshot ds) {
-        availDate = ds.child("Date").getValue().toString();
-        startTime = Double.parseDouble(ds.child("StartTime").getValue().toString().replace(':','.'));
-        endTime = Double.parseDouble(ds.child("EndTime").getValue().toString().replace(':','.'));
-        capacity = ds.child("Capacity").getValue(Integer.class);
-        location = ds.child("Location").getValue().toString();
+        date = ds.child("date").getValue().toString();
+        startTime = Double.parseDouble(ds.child("startTime").getValue().toString().replace(':','.'));
+        endTime = Double.parseDouble(ds.child("endTime").getValue().toString().replace(':','.'));
+        capacity = ds.child("capacity").getValue(Integer.class);
+        location = ds.child("location").getValue().toString();
     }
 
     public Availability(String date, Double sTime, Double eTime, String loc, int cap) {
-        this.availDate = date;
+        this.date = date;
         this.startTime = sTime;
         this.endTime = eTime;
         this.location = loc;
@@ -47,7 +45,7 @@ public class Availability implements Serializable {
     /*
     divides the total available time, up into the 30min timeslots for consulatation
      */
-    public LinkedList<String> getTimeslots(){
+    public LinkedList<String> generateTimeslots(){
         LinkedList<String> timeSlots = new LinkedList<String>();
         double t = startTime;
         while (t <= endTime) {
@@ -70,8 +68,8 @@ public class Availability implements Serializable {
 
     }
 
-    public String getAvailDate() {
-        return availDate;
+    public String getDate() {
+        return date;
     }
 
     public int getCapacity() {

@@ -113,6 +113,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         capText = (TextView) findViewById(R.id.capacityText);
         startTP.setIs24HourView(true);
         endTP.setIs24HourView(true);
+
         setMinutePicker();
     }
 
@@ -124,7 +125,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         startTime = getTime(start);
         endTime = getTime(end);
         location = locText.getText().toString();
-        capacity = Integer.parseInt(locText.getText().toString());
+        capacity = Integer.parseInt(capText.getText().toString());
     }
 
 

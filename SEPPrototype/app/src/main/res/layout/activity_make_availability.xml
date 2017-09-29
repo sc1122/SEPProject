@@ -30,12 +30,12 @@
             <Button
                 android:id="@+id/save"
                 style="@style/AppTheme.AppBarOverlay"
-                android:layout_width="350dp"
+                android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="30px"
                 android:layout_marginTop="10px"
                 android:layout_weight="1"
-                android:text="Save Availability" />
+                android:text="Save" />
         </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
@@ -153,6 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:maxLines="1"
                     android:hint="Enter Location"
                     android:inputType="textMultiLine"
                     />
