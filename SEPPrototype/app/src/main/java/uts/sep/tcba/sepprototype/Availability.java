@@ -3,6 +3,7 @@ package uts.sep.tcba.sepprototype;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.Exclude;
 
 import java.text.DecimalFormat;
 import java.util.LinkedList;
@@ -18,11 +19,10 @@ import java.util.LinkedList;
 
 public class Availability {
 
-    private int id;
     private String availDate;
     private double startTime;
     private double endTime;
-    private int studentLimit;
+    private int capacity;
     private String location;
 
     public Availability() { }
@@ -31,7 +31,7 @@ public class Availability {
         availDate = ds.child("Date").getValue().toString();
         startTime = Double.parseDouble(ds.child("StartTime").getValue().toString().replace(':','.'));
         endTime = Double.parseDouble(ds.child("EndTime").getValue().toString().replace(':','.'));
-        studentLimit = ds.child("Capacity").getValue(Integer.class);
+        capacity = ds.child("Capacity").getValue(Integer.class);
         location = ds.child("Location").getValue().toString();
     }
 
@@ -65,12 +65,19 @@ public class Availability {
         return availDate;
     }
 
-    public int getStudentLimit() {
-        return studentLimit;
+    public int getCapacity() {
+        return capacity;
     }
     
     public String getLocation() {
         return location;
     }
 
+    public String getStartTime() {
+        return String.format("%.2f", startTime).replace('.',':');
+    }
+
+    public String getEndTime() {
+        return String.format("%.2f", endTime).replace('.',':');
+    }
 }
