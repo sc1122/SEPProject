@@ -140,7 +140,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
             }
         });
 
-        // Define the new booking button in the bottom right
+        // Button press now creates a new availability
         newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
         newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
