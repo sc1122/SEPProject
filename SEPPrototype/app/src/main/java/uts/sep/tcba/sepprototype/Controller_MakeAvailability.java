@@ -1,5 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
+import android.content.res.Resources;
+import android.icu.text.DecimalFormat;
 import android.icu.text.SimpleDateFormat;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Button;
@@ -36,7 +39,11 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     private TimePicker endTP;
     private EditText locText;
     private TextView capText;
+    private NumberPicker minutePicker;
 
+    //Field for interval
+    private final static int INTERVAL = 30;
+    private static final DecimalFormat FORMATTER = new DecimalFormat("00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +113,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         capText = (TextView) findViewById(R.id.capacityText);
         startTP.setIs24HourView(true);
         endTP.setIs24HourView(true);
-
+        setMinutePicker();
     }
 
     /*
@@ -135,5 +142,37 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         return formater.format(d);
     }
 
+    //Change the interval of minute to 30 minutes
+    public void setMinutePicker() {
+        int numValues = 60 / INTERVAL;
+        String[] displayedValues = new String[numValues];
+        for (int i = 0; i < numValues; i++) {
+            displayedValues[i] = FORMATTER.format(i * INTERVAL);
+        }
+
+        View minute = startTP.findViewById(Resources.getSystem().getIdentifier("minute", "id", "android"));
+        if ((minute != null) && (minute instanceof NumberPicker)) {
+            minutePicker = (NumberPicker) minute;
+            minutePicker.setMinValue(0);
+            minutePicker.setMaxValue(numValues - 1);
+            minutePicker.setDisplayedValues(displayedValues);
+        }
+        minute = endTP.findViewById(Resources.getSystem().getIdentifier("minute", "id", "android"));
+        if ((minute != null) && (minute instanceof NumberPicker)) {
+            minutePicker = (NumberPicker) minute;
+            minutePicker.setMinValue(0);
+            minutePicker.setMaxValue(numValues - 1);
+            minutePicker.setDisplayedValues(displayedValues);
+        }
+    }
+
+
+    public int getMinute() {
+        if (minutePicker != null) {
+            return (minutePicker.getValue() * INTERVAL);
+        } else {
+            return startTP.getCurrentMinute();
+        }
+    }
 
 }
