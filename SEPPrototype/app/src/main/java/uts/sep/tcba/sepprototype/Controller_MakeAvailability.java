@@ -50,6 +50,10 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_availability);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TimePicker scrollStart = (TimePicker) findViewById(R.id.startTime);
+        scrollStart.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        TimePicker scrollEnd = (TimePicker) findViewById(R.id.endTime);
+        scrollEnd.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
 
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (Tutor) bundle.getSerializable("user");
