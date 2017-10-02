@@ -17,6 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -135,9 +136,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
         // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("HELLO", "WORLD");
-                startActivity(new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class));
-                //Object o = listView.getItemAtPosition(position);  // Create view booking screen and load booking details
+                Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
+                Bundle b = new Bundle();
+                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
+                intent.putExtras(b);
+                startActivityForResult(intent, 1);
             }
         });
 

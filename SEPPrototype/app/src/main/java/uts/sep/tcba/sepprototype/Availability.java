@@ -10,12 +10,9 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 /**
- * Created by seant on 15/09/2017.
- * Class which handles the availabilities of the tutor
- * Done in a linked list of all availabilities
- * NOTE: THIS WILL NOT BE IMPLEMENTED LIKE THIS, NO NEED FOR LINKEDLIST
- *       THIS IS A OBJECT TO EMULATE AN AVAILABILITY INTERNALLY
- *       LINKEDLIST IN THIS CASE IS THE DATASNAPSHOT FROM FIREBASE, NOT LOCAL LINKEDLIST
+ * Created by Sean Crimmins on 15/09/2017.
+ * Class which handles the availabilities of the seperate tutors
+ *
  */
 
 public class Availability implements Serializable {
@@ -79,6 +76,10 @@ public class Availability implements Serializable {
     public String getLocation() {
         return location;
     }
+
+    public double getStartTimeNum(){return startTime;}
+
+    public double getEndTimeNum(){return endTime;}
 
     public String getStartTime() {
         return String.format("%.2f", startTime).replace('.',':');
