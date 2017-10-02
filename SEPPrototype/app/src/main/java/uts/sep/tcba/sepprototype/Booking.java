@@ -65,7 +65,7 @@ public class Booking implements Serializable {
         return String.format("%.2f", this.startTime).replace('.',':');
     }
 
-    public String setStartTime(double time) {this.startTime = time;}
+    public void setStartTime(double time) {this.startTime = time;}
 
     public Double DoubleStartTime() {
         return this.startTime;
