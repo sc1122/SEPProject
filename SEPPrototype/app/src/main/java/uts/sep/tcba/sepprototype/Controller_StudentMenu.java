@@ -136,10 +136,16 @@ public Student currentStudent;
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
-                Bundle b = new Bundle();
-                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
 
-                intent.putExtras(b);
+                Booking selectedItem = bookings.get(position);
+                Log.d("BOOKING", selectedItem.toString());
+                intent.putExtra("booking", selectedItem);
+
+//        ***Using parent.getSelectedItem() doesn't seem to work unless I am wrong. _Liam ***
+//                Bundle b = new Bundle();
+//                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
+//                intent.putExtras(b);
+
                 intent.putExtra("userType" , currentStudent.getType());
                 startActivityForResult(intent, 1);
             }
