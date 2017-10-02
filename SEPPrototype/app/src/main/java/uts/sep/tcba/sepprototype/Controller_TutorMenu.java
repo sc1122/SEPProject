@@ -100,7 +100,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
+                if (!getTitle().toString().contains(currentTutor.getFirstName())) {
+                    setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
+                }
                 // Populate user bookings
                 getBookings(String.valueOf(currentTutor.getID()));
                 sortBookings();

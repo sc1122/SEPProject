@@ -77,9 +77,15 @@ public class Availability implements Serializable {
         return location;
     }
 
-    public double getStartTimeNum(){return startTime;}
+    @Exclude
+    public double getStartTimeNum() {
+        return startTime;
+    }
 
-    public double getEndTimeNum(){return endTime;}
+    @Exclude
+    public double getEndTimeNum() {
+        return endTime;
+    }
 
     public String getStartTime() {
         return String.format("%.2f", startTime).replace('.',':');

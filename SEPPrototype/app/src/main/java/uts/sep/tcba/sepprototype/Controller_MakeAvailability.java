@@ -21,8 +21,6 @@ import android.content.Intent;
 import com.google.firebase.database.*;
 import java.util.*;
 
-import org.w3c.dom.Text;
-
 import java.io.Serializable;
 
 public class Controller_MakeAvailability extends AppCompatActivity {
@@ -121,7 +119,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     /*
     Method that sets the parameters in preparation for the creation of the availability object
      */
-    private void setParameters(CalendarView cal, TimePicker start, TimePicker end){
+    private void setParameters(CalendarView cal, TimePicker start, TimePicker end) {
         date = getFormattedDate(cal);
         startTime = getTime(start);
         endTime = getTime(end);
@@ -140,8 +138,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     private String getFormattedDate(CalendarView cal){
         Long l = cal.getDate();
         Date d = new Date(l);
-        SimpleDateFormat formater = new SimpleDateFormat("dd/MM/YY");
-        return formater.format(d);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+        return formatter.format(d);
     }
 
     //Change the interval of minute to 30 minutes
