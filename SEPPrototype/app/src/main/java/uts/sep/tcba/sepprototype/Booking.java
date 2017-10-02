@@ -67,16 +67,17 @@ public class Booking implements Serializable {
 
     public void setStartTime(double time) {this.startTime = time;}
 
-    public Double DoubleStartTime() {
+    @Exclude
+    public Double getDoubleStartTime() {
         return this.startTime;
-
     }
 
     public String getEndTime() {
         return String.format("%.2f", this.endTime).replace('.',':');
     }
 
-    public Double DoubleEndTime() {
+    @Exclude
+    public Double getDoubleEndTime() {
         return this.endTime;
     }
 
@@ -109,6 +110,7 @@ public class Booking implements Serializable {
     /*
     Returns true if the booking is full, returns false otherwise
      */
+    @Exclude
     public boolean isFull(){
         return (students.size() == capacity);
     }
