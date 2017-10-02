@@ -138,8 +138,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
                 Bundle b = new Bundle();
+
                 b.putSerializable("booking", (Serializable) parent.getSelectedItem());
                 intent.putExtras(b);
+                intent.putExtra("userType" , currentTutor.getType());
                 startActivityForResult(intent, 1);
             }
         });

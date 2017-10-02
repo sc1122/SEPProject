@@ -138,7 +138,9 @@ public Student currentStudent;
                 Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
                 Bundle b = new Bundle();
                 b.putSerializable("booking", (Serializable) parent.getSelectedItem());
+
                 intent.putExtras(b);
+                intent.putExtra("userType" , currentStudent.getType());
                 startActivityForResult(intent, 1);
             }
         });
