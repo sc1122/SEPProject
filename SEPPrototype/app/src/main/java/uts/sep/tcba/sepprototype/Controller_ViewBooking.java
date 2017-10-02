@@ -19,4 +19,12 @@ public class Controller_ViewBooking extends AppCompatActivity {
 
 
     }
+
+    public void handleNewTime(double time) {
+        // Spinner w/ time = time
+        //call set time method
+        //setStartTime(time);
+    }
+
+
 }
