@@ -135,6 +135,8 @@ public Student currentStudent;
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("HELLO", "WORLD");
+                startActivity(new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class));
+
                 //Object o = listView.getItemAtPosition(position);  // Create view booking screen and load booking details
             }
         });
