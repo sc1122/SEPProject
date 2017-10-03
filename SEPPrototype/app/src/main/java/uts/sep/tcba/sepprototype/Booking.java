@@ -67,6 +67,8 @@ public class Booking implements Serializable {
 
     public void setStartTime(double time) {this.startTime = time;}
 
+    public void setEndTime(double time) {this.endTime = time;}
+
     @Exclude
     public Double getDoubleStartTime() {
         return this.startTime;

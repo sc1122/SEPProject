@@ -52,11 +52,15 @@ public class Controller_ViewBooking extends AppCompatActivity {
         capacity.setText(  currentBooking.getStudents().size() + " / "+ currentBooking.getCapacity());
     }
 
-    public void handleNewTime(double time) {
-        // Spinner w/ time = time
-        //call set time method
-        //setStartTime(time);
+    //not sure how to split start time & end time (whether we need two separate methods for each idk)
+    public void handleSTime() {
+        double sTime = Double.parseDouble(time.getText().toString());
+        currentBooking.setStartTime(sTime);
     }
 
+//    public void handleETime() {
+//        double eTime = Double.parseDouble(time.getText().toString());
+//        currentBooking.setEndTime(eTime);
+//    }
 
 }
