@@ -105,6 +105,13 @@ public class Controller_MakeAvailability extends AppCompatActivity {
      */
     private void setContent(){
         cal = (CalendarView) findViewById(R.id.calendarView);
+        cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                int correctMonth = month+1;
+                date = String.valueOf(dayOfMonth + "/" + correctMonth + "/" + year);
+            }
+        });
         startTP = (TimePicker) findViewById(R.id.startTime);
         endTP = (TimePicker) findViewById(R.id.endTime);
         locText = (EditText) findViewById(R.id.locationText);
@@ -120,26 +127,18 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     Method that sets the parameters in preparation for the creation of the availability object
      */
     private void setParameters(CalendarView cal, TimePicker start, TimePicker end) {
-        date = getFormattedDate(cal);
+        Log.d("DATE: " ,date);
         startTime = getTime(start);
         endTime = getTime(end);
         location = locText.getText().toString();
         capacity = Integer.parseInt(capText.getText().toString());
     }
-
-
+    
     /*
     Returns the time from the time picker as a double, formats as HH.MM
      */
     private double getTime(TimePicker time){
         return ((double)time.getHour() + ((double)time.getMinute() * (0.01)));
-    }
-
-    private String getFormattedDate(CalendarView cal){
-        Long l = cal.getDate();
-        Date d = new Date(l);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-        return formatter.format(d);
     }
 
     //Change the interval of minute to 30 minutes
