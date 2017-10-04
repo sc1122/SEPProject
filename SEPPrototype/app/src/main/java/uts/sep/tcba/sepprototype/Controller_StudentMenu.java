@@ -39,7 +39,8 @@ private ArrayList<String> subjects = new ArrayList<String>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
-public Student currentStudent;
+private Student currentStudent;
+private boolean bookingTab = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -50,6 +51,7 @@ public Student currentStudent;
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            bookingTab = true;
                             newBookingButton.setVisibility(View.VISIBLE);
                             refreshBookings();
                             adapter.notifyDataSetChanged();
@@ -59,6 +61,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_dashboard:
+                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
                             adapter.notifyDataSetChanged();
@@ -68,6 +71,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_notifications:
+                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
@@ -135,19 +139,16 @@ public Student currentStudent;
         // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
 
-                Booking selectedItem = bookings.get(position);
-//                Log.d("BOOKING", selectedItem.toString());
-                intent.putExtra("booking", selectedItem);
-
-//        ***Using parent.getSelectedItem() doesn't seem to work unless I am wrong. _Liam ***
-//                Bundle b = new Bundle();
-//                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
-//                intent.putExtras(b);
-
-                intent.putExtra("userType" , currentStudent.getType());
-                startActivityForResult(intent, 1);
+                BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                if (bookingTab) {
+                    Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
+                    Booking selectedItem = bookings.get(position);
+                    Log.d("BOOKING", selectedItem.toString());
+                    intent.putExtra("booking", selectedItem);
+                    intent.putExtra("userType" , currentStudent.getType());
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 

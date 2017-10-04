@@ -220,7 +220,8 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Enter location here"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:inputType="text"/>
 
             </LinearLayout>
         </ScrollView>

@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.NumberPicker;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Button;
@@ -85,7 +87,6 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     /*
@@ -113,13 +114,13 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             }
         });
         startTP = (TimePicker) findViewById(R.id.startTime);
-        endTP = (TimePicker) findViewById(R.id.endTime);
-        locText = (EditText) findViewById(R.id.locationText);
-        capText = (TextView) findViewById(R.id.capacityText);
         startTP.setIs24HourView(true);
-        endTP.setIs24HourView(true);
         startTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        endTP = (TimePicker) findViewById(R.id.endTime);
+        endTP.setIs24HourView(true);
         endTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        capText = (TextView) findViewById(R.id.capacityText);
+        locText = (EditText) findViewById(R.id.locationText);
         setMinutePicker();
     }
 

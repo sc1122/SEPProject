@@ -15,20 +15,17 @@ import com.google.firebase.database.*;
 
 import java.util.LinkedList;
 
-import javax.security.auth.Subject;
-
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-    public LinkedList<Availability> availabilities;
-    public Availability selectedAvailability;
-    public Student currentUser;
-    public Tutor tutor;
-
-    public String date;
-    public double startTime;
-    public double endTime;
-    public int subject;
+    private LinkedList<Availability> availabilities;
+    private Availability selectedAvailability;
+    private Student currentUser;
+    private Tutor tutor;
+    private String date;
+    private double startTime;
+    private double endTime;
+    private int subject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +58,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser);
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID());
         return booking;
     }
 

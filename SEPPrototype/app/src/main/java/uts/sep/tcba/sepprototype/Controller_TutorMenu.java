@@ -37,7 +37,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private ArrayList<String> pageList = new ArrayList<String>();
     private ArrayAdapter adapter;
     private FirebaseAuth mAuth;
-    public Tutor currentTutor;
+    private Tutor currentTutor;
+    private boolean bookingTab = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -49,6 +50,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            bookingTab = true;
                             newAvailabilityButton.setVisibility(View.VISIBLE);
                             for (Booking b: bookings) {
                                 pageList.add(b.toString());
@@ -60,6 +62,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             }
                             return true;
                         case R.id.navigation_dashboard:
+                            bookingTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
                             adapter.notifyDataSetChanged();
@@ -69,6 +72,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             }
                             return true;
                         case R.id.navigation_notifications:
+                            bookingTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
@@ -138,20 +142,15 @@ public class Controller_TutorMenu extends AppCompatActivity {
         // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
-
-                Booking selectedItem = bookings.get(position);
-                Log.d("BOOKING", selectedItem.toString());
-                intent.putExtra("booking", selectedItem);
-
-//         ***Using parent.getSelectedItem() doesn't seem to work unless I am wrong. _Liam ***
-//                Bundle b = new Bundle();
-//                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
-//                intent.putExtras(b);
-
-                intent.putExtra("subject", currentTutor.getSubjects());
-                intent.putExtra("userType" , currentTutor.getType());
-                startActivityForResult(intent, 1);
+                if (bookingTab) {
+                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
+                    Booking selectedItem = bookings.get(position);
+                    Log.d("BOOKING", selectedItem.toString());
+                    intent.putExtra("booking", selectedItem);
+                    intent.putExtra("subject", currentTutor.getSubjects());
+                    intent.putExtra("userType", currentTutor.getType());
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 

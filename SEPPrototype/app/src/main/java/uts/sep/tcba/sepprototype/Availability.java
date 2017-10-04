@@ -17,6 +17,7 @@ import java.util.LinkedList;
 
 public class Availability implements Serializable {
 
+    private String ID;
     private String date;
     private double startTime;
     private double endTime;
@@ -24,6 +25,7 @@ public class Availability implements Serializable {
     private String location;
 
     public Availability(DataSnapshot ds) {
+        ID = ds.getKey().toString();
         date = ds.child("date").getValue().toString();
         startTime = Double.parseDouble(ds.child("startTime").getValue().toString().replace(':','.'));
         endTime = Double.parseDouble(ds.child("endTime").getValue().toString().replace(':','.'));
@@ -62,7 +64,11 @@ public class Availability implements Serializable {
             return (String.format("%.2f", time) + " - " + String.format("%.2f", (time+0.7)));
         else
             return (String.format("%.2f", time) + " - " + String.format("%.2f",(time+0.3)));
+    }
 
+    @Exclude
+    public String getID() {
+        return ID;
     }
 
     public String getDate() {

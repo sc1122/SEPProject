@@ -24,6 +24,7 @@ public class Booking implements Serializable {
     private String tutorName;
     private int subject;
     private LinkedList<String> students = new LinkedList<String>();
+    private String availabilityID;
 
     public Booking(DataSnapshot booking, String tutorName) {
         this.date = booking.child("date").getValue().toString();
@@ -39,9 +40,10 @@ public class Booking implements Serializable {
                 this.students.add(d.getKey());
             }
         }
+        this.availabilityID = booking.child("availabilityID").getValue().toString();
     }
 
-    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s) {
+    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s, String availID) {
         this.date = a.getDate();
         this.startTime = sTime;
         this.endTime = eTime;
@@ -51,6 +53,7 @@ public class Booking implements Serializable {
         this.subject = sub;
         this.capacity = a.getCapacity();
         this.students.add(String.valueOf(s.getID()));
+        this.availabilityID = availID;
     }
 
     public int getCapacity() {
@@ -81,6 +84,10 @@ public class Booking implements Serializable {
     @Exclude
     public Double getDoubleEndTime() {
         return this.endTime;
+    }
+
+    public String getAvailabilityID() {
+        return availabilityID;
     }
 
     public String getLocation() {
