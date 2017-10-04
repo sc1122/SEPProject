@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    tools:context="uts.sep.tcba.sepprototype.Controller_ViewBooking">
+    tools:context="uts.sep.tcba.sepprototype.Controller_EditBooking">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -36,9 +36,9 @@
                 android:layout_marginRight="30px"
                 android:layout_marginTop="10px"
                 android:layout_weight="1"
-                android:text="Edit" />
-        </LinearLayout>
+                android:text="Save" />
 
+        </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
@@ -100,15 +100,12 @@
                     android:text="Date"
                     android:textSize="22sp" />
 
-                <TextView
-                    android:id="@+id/date"
+                <Spinner
+                    android:id="@+id/dateSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="10/10/2010"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
+                    android:background="@android:drawable/btn_dropdown"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -118,15 +115,12 @@
                     android:text="Time"
                     android:textSize="22sp" />
 
-                <TextView
-                    android:id="@+id/time"
+                <Spinner
+                    android:id="@+id/timeSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="13:00 - 14:00"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
+                    android:background="@android:drawable/btn_dropdown"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -136,15 +130,14 @@
                     android:text="Location"
                     android:textSize="22sp" />
 
-                <TextView
-                    android:id="@+id/location"
+                <EditText
+                    android:id="@+id/editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="CB11.04.629"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
+                    android:ems="10"
+                    android:hint="New Location"
+                    android:inputType="textPersonName"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="match_parent"

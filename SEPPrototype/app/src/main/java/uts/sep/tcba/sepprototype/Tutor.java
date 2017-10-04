@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 
+import javax.security.auth.Subject;
+
 public class Tutor extends User implements Serializable {
 
     private LinkedList<Availability> availabilities = new LinkedList<Availability>();

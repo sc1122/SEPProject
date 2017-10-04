@@ -148,6 +148,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
 //                Bundle b = new Bundle();
 //                b.putSerializable("booking", (Serializable) parent.getSelectedItem());
 //                intent.putExtras(b);
+
+                intent.putExtra("subject", currentTutor.getSubjects());
                 intent.putExtra("userType" , currentTutor.getType());
                 startActivityForResult(intent, 1);
             }
@@ -201,7 +203,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-                    Log.d("BOOKING", booking.toString());
+//                    Log.d("BOOKING", booking.toString());
                     String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
                     if (booking.child("tutor").getValue().toString().equals(ID)) {
                         Booking b = new Booking(booking, tutorName);

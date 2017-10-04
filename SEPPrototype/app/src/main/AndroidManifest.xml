@@ -38,8 +38,12 @@
         <activity
             android:name=".Controller_MakeAvailability"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Controller_ViewBooking"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Controller_ViewBooking"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Controller_EditBooking"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

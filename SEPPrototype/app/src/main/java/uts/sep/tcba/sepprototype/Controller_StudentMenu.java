@@ -138,7 +138,7 @@ public Student currentStudent;
                 Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
 
                 Booking selectedItem = bookings.get(position);
-                Log.d("BOOKING", selectedItem.toString());
+//                Log.d("BOOKING", selectedItem.toString());
                 intent.putExtra("booking", selectedItem);
 
 //        ***Using parent.getSelectedItem() doesn't seem to work unless I am wrong. _Liam ***
