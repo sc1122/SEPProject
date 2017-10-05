@@ -98,7 +98,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     Then stores this object on firebase
      */
     public Availability getDetails(){
-        setParameters(cal, startTP, endTP);
+        setParameters(startTP, endTP);
         Availability availability = new Availability(date, startTime, endTime, location, capacity);
         return availability;
     }
@@ -131,9 +131,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     /*
     Method that sets the parameters in preparation for the creation of the availability object
      */
-    private void setParameters(CalendarView cal, TimePicker start, TimePicker end) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-        date = formatter.format(cal.getDate());
+    private void setParameters(TimePicker start, TimePicker end) {
         startTime = getTime(start);
         endTime = getTime(end);
         capacity = Integer.parseInt(capText.getText().toString());

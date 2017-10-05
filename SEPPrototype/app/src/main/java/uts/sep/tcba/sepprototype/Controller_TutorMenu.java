@@ -1,6 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -250,7 +251,12 @@ public class Controller_TutorMenu extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 Availability availability = (Availability) bundle.getSerializable("availability");
-                addAvailabilityToFirebase(availability);
+                //Check if selected Time period makes sense to none-time traveller;
+                if(SelectedTimeIsCorrect(availability))
+                    addAvailabilityToFirebase(availability);
+                else{
+                    showErrorDialog("Improper Time Selected", "Please select proper time slot");
+                }
                 //TODO: Add availability to availability list
             }
         }
@@ -260,5 +266,28 @@ public class Controller_TutorMenu extends AppCompatActivity {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
         DatabaseReference bookingStatus = ref.push();
         bookingStatus.setValue(availability);
+    }
+
+    public boolean SelectedTimeIsCorrect(Availability availability){
+        double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+        double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
+        Log.d("WHAT", startTime + " " + endTime);
+        if(startTime >= endTime)
+            return false;
+        return true;
+    }
+
+    public void showErrorDialog(String title, String errorMessage){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(errorMessage);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }
