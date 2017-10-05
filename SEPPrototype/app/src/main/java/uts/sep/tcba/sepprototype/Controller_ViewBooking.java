@@ -10,8 +10,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.LinkedList;
 
@@ -47,8 +50,27 @@ public class Controller_ViewBooking extends AppCompatActivity {
             public void onClick(View v) {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference().child("Bookings");
+                final String st = currentBooking.getStartTime();
+                final String et = currentBooking.getEndTime();
+                final String availabilityId = currentBooking.getAvailabilityID();
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot data: dataSnapshot.getChildren()){
+                            if(data.child("availabilityID").getValue().toString().equals(availabilityId) && data.child("startTime").getValue().toString().equals(st) && data.child("endTime").getValue().toString().equals(et)){
+                                Log.d("BOOKINGS", st + " " + et + " " + availabilityId);
+                                data.getRef().setValue(null);
+                                finish();
+                            }
+                        }
+                    }
 
-                Log.d("BOOKINGS", ref.child("Bookings").toString());
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
         });
 

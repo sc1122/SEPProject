@@ -148,7 +148,10 @@ private boolean bookingTab = true;
                     Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
                     Booking selectedItem = bookings.get(position);
                     Log.d("BOOKING", selectedItem.toString());
+                    Log.d("BOOKINGID", selectedItem.getAvailabilityID());
+                    Log.d("USERID", currentStudent.getID()+"");
                     intent.putExtra("booking", selectedItem);
+                    intent.putExtra("id",currentStudent.getID()+"");
                     intent.putExtra("userType" , currentStudent.getType());
                     startActivityForResult(intent, 1);
                 }
@@ -233,8 +236,12 @@ private boolean bookingTab = true;
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Check if the Availability has been booked
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-//                  Comparing database availability ID to new Booking availability id
-                    if(data.child("availabilityID").getValue().toString().equals(String.valueOf(booking.getAvailabilityID()))){
+//                  By comparing database 'availability ID' to new Booking 'availability id' ** as well as 'start time' and 'end time'
+
+                    Log.d("ID",booking.getAvailabilityID());
+                    if(data.child("availabilityID").getValue().toString().equals(String.valueOf(booking.getAvailabilityID())) &&
+                            booking.getStartTime().equals(data.child("startTime").getValue().toString()) &&
+                            booking.getEndTime().equals(data.child("endTime").getValue().toString())){
                         //If exist, check to see if same student has booked it
                         for(DataSnapshot student: data.child("students").getChildren()){
                             //If student ID is in the list
@@ -266,10 +273,12 @@ private boolean bookingTab = true;
 //student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
 
                                 Log.e("EXIST",data.child("students").toString());
-                                bookingStatus.child(booking.getAvailabilityID()+"").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+                                //bookingStatus.child(booking.getAvailabilityID()+"").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+                                break;
                             }
                         }
                     }else{
+
                         //If availability has not been booked by anymore, create new Booking
                         //TODO: this keep running even though it doesnt meet condition
                         bookingStatus.setValue(booking);
