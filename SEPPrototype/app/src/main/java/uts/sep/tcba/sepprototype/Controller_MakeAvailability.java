@@ -1,5 +1,8 @@
 package uts.sep.tcba.sepprototype;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.icu.text.DecimalFormat;
 import android.icu.text.SimpleDateFormat;
@@ -39,7 +42,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     private TimePicker endTP;
     private EditText locText;
     private TextView capText;
-    private NumberPicker minutePicker;
+    private NumberPicker minutePicker , minutePickerEnd;
 
     //Field for interval
     private final static int INTERVAL = 30;
@@ -128,18 +131,19 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     Method that sets the parameters in preparation for the creation of the availability object
      */
     private void setParameters(CalendarView cal, TimePicker start, TimePicker end) {
-        Log.d("DATE: " ,date);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+        date = formatter.format(cal.getDate());
         startTime = getTime(start);
         endTime = getTime(end);
-        location = locText.getText().toString();
         capacity = Integer.parseInt(capText.getText().toString());
+        location = locText.getText().toString();
     }
     
     /*
     Returns the time from the time picker as a double, formats as HH.MM
      */
     private double getTime(TimePicker time){
-        return ((double)time.getHour() + ((double)time.getMinute() * (0.01)));
+        return ((double)time.getHour() + ((double)time.getMinute() * (0.3)));
     }
 
     //Change the interval of minute to 30 minutes
@@ -159,10 +163,10 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         }
         minute = endTP.findViewById(Resources.getSystem().getIdentifier("minute", "id", "android"));
         if ((minute != null) && (minute instanceof NumberPicker)) {
-            minutePicker = (NumberPicker) minute;
-            minutePicker.setMinValue(0);
-            minutePicker.setMaxValue(numValues - 1);
-            minutePicker.setDisplayedValues(displayedValues);
+            minutePickerEnd = (NumberPicker) minute;
+            minutePickerEnd.setMinValue(0);
+            minutePickerEnd.setMaxValue(numValues - 1);
+            minutePickerEnd.setDisplayedValues(displayedValues);
         }
     }
 
@@ -174,5 +178,6 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             return startTP.getCurrentMinute();
         }
     }
+
 
 }
