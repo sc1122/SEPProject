@@ -16,7 +16,7 @@ import javax.security.auth.Subject;
 
 public class Tutor extends User implements Serializable {
 
-    private LinkedList<Availability> availabilities = new LinkedList<Availability>();
+    public LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
     public Tutor(int ID){
         super(ID);
@@ -42,29 +42,9 @@ public class Tutor extends User implements Serializable {
         for (DataSnapshot ds : data.child("Availabilities").getChildren()) {
             availabilities.add(new Availability(ds));
         }
-        /* FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + this.getID() + "/Availabilities");
-        Log.d("TUTOR YAY", ref.toString());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    availabilities.add(new Availability(ds));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });*/
     }
 
-    public void addAvailability() {
-
-    }
-
-    public void editAvailability() {
+    public void deleteAvailability() {
 
     }
 
@@ -113,6 +93,23 @@ public class Tutor extends User implements Serializable {
                 avail.add(a);
             }
         }
+        Collections.sort(avail, new Comparator<Availability>() {
+            public int compare(Availability a1, Availability a2) {
+                double t1 = a1.getStartTimeDouble();
+                Log.d("TIME1", String.valueOf(t1));
+                double t2 = a2.getStartTimeDouble();
+                Log.d("TIME2", String.valueOf(t2));
+
+                if (t1 < t2) {
+                    Log.d("TIME1", "SMALLER");
+                    return -1;
+                } else if (t1 > t2) {
+                    Log.d("TIME2", "SMALLER");
+                    return 1;
+                }
+                return 0;
+            }
+        });
         return avail;
     }
 

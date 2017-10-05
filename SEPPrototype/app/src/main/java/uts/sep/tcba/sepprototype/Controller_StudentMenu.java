@@ -43,7 +43,9 @@ private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
 private Student currentStudent;
 private boolean bookingTab = true;
-    final Context context = this;
+final Context context = this;
+private boolean newBooking = true;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -176,6 +178,11 @@ private boolean bookingTab = true;
         for (Booking b: bookings) {
             pageList.add(b.toString());
         }
+        if (bookings.size() > 0) {
+            mTextMessage.setVisibility(View.GONE);
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE);
+        }
     }
 
     public void sortBookings() {
@@ -206,6 +213,7 @@ private boolean bookingTab = true;
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bookings.clear();
+                Log.d("HelloMemes", dataSnapshot.toString());
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
                     String tutorID = booking.child("tutor").getValue().toString();
                     DataSnapshot tutorBooked = dataSnapshot.child("Users").child(tutorID);
@@ -230,75 +238,74 @@ private boolean bookingTab = true;
     public void addBookingToFirebase(final Booking booking) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
         final DatabaseReference bookingStatus = ref.push();
-        String key = bookingStatus.getKey();
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //Check if the Availability has been booked
-                for(DataSnapshot data: dataSnapshot.getChildren()){
+        if (!newBooking) {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Check if the Availability has been booked
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
 //                  By comparing database 'availability ID' to new Booking 'availability id' ** as well as 'start time' and 'end time'
 
-                    Log.d("ID",booking.getAvailabilityID());
-                    if(data.child("availabilityID").getValue().toString().equals(String.valueOf(booking.getAvailabilityID())) &&
-                            booking.getStartTime().equals(data.child("startTime").getValue().toString()) &&
-                            booking.getEndTime().equals(data.child("endTime").getValue().toString())){
-                        //If exist, check to see if same student has booked it
-                        for(DataSnapshot student: data.child("students").getChildren()){
-                            //If student ID is in the list
-                            Log.e("EXIST",student.getKey());
-                            if(student.getKey().equals(currentStudent.getID()+"")){
-                                //Pop-up alert to warn of existing booking and remove the booking
-                                Log.e("EXIST", String.valueOf(currentStudent.getID()));
-                                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-                                alertDialog.setTitle("Existing Booking!");
-                                alertDialog.setMessage("The Booking you are making has been made");
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                dialogInterface.dismiss();
-                                            }
-                                        });
-                                alertDialog.show();
-                                Log.e("EXIST","This booking has been made");
-                                //Remove the added booking
-                                //TODO: as the booking are always added, I simply remove it if it is found to be existing
-                                bookingStatus.setValue(null);
-                            }else{
-                                Log.e("EXIST","Somebody has already made this");
-                                //If not in the list, add student to the list and complete the booking;
+                        Log.d("ID", booking.getAvailabilityID());
+                        if (data.child("availabilityID").getValue().toString().equals(String.valueOf(booking.getAvailabilityID())) &&
+                                booking.getStartTime().equals(data.child("startTime").getValue().toString()) &&
+                                booking.getEndTime().equals(data.child("endTime").getValue().toString())) {
+                            //If exist, check to see if same student has booked it
+                            for (DataSnapshot student : data.child("students").getChildren()) {
+                                //If student ID is in the list
+                                Log.e("EXIST", student.getKey());
+                                if (student.getKey().equals(currentStudent.getID() + "")) {
+                                    //Pop-up alert to warn of existing booking and remove the booking
+                                    Log.e("EXIST", String.valueOf(currentStudent.getID()));
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Existing Booking!");
+                                    alertDialog.setMessage("The Booking you are making has been made");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                    Log.e("EXIST", "This booking has been made");
+                                    //Remove the added booking
+                                    //TODO: as the booking are always added, I simply remove it if it is found to be existing
+                                    bookingStatus.setValue(null);
+                                } else {
+                                    Log.e("EXIST", "Somebody has already made this");
+                                    //If not in the list, add student to the list and complete the booking;
 
-                                //TODO: Add student to existing booking;
-                                //student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
+                                    //TODO: Add student to existing booking;
+                                    //student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
 //student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
 
-                                Log.e("EXIST",data.child("students").toString());
-                                //bookingStatus.child(booking.getAvailabilityID()+"").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
-                                break;
+                                    Log.e("EXIST", data.child("students").toString());
+                                    //bookingStatus.child(booking.getAvailabilityID()+"").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+                                    break;
+                                }
                             }
                         }
-                    }else{
-
-                        //If availability has not been booked by anymore, create new Booking
-                        //TODO: this keep running even though it doesnt meet condition
-                        bookingStatus.setValue(booking);
-                        bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
-
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-
-
-//            bookingStatus.setValue(booking);
-//            bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
-
+                }
+            });
+        } else {
+            bookingStatus.setValue(booking);
+            //If availability has not been booked by anymore, create new Booking
+            //TODO: this keep running even though it doesnt meet condition
+        }
+        setAttendingBooking(bookingStatus);
     }
+
+    public void setAttendingBooking(DatabaseReference bookingStatus) {
+        bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+    }
+
 
     @Override
     public void onBackPressed(){
@@ -329,6 +336,16 @@ private boolean bookingTab = true;
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
+                if (bundle.get("id") != null) {
+                    newBooking = true;
+                } else {
+                    newBooking = false;
+                }
+
+                //Remove once ID is passed
+                newBooking = true;
+                //Remove once ID is passed
+
                 Booking booking = (Booking) bundle.getSerializable("booking");
                 addBookingToFirebase(booking);
                 adapter.notifyDataSetChanged();

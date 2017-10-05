@@ -110,7 +110,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 int correctMonth = month+1;
-                date = String.valueOf(dayOfMonth + "/" + correctMonth + "/" + year);
+                String correctYear = String.valueOf(year).substring(2);
+                date = String.valueOf(dayOfMonth + "/" + correctMonth + "/") + correctYear;
             }
         });
         startTP = (TimePicker) findViewById(R.id.startTime);

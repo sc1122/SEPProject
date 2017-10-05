@@ -41,12 +41,21 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                    Intent intent = getIntent();
-                    Bundle b = new Bundle();
-                    b.putSerializable("booking", getDetails());
-                    intent.putExtras(b);
-                    setResult(RESULT_OK, intent);
-                    finish();
+                Intent intent = getIntent();
+                Bundle b = new Bundle();
+                Booking book = getDetails();
+                // iterate through all bookings for that tutor on that date at that time for that subject
+
+                // if one matches that
+                    b.putString("id",currentUser.getID()+"");
+                // else
+                    // new booking
+                    b.putSerializable("booking", book);
+                // end if
+
+                intent.putExtras(b);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }
@@ -138,6 +147,11 @@ public class Controller_MakeBooking extends AppCompatActivity {
         for (Availability a : availabilities) {
             timeslots.addAll(a.generateTimeslots());
         }
+
+        // Iterate through list of timeslots, remove any where there is a booking that meets the following criteria:
+            // 1. Booking is for a different subject than the selected subject
+            // 2. Booking is full
+
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
         consTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

@@ -47,7 +47,7 @@ public class Availability implements Serializable {
     public LinkedList<String> generateTimeslots(){
         LinkedList<String> timeSlots = new LinkedList<String>();
         double t = startTime;
-        while (t <= endTime) {
+        while (t < endTime) {
             if(String.format("%.2f", t).endsWith(".30")) {
                 timeSlots.add(timeDivide(t));
                 t += 0.7;
@@ -84,12 +84,12 @@ public class Availability implements Serializable {
     }
 
     @Exclude
-    public double getStartTimeNum() {
+    public double getStartTimeDouble() {
         return startTime;
     }
 
     @Exclude
-    public double getEndTimeNum() {
+    public double getEndTimeDouble() {
         return endTime;
     }
 

@@ -15,6 +15,7 @@ import java.util.LinkedList;
 
 public class Booking implements Serializable {
 
+    private String bookingID;
     private int capacity;
     private String date;
     private double startTime;
@@ -27,6 +28,8 @@ public class Booking implements Serializable {
     private String availabilityID;
 
     public Booking(DataSnapshot booking, String tutorName) {
+        this.bookingID = booking.getKey().toString();
+        Log.d("KEYS", bookingID);
         this.date = booking.child("date").getValue().toString();
         this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
         this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
@@ -54,6 +57,11 @@ public class Booking implements Serializable {
         this.capacity = a.getCapacity();
         this.students.add(String.valueOf(s.getID()));
         this.availabilityID = availID;
+    }
+
+    @Exclude
+    public String getBookingID() {
+        return this.bookingID;
     }
 
     public int getCapacity() {
