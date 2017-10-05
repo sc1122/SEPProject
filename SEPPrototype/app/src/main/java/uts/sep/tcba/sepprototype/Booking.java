@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.database.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -12,56 +13,78 @@ import java.util.LinkedList;
  * Created by CalebAdra on 20/9/17.
  */
 
-public class Booking {
+public class Booking implements Serializable {
 
-    public int capacity;
-    public String date;
-    public String startTime;
-    public String endTime;
-    public String location;
-    public int tutorID;
-    public String tutorName;
-    public int subject;
-    public LinkedList<String> students = new LinkedList<String>();
+    private int capacity;
+    private String date;
+    private double startTime;
+    private double endTime;
+    private String location;
+    private int tutor;
+    private String tutorName;
+    private int subject;
+    private LinkedList<String> students = new LinkedList<String>();
+
+    public Booking() {}
 
     public Booking(DataSnapshot booking, String tutorName) {
-        capacity = booking.child("Capacity").getValue(Integer.class);
-        date = booking.child("Date").getValue().toString();
-        startTime = booking.child("StartTime").getValue().toString();
-        endTime = booking.child("EndTime").getValue().toString();
-        location = booking.child("Location").getValue().toString();
-        tutorID = booking.child("Tutor").getValue(Integer.class);
+        this.date = booking.child("date").getValue().toString();
+        this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
+        this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
+        this.location = booking.child("location").getValue().toString();
+        this.tutor = booking.child("tutor").getValue(Integer.class);
         this.tutorName = tutorName;
-        subject = booking.child("Subject").getValue(Integer.class);
-        for (DataSnapshot d: booking.child("Students").getChildren()){
+        this.subject = booking.child("subject").getValue(Integer.class);
+        this.capacity = booking.child("capacity").getValue(Integer.class);
+        for (DataSnapshot d: booking.child("students").getChildren()){
             if (d.child("BookingStatus").getValue().toString().equals("Attending")) {
-                students.add(d.getKey());
+                this.students.add(d.getKey());
             }
         }
     }
 
+    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s) {
+        this.date = a.getAvailDate();
+        this.startTime = sTime;
+        this.endTime = eTime;
+        this.location = a.getLocation();
+        this.tutor = t.getID();
+        this.tutorName = t.getFirstName() + " " + t.getLastName();
+        this.subject = sub;
+        this.capacity = a.getStudentLimit();
+        this.students.add(String.valueOf(s.getID()));
+    }
+
     public int getCapacity() {
-        return capacity;
+        return this.capacity;
     }
 
     public String getDate() {
-        return date;
+        return this.date;
     }
 
     public String getStartTime() {
-        return startTime;
+        return String.format("%.2f", this.startTime).replace('.',':');
+    }
+
+    public Double DoubleStartTime() {
+        return this.startTime;
     }
 
     public String getEndTime() {
-        return endTime;
+        return String.format("%.2f", this.endTime).replace('.',':');
+    }
+
+    public Double DoubleEndTime() {
+        return this.endTime;
     }
 
     public String getLocation() {
-        return location;
+        return this.location;
     }
 
-    public int getTutorID() {
-        return tutorID;
+    public int getTutor() {
+        return this.tutor;
     }
 
     public String getTutorName() {
@@ -69,16 +92,24 @@ public class Booking {
     }
 
     public int getSubject() {
-        return subject;
+        return this.subject;
     }
 
+    @Exclude
     public LinkedList<String> getStudents() {
-        return students;
+        return this.students;
     }
 
     @Override
     public String toString(){
-        return date + " " + startTime + " - " + tutorName + " (" + subject + ")\n" + location;
+        return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
+    }
+
+    /*
+    Returns true if the booking is full, returns false otherwise
+     */
+    public boolean isFull(){
+        return (students.size() == capacity);
     }
 
 }

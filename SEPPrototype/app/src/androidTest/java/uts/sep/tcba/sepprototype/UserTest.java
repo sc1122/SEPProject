@@ -1,5 +1,8 @@
 package uts.sep.tcba.sepprototype;
 
+import android.util.Log;
+import android.widget.TextView;
+
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -13,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
 
+
 /**
  * Created by Nick Earley on 28/09/2017.
  */
@@ -24,29 +28,83 @@ public class UserTest {
     String first = "Test";
     String last = "User";
 
-    User testUser = new User(ID);
-    private FirebaseAuth mAuth;
+
+    User testUser = new User();
+
+    public UserTest() throws InterruptedException {
+
+        testUser.firstName = first;
+        testUser.lastName = last;
+        testUser.type = type;
+        testUser.ID = ID;
+        testUser.email = ID + "@student.uts.edu.au";
+
+        Log.d("Valid", "hello");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Users/" + ID);
+        Log.d("HI", ref.toString());
+        testUser.subjects.add("stuff");
+
+        Thread.sleep(100);
+        /*try
+        {
+            Thread.sleep(1000);
+        }catch(InterruptedException ie) {
+        }*/
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.d("Test2", "Test2");
+                User testUser = new User(dataSnapshot);
+                Log.d("ToString",testUser.toString() );
+//                asb(testUser);
+                if(testUser.getID() == (ID)){
+                    Log.d("Currently","Test4");
+                }
 
 
-    public void userTest() {
-        mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase
-        mAuth.signInWithEmailAndPassword("456", "password");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
+
+       // Log.d("THIRD", testUser.toString());
+
+
     }
+
+//    public User asb(User thing) {
+//        Log.d("ANOTHER", thing.toString());
+//        this.testUser = thing;
+//        Log.d("ONE", testUser.toString());
+//        return thing;
+//
+//    }
 
 
     @Test
     public void getID() throws Exception {
-
+//        Log.d("NewString",testUser.toString());
+//        if(testUser == null){
+//            Log.d("Null","Null");
+//        };
+//        if(testUser == null) {
+//            Log.d("LUL", "LUL");
+//        }
         assertEquals(testUser.getID(), ID);
 
     }
 
     @Test
     public void getEmail() throws Exception {
-        userTest();
-        User testUser = new User(ID);
-        assertEquals(testUser.getEmail(), ID+"@student.uts.edu.au");
 
+        assertEquals(testUser.getEmail(), ID+"@student.uts.edu.au");
     }
 
     @Test

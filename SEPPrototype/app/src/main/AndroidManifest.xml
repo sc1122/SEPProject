@@ -22,11 +22,19 @@
         </activity>
         <activity
             android:name=".Controller_StudentMenu"
-            android:label="@string/title_activity_studentmenu"></activity>
+            android:label="@string/title_activity_studentmenu" />
         <activity
             android:name=".Controller_MakeBooking"
             android:label="@string/title_activity_makebooking"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Controller_TutorMenu"
+            android:label="@string/title_activity_controller__tutor_menu"
+            android:parentActivityName=".Controller_Authentication">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uts.sep.tcba.sepprototype.Controller_Authentication" />
+        </activity>
     </application>
 
 </manifest>

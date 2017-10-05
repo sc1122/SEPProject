@@ -19,4 +19,5 @@
     <string name="subjects_placeholder">Not enrolled in any subjects</string>
     <string name="notifications_placeholder">No new notifications</string>
     <string name="title_activity_makebooking">Make a Booking</string>
+    <string name="title_activity_controller__tutor_menu">Consultation Booker</string>
 </resources>

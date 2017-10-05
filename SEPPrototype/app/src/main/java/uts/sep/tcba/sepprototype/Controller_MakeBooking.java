@@ -21,8 +21,14 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
     public LinkedList<Availability> availabilities;
+    public Availability selectedAvailability;
     public Student currentUser;
     public Tutor tutor;
+
+    public String date;
+    public double startTime;
+    public double endTime;
+    public int subject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +37,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         Bundle bundle = this.getIntent().getExtras();
-        currentUser = new Student((User) bundle.getSerializable("user"));
+        currentUser = (Student) bundle.getSerializable("user");
         setContent();
 
         setSupportActionBar(toolbar);
@@ -39,8 +45,9 @@ public class Controller_MakeBooking extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                     Intent intent = getIntent();
-                    String bookingDetails = getDetails();
-                    intent.putExtra("result", bookingDetails);
+                    Bundle b = new Bundle();
+                    b.putSerializable("booking", getDetails());
+                    intent.putExtras(b);
                     setResult(RESULT_OK, intent);
                     finish();
             }
@@ -53,38 +60,46 @@ public class Controller_MakeBooking extends AppCompatActivity {
     Test here for no. of students exceeding max for booking
     TODO: Create booking use cases use this method!
      */
-    public String getDetails(){
-        String booking = "PLACEHOLER";
+    public Booking getDetails(){
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser);
         return booking;
     }
 
     /*
-    following 4 methods generates the content of each of the items in some way
-    TODO: make this more dynamic, changing the time/date based off the subject
+    Following method generates the contents of each spinner by pulling the different availability
+    Objects from firebase
     TODO: set up listeners to hide date->time until the preceding list has a selection
      */
     private void setContent(){
-        setSubjectList(currentUser);
-        setDateList(tutor);
-        setTimeList(availabilities);
-        TextView tutorName = (TextView) findViewById(R.id.tutor);
-        // BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
-        // tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
-        TextView location = (TextView) findViewById(R.id.location);
-        // BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
-        //location.setText(selectedAvailability.getLocation());
+        setSubjectList();
     }
 
-    private void setSubjectList(final Student student){
+    private void setSubjectList(){
         Spinner subjectNo = (Spinner)findViewById(R.id.subject);
         subjectNo.setPrompt("Select Subject");
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, student.getSubjects());
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, currentUser.getSubjects());
         subjectNo.setAdapter(adapter);
         subjectNo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String subjectSelection = adapterView.getAdapter().getItem(i).toString().substring(0,5);
-                tutor = new Tutor(student.getTutorsForIndex(i));
+                Log.d("SELECTION", "MADE");
+                subject = Integer.parseInt(adapterView.getAdapter().getItem(i).toString().substring(0,5));
+                final int tutorID = currentUser.getTutorsForIndex(i);
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = database.getReference("Users/" + tutorID);
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        tutor = new Tutor(dataSnapshot);
+                        setDateList();
+                        TextView tutorName = (TextView) findViewById(R.id.tutor);
+                        tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("RLdatabase", "Failed");
+                    }
+                });
             }
 
             @Override
@@ -92,51 +107,59 @@ public class Controller_MakeBooking extends AppCompatActivity {
         });
     }
 
-    private void setDateList(final Tutor tutor){
+    private void setDateList(){
         Spinner consDate = (Spinner)findViewById(R.id.date);
         consDate.setPrompt("Select Date");
-        /* BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
-        consDate.setAdapter(adapter); */
+        consDate.setAdapter(adapter);
         consDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                availabilities = tutor.getAvailabilitiesForDate(adapterView.getAdapter().getItem(i).toString());
+                date = adapterView.getAdapter().getItem(i).toString();
+                availabilities = tutor.getAvailabilitiesForDate(date);
+                setTimeList();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
     }
 
-    private void setTimeList(LinkedList<Availability> availabilities){
+    private void setTimeList(){
         Spinner consTime = (Spinner)findViewById(R.id.time);
         consTime.setPrompt("Select Time");
         LinkedList<String> timeslots = new LinkedList<String>();
-        /* BREAKS BECAUSE FIREBASE HASN'T RETURNED DATA
         for (Availability a : availabilities) {
             timeslots.addAll(a.getTimeslots());
-        } */
+        }
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
         consTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //CODE TO DETERMINE THE AVAILABILITY SELECTED
+                String selectedtime = adapterView.getAdapter().getItem(i).toString();
+                for (Availability a : availabilities) {
+                    for (String s : a.getTimeslots()) {
+                        if (s.equals(selectedtime)) {
+                            selectedAvailability = a;
+                        }
+                    }
+                }
+                String[] times = adapterView.getAdapter().getItem(i).toString().split(" - ");
+                startTime = Double.parseDouble(times[0].replace(':','.'));
+                endTime = Double.parseDouble(times[1].replace(':','.'));
+
+                //TODO: read the number of student from the selected availability
+                TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
+                LinkedList<String> numOfStudent = getDetails().getStudents();
+                studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getStudentLimit());
+
+                TextView loc = (TextView) findViewById(R.id.location);
+                loc.setText(selectedAvailability.getLocation());
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-    }
-
-    /*
-    Skeleton code of final method when records are pulled from database
-    Will result in removal of three respective methods when completed
-    TODO: In future iterations
-     */
-    private void setList(Student student){
-        LinkedList<String> subjects = student.getSubjects();
-        Spinner subjectNo = (Spinner)findViewById(R.id.subject);
-        //Insert code to set field based on subject choice and selected items
     }
 
     private String getSpinnerContent(Spinner spinner){
@@ -161,4 +184,5 @@ public class Controller_MakeBooking extends AppCompatActivity {
             return false;
     }
     */
+
 }

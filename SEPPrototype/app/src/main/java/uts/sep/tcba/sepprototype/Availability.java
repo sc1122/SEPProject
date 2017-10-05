@@ -24,6 +24,8 @@ public class Availability {
     private int studentLimit;
     private String location;
 
+    public Availability() { }
+
     public Availability(DataSnapshot ds) {
         availDate = ds.child("Date").getValue().toString();
         startTime = Double.parseDouble(ds.child("StartTime").getValue().toString().replace(':','.'));

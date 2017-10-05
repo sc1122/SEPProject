@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Controller_TutorMenu"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textSize="18dp"
+            android:text="@string/home_placeholder"
+            android:visibility="gone"/>
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:divider="@android:color/background_light"
+            android:layout_margin="10dp"
+            android:dividerHeight="15dp" />
+
+        <include layout="@layout/content_makebooking" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/newAvailability"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
+            android:tint="@android:color/background_light"
+            app:backgroundTint="@android:color/black"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/background_dark"
+            app:srcCompat="@drawable/ic_calendar_add" />
+
+    </FrameLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/navigation" />
+
+</LinearLayout>

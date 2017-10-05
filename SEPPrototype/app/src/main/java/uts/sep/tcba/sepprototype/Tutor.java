@@ -2,15 +2,28 @@ package uts.sep.tcba.sepprototype;
 
 import android.util.Log;
 import com.google.firebase.database.*;
+
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 
-public class Tutor extends User {
+public class Tutor extends User implements Serializable {
 
     private LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
     public Tutor(int ID){
         super(ID);
-        fetchAvailabilities();
+        //fetchAvailabilities();
+    }
+
+    public Tutor(DataSnapshot data){
+        super(data);
+        fetchAvailabilities(data);
     }
 
     public Tutor(User user){
@@ -20,11 +33,14 @@ public class Tutor extends User {
         this.subjects = user.getSubjects();
         this.type = user.getType();
         this.email = user.getEmail();
-        fetchAvailabilities();
+        //fetchAvailabilities();
     }
 
-    public void fetchAvailabilities() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+    public void fetchAvailabilities(DataSnapshot data) {
+        for (DataSnapshot ds : data.child("Availabilities").getChildren()) {
+            availabilities.add(new Availability(ds));
+        }
+        /* FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + this.getID() + "/Availabilities");
         Log.d("TUTOR YAY", ref.toString());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -39,7 +55,7 @@ public class Tutor extends User {
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("RLdatabase", "Failed");
             }
-        });
+        });*/
     }
 
     public void addAvailability() {
@@ -54,13 +70,37 @@ public class Tutor extends User {
         return availabilities;
     }
 
+    public void sortAvailabilities() {
+        Collections.sort(availabilities, new Comparator<Availability>() {
+            public int compare(Availability a1, Availability a2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+                try {
+                    Date date1 = formatter.parse(a1.getAvailDate());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(a2.getAvailDate());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+    }
+
     /*
     Returns list of strings of all available dates
      */
     public LinkedList<String> getAvailableDates(){
         LinkedList<String> availDates = new LinkedList<String>();
-        for(Availability available : availabilities)
-            availDates.add(available.getAvailDate());
+        LinkedList<String> alreadyAdded = new LinkedList<String>();
+        sortAvailabilities();
+        for (Availability a : availabilities) {
+            if (!availDates.contains(a.getAvailDate())) {
+                availDates.add(a.getAvailDate());
+            }
+        }
         return availDates;
     }
 

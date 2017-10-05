@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,26 +21,26 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 
-public class Controller_StudentMenu extends AppCompatActivity{
 
-private TextView mTextMessage;
-private ListView listView;
-private FloatingActionButton newBookingButton;
-private ArrayList<Booking> bookings = new ArrayList<Booking>();
-private ArrayList<String> subjects = new ArrayList<String>();
-private ArrayList<String> pageList = new ArrayList<String>();
-private ArrayAdapter adapter;
-private FirebaseAuth mAuth;
-public Student currentStudent;
+public class Controller_TutorMenu extends AppCompatActivity {
+
+    private TextView mTextMessage;
+    private ListView listView;
+    private FloatingActionButton newAvailabilityButton;
+    private ArrayList<Booking> bookings = new ArrayList<Booking>();
+    private ArrayList<String> subjects = new ArrayList<String>();
+    private ArrayList<String> pageList = new ArrayList<String>();
+    private ArrayAdapter adapter;
+    private FirebaseAuth mAuth;
+    public Tutor currentTutor;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
+
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
                     pageList.clear();
@@ -49,8 +48,10 @@ public Student currentStudent;
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
-                            newBookingButton.setVisibility(View.VISIBLE);
-                            refreshBookings();
+                            newAvailabilityButton.setVisibility(View.VISIBLE);
+                            for (Booking b: bookings) {
+                                pageList.add(b.toString());
+                            }
                             adapter.notifyDataSetChanged();
                             if (bookings.size() > 0) {
                                 mTextMessage.setVisibility(View.GONE);
@@ -58,7 +59,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_dashboard:
-                            newBookingButton.setVisibility(View.GONE);
+                            newAvailabilityButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
                             adapter.notifyDataSetChanged();
                             if (subjects.size() > 0) {
@@ -67,7 +68,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_notifications:
-                            newBookingButton.setVisibility(View.GONE);
+                            newAvailabilityButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
                     }
@@ -80,7 +81,7 @@ public Student currentStudent;
 
         // Activity Initialisation
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_studentmenu);
+        setContentView(R.layout.activity_tutormenu);
         mTextMessage = (TextView) findViewById(R.id.message);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -90,7 +91,7 @@ public Student currentStudent;
         Intent intent = getIntent();
         int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
         String loggedInUserType = intent.getStringExtra("type");
-        currentStudent = new Student(loggedInUserID);
+        currentTutor = new Tutor(loggedInUserID);
 
         // Set a listener for when data is updated/loaded to refresh the view
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -98,12 +99,12 @@ public Student currentStudent;
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setTitle(getTitle() + " - " + currentStudent.getFirstName() + " " + currentStudent.getLastName() + " (S)");
+                setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
                 // Populate user bookings
-                getBookings(String.valueOf(currentStudent.getID()));
+                getBookings(String.valueOf(currentTutor.getID()));
                 sortBookings();
                 // Populate user subjects
-                subjects.addAll(currentStudent.getSubjects());
+                subjects.addAll(currentTutor.getSubjects());
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -140,14 +141,14 @@ public Student currentStudent;
         });
 
         // Define the new booking button in the bottom right
-        newBookingButton = (FloatingActionButton) findViewById(R.id.newBooking);
-        newBookingButton.setOnClickListener(new View.OnClickListener() {
+        newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
+        newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class);
+                /* Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeBooking.class);
                 Bundle b = new Bundle();
-                b.putSerializable("user", currentStudent);
+                b.putSerializable("user", currentTutor);
                 intent.putExtras(b);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 1); */
             }
         });
     }
@@ -183,16 +184,13 @@ public Student currentStudent;
         bookings.clear();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                bookings.clear();
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-                    String tutorID = booking.child("tutor").getValue().toString();
-                    DataSnapshot tutorBooked = dataSnapshot.child("Users").child(tutorID);
-                    String tutorName = tutorBooked.child("FirstName").getValue().toString() + " " + tutorBooked.child("LastName").getValue().toString();
-                    if (booking.child("students").child(ID).exists()) {
-                        Log.d("STUDENT", booking.getValue().toString());
+                    Log.d("BOOKING", booking.toString());
+                    String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
+                    if (booking.child("tutor").getValue().toString().equals(ID)) {
                         Booking b = new Booking(booking, tutorName);
                         bookings.add(b);
                     }
@@ -208,16 +206,9 @@ public Student currentStudent;
         });
     }
 
-    public void addBookingToFirebase(Booking booking) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
-        DatabaseReference bookingStatus = ref.push();
-        bookingStatus.setValue(booking);
-        bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
-    }
-
     @Override
     public void onBackPressed(){
-        AlertDialog alertDialog = new AlertDialog.Builder(Controller_StudentMenu.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(Controller_TutorMenu.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage("Would you like to log out?");
 
@@ -243,11 +234,7 @@ public Student currentStudent;
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                Booking booking = (Booking) bundle.getSerializable("booking");
-                addBookingToFirebase(booking);
-                adapter.notifyDataSetChanged();
-                sortBookings();
+                //Code to write availability to Firebase
             }
         }
     }
