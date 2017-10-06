@@ -235,6 +235,7 @@ private boolean newBooking = true;
         });
     }
 
+
     public void addBookingToFirebase(final Booking booking, String id) {
         DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings");
         DatabaseReference newBookingRef = bookingsRef.push();
@@ -296,5 +297,19 @@ private boolean newBooking = true;
                 sortBookings();
             }
         }
+    }
+
+    private void showErrorDialog(String title, String errorMessage){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(errorMessage);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

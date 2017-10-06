@@ -1,7 +1,6 @@
 package uts.sep.tcba.sepprototype;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +38,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Tutor currentTutor;
     private boolean bookingTab = true;
+    private boolean existingAvailability = false;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -252,9 +251,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 Bundle bundle = data.getExtras();
                 Availability availability = (Availability) bundle.getSerializable("availability");
                 //Check if selected Time period makes sense to none-time traveller;
-                if(SelectedTimeIsCorrect(availability))
-                    addAvailabilityToFirebase(availability);
-                else{
+                if(selectedTimeIsCorrect(availability)) {
+                    availabilityDoesNotExist(availability);
+                }else{
                     showErrorDialog("Improper Time Selected", "Please select proper time slot");
                 }
                 //TODO: Add availability to availability list
@@ -262,22 +261,52 @@ public class Controller_TutorMenu extends AppCompatActivity {
         }
     }
 
+
     public void addAvailabilityToFirebase(Availability availability) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
         DatabaseReference bookingStatus = ref.push();
         bookingStatus.setValue(availability);
     }
 
-    public boolean SelectedTimeIsCorrect(Availability availability){
+    private boolean selectedTimeIsCorrect(Availability availability){
         double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
         double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
-        Log.d("WHAT", startTime + " " + endTime);
         if(startTime >= endTime)
             return false;
         return true;
     }
 
-    public void showErrorDialog(String title, String errorMessage){
+    private void availabilityDoesNotExist(final Availability availability) {
+        String tutorId = String.valueOf(currentTutor.getID());
+        final String date = availability.getDate();
+        final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+        final double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
+        Log.d("REF", ref.toString());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
+                    String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
+                    if(snapshot.child("date").getValue().equals(date)) {
+                        if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
+                            showErrorDialog("Availability Error", "Input availability already existed");
+                        }else {
+                            addAvailabilityToFirebase(availability);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void showErrorDialog(String title, String errorMessage){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(errorMessage);
@@ -290,4 +319,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 });
         alertDialog.show();
     }
+
+
+
 }
