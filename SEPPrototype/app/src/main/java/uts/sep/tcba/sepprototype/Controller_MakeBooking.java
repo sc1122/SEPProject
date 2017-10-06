@@ -15,20 +15,17 @@ import com.google.firebase.database.*;
 
 import java.util.LinkedList;
 
-import javax.security.auth.Subject;
-
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-    public LinkedList<Availability> availabilities;
-    public Availability selectedAvailability;
-    public Student currentUser;
-    public Tutor tutor;
-
-    public String date;
-    public double startTime;
-    public double endTime;
-    public int subject;
+    private LinkedList<Availability> availabilities;
+    private Availability selectedAvailability;
+    private Student currentUser;
+    private Tutor tutor;
+    private String date;
+    private double startTime;
+    private double endTime;
+    private int subject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +41,21 @@ public class Controller_MakeBooking extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                    Intent intent = getIntent();
-                    Bundle b = new Bundle();
-                    b.putSerializable("booking", getDetails());
-                    intent.putExtras(b);
-                    setResult(RESULT_OK, intent);
-                    finish();
+                Intent intent = getIntent();
+                Bundle b = new Bundle();
+                Booking book = getDetails();
+                // iterate through all bookings for that tutor on that date at that time for that subject
+
+                // if one matches that
+                    b.putString("id",currentUser.getID()+"");
+                // else
+                    // new booking
+                    b.putSerializable("booking", book);
+                // end if
+
+                intent.putExtras(b);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }
@@ -61,14 +67,14 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser);
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID());
         return booking;
     }
 
     /*
     Following method generates the contents of each spinner by pulling the different availability
     Objects from firebase
-    TODO: set up listeners to hide date->time until the preceding list has a selection
+    TODO: set up listeners to hide date->time until the preceding list has a selection, QOL change not needed for project
      */
     private void setContent(){
         setSubjectList();
@@ -90,6 +96,16 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        // Clear fields if no availability for selected subject
+                        Spinner consTime = (Spinner)findViewById(R.id.time);
+                        consTime.setAdapter(null);
+                        TextView loc = (TextView) findViewById(R.id.location);
+                        loc.setText("");
+                        TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
+                        studentAttending.setText("");
+                        //-----------------------------------------------------
+
                         tutor = new Tutor(dataSnapshot);
                         setDateList();
                         TextView tutorName = (TextView) findViewById(R.id.tutor);
@@ -129,8 +145,13 @@ public class Controller_MakeBooking extends AppCompatActivity {
         consTime.setPrompt("Select Time");
         LinkedList<String> timeslots = new LinkedList<String>();
         for (Availability a : availabilities) {
-            timeslots.addAll(a.getTimeslots());
+            timeslots.addAll(a.generateTimeslots());
         }
+
+        // Iterate through list of timeslots, remove any where there is a booking that meets the following criteria:
+            // 1. Booking is for a different subject than the selected subject
+            // 2. Booking is full
+
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
         consTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -139,7 +160,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 //CODE TO DETERMINE THE AVAILABILITY SELECTED
                 String selectedtime = adapterView.getAdapter().getItem(i).toString();
                 for (Availability a : availabilities) {
-                    for (String s : a.getTimeslots()) {
+                    for (String s : a.generateTimeslots()) {
                         if (s.equals(selectedtime)) {
                             selectedAvailability = a;
                         }
@@ -149,10 +170,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 startTime = Double.parseDouble(times[0].replace(':','.'));
                 endTime = Double.parseDouble(times[1].replace(':','.'));
 
-                //TODO: read the number of student from the selected availability
+                //TODO: read the number of student from the selected availability (have to rethink how you we're doing this
                 TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
-                LinkedList<String> numOfStudent = getDetails().getStudents();
-                studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getStudentLimit());
+                //LinkedList<String> numOfStudent = getDetails().getStudents();
+                //studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getCapacity());
 
                 TextView loc = (TextView) findViewById(R.id.location);
                 loc.setText(selectedAvailability.getLocation());
@@ -161,28 +182,5 @@ public class Controller_MakeBooking extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
     }
-
-    private String getSpinnerContent(Spinner spinner){
-        return spinner.getSelectedItem().toString();
-    }
-
-    /* Eventually, obtain max booked from booking object
-    private boolean isNotFull(){
-        if (content.getStudentBooked() >= content.getStudentLimit()) {
-
-            Log.e("Test", "this was run");
-            AlertDialog fullAlert = new AlertDialog.Builder(Controller_MakeBooking.this).create();
-            fullAlert.setTitle("Alert");
-            fullAlert.setMessage("This session has reached max number of student!");
-
-            fullAlert.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, "Back",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            return false;
-    }
-    */
 
 }

@@ -126,9 +126,9 @@
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Location"
-                    android:padding="10dp"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:hint="Location Unspecified"
+                    android:padding="10dp" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>

@@ -1,6 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +38,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private ArrayList<String> pageList = new ArrayList<String>();
     private ArrayAdapter adapter;
     private FirebaseAuth mAuth;
-    public Tutor currentTutor;
+    private Tutor currentTutor;
+    private boolean bookingTab = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -48,6 +51,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            bookingTab = true;
                             newAvailabilityButton.setVisibility(View.VISIBLE);
                             for (Booking b: bookings) {
                                 pageList.add(b.toString());
@@ -59,6 +63,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             }
                             return true;
                         case R.id.navigation_dashboard:
+                            bookingTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
                             adapter.notifyDataSetChanged();
@@ -68,6 +73,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             }
                             return true;
                         case R.id.navigation_notifications:
+                            bookingTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
@@ -99,7 +105,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
+                if (!getTitle().toString().contains(currentTutor.getFirstName())) {
+                    setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
+                }
                 // Populate user bookings
                 getBookings(String.valueOf(currentTutor.getID()));
                 sortBookings();
@@ -135,20 +143,27 @@ public class Controller_TutorMenu extends AppCompatActivity {
         // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("HELLO", "WORLD");
-                //Object o = listView.getItemAtPosition(position);  // Create view booking screen and load booking details
+                if (bookingTab) {
+                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
+                    Booking selectedItem = bookings.get(position);
+                    Log.d("BOOKING", selectedItem.toString());
+                    intent.putExtra("booking", selectedItem);
+                    intent.putExtra("subject", currentTutor.getSubjects());
+                    intent.putExtra("userType", currentTutor.getType());
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 
-        // Define the new booking button in the bottom right
+        // Button press now creates a new availability
         newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
         newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                /* Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeBooking.class);
+                Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeAvailability.class);
                 Bundle b = new Bundle();
                 b.putSerializable("user", currentTutor);
                 intent.putExtras(b);
-                startActivityForResult(intent, 1); */
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -188,7 +203,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-                    Log.d("BOOKING", booking.toString());
+//                    Log.d("BOOKING", booking.toString());
                     String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
                     if (booking.child("tutor").getValue().toString().equals(ID)) {
                         Booking b = new Booking(booking, tutorName);
@@ -234,8 +249,45 @@ public class Controller_TutorMenu extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
-                //Code to write availability to Firebase
+                Bundle bundle = data.getExtras();
+                Availability availability = (Availability) bundle.getSerializable("availability");
+                //Check if selected Time period makes sense to none-time traveller;
+                if(SelectedTimeIsCorrect(availability))
+                    addAvailabilityToFirebase(availability);
+                else{
+                    showErrorDialog("Improper Time Selected", "Please select proper time slot");
+                }
+                //TODO: Add availability to availability list
             }
         }
+    }
+
+    public void addAvailabilityToFirebase(Availability availability) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
+        DatabaseReference bookingStatus = ref.push();
+        bookingStatus.setValue(availability);
+    }
+
+    public boolean SelectedTimeIsCorrect(Availability availability){
+        double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+        double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
+        Log.d("WHAT", startTime + " " + endTime);
+        if(startTime >= endTime)
+            return false;
+        return true;
+    }
+
+    public void showErrorDialog(String title, String errorMessage){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(errorMessage);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

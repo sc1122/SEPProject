@@ -2,6 +2,8 @@ package uts.sep.tcba.sepprototype;
 
 import org.junit.Test;
 
+import java.util.LinkedList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -9,17 +11,27 @@ import static org.junit.Assert.*;
  */
 public class StudentTest {
 
+    int ID = 456;
+    public LinkedList<Integer> tutors = new LinkedList<Integer>();
+
+    Student testStudent = new Student(ID);
+    // Tutor testTutor = new Tutor(ID);
+
+    public StudentTest() {
+        testStudent.tutors.add(456);
+        tutors.add(456);
+
+    }
+
 
 
     @Test
     public void fetchTutorsForSubject() throws Exception {
+        testStudent.getTutors();
+
 
     }
 
-    @Test
-    public void selectTimeslot() throws Exception {
-
-    }
 
     @Test
     public void makeConsultation() throws Exception {
@@ -33,6 +45,8 @@ public class StudentTest {
 
     @Test
     public void getTutors() throws Exception {
+
+        assertEquals(testStudent.getTutors(),tutors);
 
     }
 

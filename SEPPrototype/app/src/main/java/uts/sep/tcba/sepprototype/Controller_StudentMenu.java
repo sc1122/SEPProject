@@ -1,6 +1,7 @@
 package uts.sep.tcba.sepprototype;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Controller_StudentMenu extends AppCompatActivity{
@@ -38,7 +41,11 @@ private ArrayList<String> subjects = new ArrayList<String>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
-public Student currentStudent;
+private Student currentStudent;
+private boolean bookingTab = true;
+final Context context = this;
+private boolean newBooking = true;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -49,6 +56,7 @@ public Student currentStudent;
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            bookingTab = true;
                             newBookingButton.setVisibility(View.VISIBLE);
                             refreshBookings();
                             adapter.notifyDataSetChanged();
@@ -58,6 +66,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_dashboard:
+                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
                             adapter.notifyDataSetChanged();
@@ -67,6 +76,7 @@ public Student currentStudent;
                             }
                             return true;
                         case R.id.navigation_notifications:
+                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
@@ -134,8 +144,19 @@ public Student currentStudent;
         // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("HELLO", "WORLD");
-                //Object o = listView.getItemAtPosition(position);  // Create view booking screen and load booking details
+
+                BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                if (bookingTab) {
+                    Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
+                    Booking selectedItem = bookings.get(position);
+                    Log.d("BOOKING", selectedItem.toString());
+                    Log.d("BOOKINGID", selectedItem.getAvailabilityID());
+                    Log.d("USERID", currentStudent.getID()+"");
+                    intent.putExtra("booking", selectedItem);
+                    intent.putExtra("id",currentStudent.getID()+"");
+                    intent.putExtra("userType" , currentStudent.getType());
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 
@@ -156,6 +177,11 @@ public Student currentStudent;
         pageList.clear();
         for (Booking b: bookings) {
             pageList.add(b.toString());
+        }
+        if (bookings.size() > 0) {
+            mTextMessage.setVisibility(View.GONE);
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -187,6 +213,7 @@ public Student currentStudent;
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bookings.clear();
+                Log.d("HelloMemes", dataSnapshot.toString());
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
                     String tutorID = booking.child("tutor").getValue().toString();
                     DataSnapshot tutorBooked = dataSnapshot.child("Users").child(tutorID);
@@ -208,12 +235,77 @@ public Student currentStudent;
         });
     }
 
-    public void addBookingToFirebase(Booking booking) {
+    public void addBookingToFirebase(final Booking booking) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
-        DatabaseReference bookingStatus = ref.push();
-        bookingStatus.setValue(booking);
+        final DatabaseReference bookingStatus = ref.push();
+        if (!newBooking) {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Check if the Availability has been booked
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+//                  By comparing database 'availability ID' to new Booking 'availability id' ** as well as 'start time' and 'end time'
+
+                        Log.d("ID", booking.getAvailabilityID());
+                        if (data.child("availabilityID").getValue().toString().equals(String.valueOf(booking.getAvailabilityID())) &&
+                                booking.getStartTime().equals(data.child("startTime").getValue().toString()) &&
+                                booking.getEndTime().equals(data.child("endTime").getValue().toString())) {
+                            //If exist, check to see if same student has booked it
+                            for (DataSnapshot student : data.child("students").getChildren()) {
+                                //If student ID is in the list
+                                Log.e("EXIST", student.getKey());
+                                if (student.getKey().equals(currentStudent.getID() + "")) {
+                                    //Pop-up alert to warn of existing booking and remove the booking
+                                    Log.e("EXIST", String.valueOf(currentStudent.getID()));
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Existing Booking!");
+                                    alertDialog.setMessage("The Booking you are making has been made");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                    Log.e("EXIST", "This booking has been made");
+                                    //Remove the added booking
+                                    //TODO: as the booking are always added, I simply remove it if it is found to be existing
+                                    bookingStatus.setValue(null);
+                                } else {
+                                    Log.e("EXIST", "Somebody has already made this");
+                                    //If not in the list, add student to the list and complete the booking;
+
+                                    //TODO: Add student to existing booking;
+                                    //student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
+//student.getRef().push().setValue(String.valueOf(currentStudent.getID()));
+
+                                    Log.e("EXIST", data.child("students").toString());
+                                    //bookingStatus.child(booking.getAvailabilityID()+"").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            bookingStatus.setValue(booking);
+            //If availability has not been booked by anymore, create new Booking
+            //TODO: this keep running even though it doesnt meet condition
+        }
+        setAttendingBooking(bookingStatus);
+    }
+
+    public void setAttendingBooking(DatabaseReference bookingStatus) {
         bookingStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
     }
+
 
     @Override
     public void onBackPressed(){
@@ -244,6 +336,16 @@ public Student currentStudent;
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
+                if (bundle.get("id") != null) {
+                    newBooking = true;
+                } else {
+                    newBooking = false;
+                }
+
+                //Remove once ID is passed
+                newBooking = true;
+                //Remove once ID is passed
+
                 Booking booking = (Booking) bundle.getSerializable("booking");
                 addBookingToFirebase(booking);
                 adapter.notifyDataSetChanged();

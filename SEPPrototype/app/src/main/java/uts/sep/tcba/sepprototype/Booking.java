@@ -15,6 +15,7 @@ import java.util.LinkedList;
 
 public class Booking implements Serializable {
 
+    private String bookingID;
     private int capacity;
     private String date;
     private double startTime;
@@ -24,10 +25,11 @@ public class Booking implements Serializable {
     private String tutorName;
     private int subject;
     private LinkedList<String> students = new LinkedList<String>();
-
-    public Booking() {}
+    private String availabilityID;
 
     public Booking(DataSnapshot booking, String tutorName) {
+        this.bookingID = booking.getKey().toString();
+        Log.d("KEYS", bookingID);
         this.date = booking.child("date").getValue().toString();
         this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
         this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
@@ -41,18 +43,25 @@ public class Booking implements Serializable {
                 this.students.add(d.getKey());
             }
         }
+        this.availabilityID = booking.child("availabilityID").getValue().toString();
     }
 
-    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s) {
-        this.date = a.getAvailDate();
+    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s, String availID) {
+        this.date = a.getDate();
         this.startTime = sTime;
         this.endTime = eTime;
         this.location = a.getLocation();
         this.tutor = t.getID();
         this.tutorName = t.getFirstName() + " " + t.getLastName();
         this.subject = sub;
-        this.capacity = a.getStudentLimit();
+        this.capacity = a.getCapacity();
         this.students.add(String.valueOf(s.getID()));
+        this.availabilityID = availID;
+    }
+
+    @Exclude
+    public String getBookingID() {
+        return this.bookingID;
     }
 
     public int getCapacity() {
@@ -67,7 +76,12 @@ public class Booking implements Serializable {
         return String.format("%.2f", this.startTime).replace('.',':');
     }
 
-    public Double DoubleStartTime() {
+    public void setStartTime(double time) {this.startTime = time;}
+
+    public void setEndTime(double time) {this.endTime = time;}
+
+    @Exclude
+    public Double getDoubleStartTime() {
         return this.startTime;
     }
 
@@ -75,8 +89,13 @@ public class Booking implements Serializable {
         return String.format("%.2f", this.endTime).replace('.',':');
     }
 
-    public Double DoubleEndTime() {
+    @Exclude
+    public Double getDoubleEndTime() {
         return this.endTime;
+    }
+
+    public String getAvailabilityID() {
+        return availabilityID;
     }
 
     public String getLocation() {
@@ -108,6 +127,7 @@ public class Booking implements Serializable {
     /*
     Returns true if the booking is full, returns false otherwise
      */
+    @Exclude
     public boolean isFull(){
         return (students.size() == capacity);
     }

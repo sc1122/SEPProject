@@ -35,6 +35,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uts.sep.tcba.sepprototype.Controller_Authentication" />
         </activity>
+        <activity
+            android:name=".Controller_MakeAvailability"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Controller_ViewBooking"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".Controller_EditBooking"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+
     </application>
 
 </manifest>
