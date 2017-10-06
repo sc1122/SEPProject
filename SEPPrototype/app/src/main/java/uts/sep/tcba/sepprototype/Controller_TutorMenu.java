@@ -296,6 +296,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
                         }else {
                             addAvailabilityToFirebase(availability);
                         }
+                    }else{
+                        addAvailabilityToFirebase(availability);
+                        break;
                     }
                 }
             }
