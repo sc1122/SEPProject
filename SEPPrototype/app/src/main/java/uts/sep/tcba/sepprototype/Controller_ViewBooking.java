@@ -42,7 +42,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
         }
 
         //Log.d("DETAIL", currentBooking.toString());
-        setContent(currentBooking);
+        setContent(bundle.getString("subject"));
 
         //Cancel Button Code
         cancelButton = (Button) findViewById(R.id.cancel);
@@ -68,7 +68,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
         });
     }
 
-    private void setContent(Booking currentBooking) {
+    private void setContent(String subjectString) {
         this.subject = (TextView) findViewById(R.id.subject);
         this.tutor = (TextView) findViewById(R.id.tutor);
         this.date = (TextView) findViewById(R.id.date);
@@ -76,10 +76,9 @@ public class Controller_ViewBooking extends AppCompatActivity {
         this.location = (TextView) findViewById(R.id.location);
         this.capacity = (TextView) findViewById(R.id.capacity);
 
-        subject.setText(String.valueOf(currentBooking.getSubject()) );
+        subject.setText(subjectString);
 
-
-        tutor.setText(currentBooking.getTutor() + currentBooking.getTutorName());
+        tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");
         date.setText(currentBooking.getDate());
         time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
         location.setText(currentBooking.getLocation());

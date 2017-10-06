@@ -149,6 +149,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     intent.putExtra("booking", selectedItem);
                     intent.putExtra("subject", currentTutor.getSubjects());
                     intent.putExtra("userType", currentTutor.getType());
+                    intent.putExtra("subject", currentTutor.getSubjectFromSubjects(selectedItem.getSubject()));
                     startActivityForResult(intent, 1);
                 }
             }

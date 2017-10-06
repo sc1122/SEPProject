@@ -157,10 +157,9 @@
                 <TextView
                     android:id="@+id/capacity"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:paddingStart="15dp"
-                    android:text="5 / 10"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
@@ -169,6 +168,8 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingTop="15dp"
+                    android:layout_margin="10dp"
                     android:text="Cancel"
                     android:textStyle="bold" />
 

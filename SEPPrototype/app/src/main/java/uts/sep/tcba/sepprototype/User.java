@@ -68,9 +68,18 @@ public class User implements Serializable {
     public void extractAndAddSubjects(DataSnapshot data) {
         subjects.clear();
         for (DataSnapshot d : data.getChildren()) {
-            String subject = d.getKey().toString() + " - " + d.child("Name").getValue().toString();
+            String subject = d.child("Name").getValue().toString() + " (" + d.getKey().toString() + ")";
             subjects.add(subject);
         }
+    }
+
+    public String getSubjectFromSubjects(int subjectID) {
+        for (String subject : subjects) {
+            if (subject.contains(subjectID+"")) {
+                return subject;
+            }
+        }
+        return null;
     }
 
     public void cancelConsultation() {

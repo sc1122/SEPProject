@@ -155,6 +155,7 @@ private boolean newBooking = true;
                     intent.putExtra("booking", selectedItem);
                     intent.putExtra("id",currentStudent.getID()+"");
                     intent.putExtra("userType" , currentStudent.getType());
+                    intent.putExtra("subject", currentStudent.getSubjectFromSubjects(selectedItem.getSubject()));
                     startActivityForResult(intent, 1);
                 }
             }
@@ -297,19 +298,5 @@ private boolean newBooking = true;
                 sortBookings();
             }
         }
-    }
-
-    private void showErrorDialog(String title, String errorMessage){
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(errorMessage);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 }

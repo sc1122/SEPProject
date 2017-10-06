@@ -109,7 +109,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d("SELECTION", "MADE");
-                subject = Integer.parseInt(adapterView.getAdapter().getItem(i).toString().substring(0,5));
+                String subjectString = adapterView.getAdapter().getItem(i).toString();
+                subject = Integer.parseInt(subjectString.substring(subjectString.length()-6,subjectString.length()-1));
                 final int tutorID = currentUser.getTutorsForIndex(i);
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("Users/" + tutorID);
