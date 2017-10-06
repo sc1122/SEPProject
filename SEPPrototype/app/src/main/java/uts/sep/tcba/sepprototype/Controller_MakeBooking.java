@@ -26,6 +26,12 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private double startTime;
     private double endTime;
     private int subject;
+    private LinkedList<String> timeslots = new LinkedList<String>();
+    private String existingBookingID = "";
+
+    private Spinner consTime;
+    private Bundle bundleSend;
+    private Intent intentSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,29 +39,43 @@ public class Controller_MakeBooking extends AppCompatActivity {
         setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        Bundle bundle = this.getIntent().getExtras();
+        final Bundle bundle = this.getIntent().getExtras();
         currentUser = (Student) bundle.getSerializable("user");
         setContent();
 
+        intentSend = getIntent();
         setSupportActionBar(toolbar);
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = getIntent();
-                Bundle b = new Bundle();
-                Booking book = getDetails();
+                bundleSend = new Bundle();
+                final Booking book = getDetails();
                 // iterate through all bookings for that tutor on that date at that time for that subject
-
-                // if one matches that
-                    b.putString("id",currentUser.getID()+"");
-                // else
-                    // new booking
-                    b.putSerializable("booking", book);
-                // end if
-
-                intent.putExtras(b);
-                setResult(RESULT_OK, intent);
-                finish();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            // If there is a booking at the same time as selected
+                            if (book.getStartTime().equals(data.child("startTime").getValue().toString()) &&
+                                    book.getEndTime().equals(data.child("endTime").getValue().toString()) &&
+                                    book.getSubject() == data.child("subject").getValue(Integer.class) &&
+                                    book.getTutor() == data.child("tutor").getValue(Integer.class)) {
+                                Log.d("MATCH", "FOUND");
+                                existingBookingID = data.getKey();
+                            }
+                        }
+                        Log.d("MATCH", existingBookingID);
+                        bundleSend.putString("existingBookingID", existingBookingID);
+                        bundleSend.putSerializable("booking", book);
+                        intentSend.putExtras(bundleSend);
+                        setResult(RESULT_OK, intentSend);
+                        finish();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
             }
         });
     }
@@ -141,17 +161,59 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     private void setTimeList(){
-        Spinner consTime = (Spinner)findViewById(R.id.time);
+        consTime = (Spinner)findViewById(R.id.time);
         consTime.setPrompt("Select Time");
-        LinkedList<String> timeslots = new LinkedList<String>();
+        timeslots.clear();
         for (Availability a : availabilities) {
             timeslots.addAll(a.generateTimeslots());
         }
 
-        // Iterate through list of timeslots, remove any where there is a booking that meets the following criteria:
-            // 1. Booking is for a different subject than the selected subject
-            // 2. Booking is full
+        LinkedList<String> startTimes = new LinkedList<String>();
+        LinkedList<String> endTimes = new LinkedList<String>();
 
+        for (String timeslot : timeslots) {
+            String[] time = timeslot.split("\\s-\\s");
+            startTimes.add(time[0]);
+            endTimes.add(time[1]);
+        }
+
+        removeClashingTimeslots(startTimes, endTimes);
+    }
+
+    public void removeClashingTimeslots(final LinkedList<String> startTimes, final LinkedList<String> endTimes){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    for (int i = 0; i < startTimes.size(); i = i + 1) {
+                        // If there is a booking at the same time as selected
+                        if (startTimes.get(i).equals(data.child("startTime").getValue().toString().replace(':', '.')) &&
+                                endTimes.get(i).equals(data.child("endTime").getValue().toString().replace(':', '.'))) {
+                            if (data.child("students").child(String.valueOf(currentUser.getID())).exists()) {
+                                Log.d("Student booked", "WOO");
+                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i));
+                            } else if (subject == data.child("subject").getValue(Integer.class) // If there is a booking for the same subject as selected and not full
+                                    && data.child("students").getChildrenCount() < data.child("capacity").getValue(Long.class)) {
+                                Log.d("Booked but open", "WOO");
+                            } else {
+                                // Otherwise, remove timeslot
+                                Log.d("Not free", "WOO");
+                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i));
+                            }
+                        }
+                    }
+                }
+                bindToMenu();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void bindToMenu() {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, timeslots);
         consTime.setAdapter(adapter);
         consTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
