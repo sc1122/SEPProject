@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 
 
 public class Controller_TutorMenu extends AppCompatActivity {
@@ -38,7 +39,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Tutor currentTutor;
     private boolean bookingTab = true;
-    private boolean existingAvailability = false;
+    private boolean existingAvailability = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -286,18 +287,26 @@ public class Controller_TutorMenu extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+
                     String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
                     String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
+
+                    Log.d("WWWW", snapshot.child("date").getValue().toString());
+
                     if(snapshot.child("date").getValue().equals(date)) {
                         if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
                             showErrorDialog("Availability Error", "Input availability already existed");
+                            existingAvailability = true;
                         }else {
                             addAvailabilityToFirebase(availability);
                         }
                     }else{
-                        addAvailabilityToFirebase(availability);
-                        break;
+                        existingAvailability = false;
                     }
+                }
+
+                if(existingAvailability == false){
+                    addAvailabilityToFirebase(availability);
                 }
             }
 
