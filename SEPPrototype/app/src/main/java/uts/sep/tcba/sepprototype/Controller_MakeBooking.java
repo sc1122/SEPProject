@@ -235,8 +235,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
 
                 //TODO: read the number of student from the selected availability (have to rethink how you we're doing this
                 TextView studentAttending = (TextView) findViewById(R.id.studentBooked);
-                //LinkedList<String> numOfStudent = getDetails().getStudents();
-                //studentAttending.setText("No.Students Attending/Allowed: " + numOfStudent.size() + "/" + selectedAvailability.getCapacity());
+                studentAttending.setText("Maximum No. of Students: " + selectedAvailability.getCapacity());
 
                 TextView loc = (TextView) findViewById(R.id.location);
                 loc.setText(selectedAvailability.getLocation());

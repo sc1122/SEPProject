@@ -23,7 +23,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:textSize="18dp"
-            android:text="@string/home_placeholder"
+            android:text="@string/bookings_placeholder"
             android:visibility="gone"/>
 
         <ListView

@@ -57,12 +57,14 @@ private boolean newBooking = true;
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            mTextMessage.setText(R.string.bookings_placeholder);
                             bookingTab = true;
                             newBookingButton.setVisibility(View.VISIBLE);
                             refreshBookings();
                             adapter.notifyDataSetChanged();
                             return true;
                         case R.id.navigation_dashboard:
+                            mTextMessage.setText(R.string.subjects_placeholder);
                             bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             pageList.addAll(subjects);
@@ -73,9 +75,9 @@ private boolean newBooking = true;
                             }
                             return true;
                         case R.id.navigation_notifications:
+                            mTextMessage.setText(R.string.notifications_placeholder);
                             bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
-                            mTextMessage.setText(R.string.notifications_placeholder);
                             for (Notification not : notifications) {
                                 pageList.add(not.toString());
                             }
@@ -256,6 +258,9 @@ private boolean newBooking = true;
             if (bookings.size() > 0) {
                 mTextMessage.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
+            } else {
+                mTextMessage.setVisibility(View.VISIBLE);
+                listView.setVisibility(View.GONE);
             }
         }
     }

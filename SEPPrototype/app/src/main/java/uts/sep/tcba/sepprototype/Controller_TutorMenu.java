@@ -51,6 +51,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
+                            mTextMessage.setText(R.string.bookings_placeholder);
                             bookingTab = true;
                             availTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
@@ -58,17 +59,17 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             return true;
                         case R.id.navigation_dashboard:
+                            mTextMessage.setText(R.string.availabilites_placeholder);
                             bookingTab = false;
                             availTab = true;
                             newAvailabilityButton.setVisibility(View.VISIBLE);
-                            mTextMessage.setText("No availabilities added.\n\nClick the button in the bottom right of the screen to add an availability.");
                             refreshListView();
                             return true;
                         case R.id.navigation_notifications:
+                            mTextMessage.setText(R.string.notifications_placeholder);
                             bookingTab = false;
                             availTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
-                            mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
                     }
                     return false;
@@ -176,9 +177,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
             }
         }
         if (pageList.size() > 0) {
-
             mTextMessage.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
         }
         adapter.notifyDataSetChanged();
     }
