@@ -169,8 +169,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         }
         if (bookings.size() > 0) {
             mTextMessage.setVisibility(View.GONE);
-        } else {
-            mTextMessage.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -60,10 +60,6 @@ private boolean newBooking = true;
                             newBookingButton.setVisibility(View.VISIBLE);
                             refreshBookings();
                             adapter.notifyDataSetChanged();
-                            if (bookings.size() > 0) {
-                                mTextMessage.setVisibility(View.GONE);
-                                listView.setVisibility(View.VISIBLE);
-                            }
                             return true;
                         case R.id.navigation_dashboard:
                             bookingTab = false;
@@ -181,8 +177,7 @@ private boolean newBooking = true;
         }
         if (bookings.size() > 0) {
             mTextMessage.setVisibility(View.GONE);
-        } else {
-            mTextMessage.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
         }
     }
 
