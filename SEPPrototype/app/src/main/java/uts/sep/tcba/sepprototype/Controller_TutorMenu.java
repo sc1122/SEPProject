@@ -32,17 +32,16 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private ListView listView;
     private FloatingActionButton newAvailabilityButton;
     private ArrayList<Booking> bookings = new ArrayList<Booking>();
-    private ArrayList<String> subjects = new ArrayList<String>();
+    private ArrayList<Availability> availabilities = new ArrayList<Availability>();
     private ArrayList<String> pageList = new ArrayList<String>();
     private ArrayAdapter adapter;
     private FirebaseAuth mAuth;
     private Tutor currentTutor;
     private boolean bookingTab = true;
-    private boolean existingAvailability = false;
+    private boolean availTab = false;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
-
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
                     pageList.clear();
@@ -51,22 +50,21 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     switch(item.getItemId()){
                         case R.id.navigation_home:
                             bookingTab = true;
-                            newAvailabilityButton.setVisibility(View.VISIBLE);
-                            refreshBookings();
+                            availTab = false;
+                            newAvailabilityButton.setVisibility(View.GONE);
+                            refreshListView();
                             adapter.notifyDataSetChanged();
                             return true;
                         case R.id.navigation_dashboard:
                             bookingTab = false;
-                            newAvailabilityButton.setVisibility(View.GONE);
-                            pageList.addAll(subjects);
-                            adapter.notifyDataSetChanged();
-                            if (subjects.size() > 0) {
-                                mTextMessage.setVisibility(View.GONE);
-                                listView.setVisibility(View.VISIBLE);
-                            }
+                            availTab = true;
+                            newAvailabilityButton.setVisibility(View.VISIBLE);
+                            mTextMessage.setText("No availabilities added.\n\nClick the button in the bottom right of the screen to add an availability.");
+                            refreshListView();
                             return true;
                         case R.id.navigation_notifications:
                             bookingTab = false;
+                            availTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
                             return true;
@@ -83,13 +81,12 @@ public class Controller_TutorMenu extends AppCompatActivity {
         setContentView(R.layout.activity_tutormenu);
         mTextMessage = (TextView) findViewById(R.id.message);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_tutor);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // Fetch user from previous activity
         Intent intent = getIntent();
         int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
-        String loggedInUserType = intent.getStringExtra("type");
         currentTutor = new Tutor(loggedInUserID);
 
         // Set a listener for when data is updated/loaded to refresh the view
@@ -104,8 +101,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 // Populate user bookings
                 getBookings(String.valueOf(currentTutor.getID()));
                 sortBookings();
-                // Populate user subjects
-                subjects.addAll(currentTutor.getSubjects());
+                // Populate user availabilities
+                getAvailabilities(dataSnapshot);
+                sortAvailabilities();
+                refreshListView();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -151,55 +150,45 @@ public class Controller_TutorMenu extends AppCompatActivity {
 
         // Button press now creates a new availability
         newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
+        newAvailabilityButton.setVisibility(View.GONE);
         newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeAvailability.class);
                 Bundle b = new Bundle();
                 b.putSerializable("user", currentTutor);
                 intent.putExtras(b);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 2);
             }
         });
     }
 
-    public void refreshBookings() {
+    public void refreshListView() {
         pageList.clear();
-        for (Booking b: bookings) {
-            pageList.add(b.toString());
+        if (bookingTab) {
+            for (Booking b : bookings) {
+                pageList.add(b.toString());
+            }
+        } else if (availTab) {
+            for (Availability a : availabilities) {
+                pageList.add(a.toString());
+            }
         }
-        if (bookings.size() > 0) {
+        if (pageList.size() > 0) {
+
             mTextMessage.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
         }
-    }
-
-    public void sortBookings() {
-        Collections.sort(bookings, new Comparator<Booking>() {
-            public int compare(Booking b1, Booking b2) {
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-                try {
-                    Date date1 = formatter.parse(b1.getDate());
-                    Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(b2.getDate());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
-                    return date1.compareTo(date2);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return 0;
-            }
-        });
-        refreshBookings();
+        adapter.notifyDataSetChanged();
     }
 
     public void getBookings(final String ID) {
         bookings.clear();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                bookings.clear();
                 for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
 //                    Log.d("BOOKING", booking.toString());
                     String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
@@ -209,12 +198,59 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     }
                 }
                 sortBookings();
+                refreshListView();
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("RLdatabase", "Failed");
+            }
+        });
+    }
+
+    public void sortBookings() {
+        Collections.sort(bookings, new Comparator<Booking>() {
+            public int compare(Booking b1, Booking b2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+                try {
+                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+    }
+
+    public void getAvailabilities(DataSnapshot dataSnapshot) {
+        availabilities.clear();
+        for (DataSnapshot data : dataSnapshot.child("Availabilities").getChildren()) {
+            availabilities.add(new Availability(data));
+        }
+    }
+
+    public void sortAvailabilities() {
+        Collections.sort(availabilities, new Comparator<Availability>() {
+            @Override
+            public int compare(Availability a1, Availability a2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+                try {
+                    Date date1 = formatter.parse(a1.getDate() + " " + a1.getStartTime());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(a2.getDate() + " " + a2.getStartTime());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
             }
         });
     }
@@ -243,7 +279,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Return method from make booking view
+    // Return method from make availability and from view booking
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && data != null) {
             if (resultCode == RESULT_OK) {
@@ -257,9 +293,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 }
                 //TODO: Add availability to availability list
             }
+            BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
+            view.setSelectedItemId(R.id.navigation_dashboard);
         }
     }
-
 
     public void addAvailabilityToFirebase(Availability availability) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");

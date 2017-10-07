@@ -94,4 +94,9 @@ public class Availability implements Serializable {
     public String getEndTime() { // returns a string of the end time to saved to Firebase
         return String.format("%.2f", endTime).replace('.',':');
     }
+
+    @Override
+    public String toString(){
+        return this.date + " " + getStartTime() + " - " + getEndTime() + "\n" + this.location;
+    }
 }

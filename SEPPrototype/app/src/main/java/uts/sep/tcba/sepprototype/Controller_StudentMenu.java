@@ -38,6 +38,7 @@ private ListView listView;
 private FloatingActionButton newBookingButton;
 private ArrayList<Booking> bookings = new ArrayList<Booking>();
 private ArrayList<String> subjects = new ArrayList<String>();
+private ArrayList<Notification> notifications = new ArrayList<Notification>();
 private ArrayList<String> pageList = new ArrayList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
@@ -75,6 +76,14 @@ private boolean newBooking = true;
                             bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
                             mTextMessage.setText(R.string.notifications_placeholder);
+                            for (Notification not : notifications) {
+                                pageList.add(not.toString());
+                            }
+                            if (notifications.size() > 0) {
+                                mTextMessage.setVisibility(View.GONE);
+                                listView.setVisibility(View.VISIBLE);
+                            }
+                            adapter.notifyDataSetChanged();
                             return true;
                     }
                     return false;
@@ -89,7 +98,7 @@ private boolean newBooking = true;
         setContentView(R.layout.activity_studentmenu);
         mTextMessage = (TextView) findViewById(R.id.message);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_student);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // Fetch user from previous activity
@@ -101,15 +110,33 @@ private boolean newBooking = true;
         // Set a listener for when data is updated/loaded to refresh the view
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + loggedInUserID);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Populate user subjects
+                subjects.addAll(currentStudent.getSubjects());
+                //  get all notifications for user
+                for (DataSnapshot d : dataSnapshot.child("Notifications").getChildren()) {
+                    notifications.add(new Notification(d));
+                }
+                // Clears notifications from Firebase
+                FirebaseDatabase.getInstance().getReference("Users/" + currentStudent.getID()).child("Notifications").setValue(null);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setTitle(getTitle() + " - " + currentStudent.getFirstName() + " " + currentStudent.getLastName() + " (S)");
+                if (!getTitle().toString().contains(currentStudent.getFirstName())) {
+                    setTitle(getTitle() + " - " + currentStudent.getFirstName() + " " + currentStudent.getLastName() + " (S)");
+                }
                 // Populate user bookings
                 getBookings(String.valueOf(currentStudent.getID()));
-                sortBookings();
-                // Populate user subjects
-                subjects.addAll(currentStudent.getSubjects());
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -141,7 +168,7 @@ private boolean newBooking = true;
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_student);
                 if (bookingTab) {
                     Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
                     Booking selectedItem = bookings.get(position);
@@ -168,37 +195,6 @@ private boolean newBooking = true;
                 startActivityForResult(intent, 1);
             }
         });
-    }
-
-    public void refreshBookings() {
-        pageList.clear();
-        for (Booking b: bookings) {
-            pageList.add(b.toString());
-        }
-        if (bookings.size() > 0) {
-            mTextMessage.setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void sortBookings() {
-        Collections.sort(bookings, new Comparator<Booking>() {
-            public int compare(Booking b1, Booking b2) {
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-                try {
-                    Date date1 = formatter.parse(b1.getDate());
-                    Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(b2.getDate());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
-                    return date1.compareTo(date2);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return 0;
-            }
-        });
-        refreshBookings();
     }
 
     public void getBookings(final String ID) {
@@ -231,6 +227,38 @@ private boolean newBooking = true;
         });
     }
 
+    public void sortBookings() {
+        Collections.sort(bookings, new Comparator<Booking>() {
+            public int compare(Booking b1, Booking b2) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+                try {
+                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime());
+                    Log.d("DATE1", date1.toString());
+                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime());
+                    Log.d("DATE2", date2.toString());
+                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+        refreshBookings();
+    }
+
+    public void refreshBookings() {
+        if (bookingTab) {
+            pageList.clear();
+            for (Booking b: bookings) {
+                pageList.add(b.toString());
+            }
+            if (bookings.size() > 0) {
+                mTextMessage.setVisibility(View.GONE);
+                listView.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 
     public void addBookingToFirebase(final Booking booking, String id) {
         DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings");
@@ -289,8 +317,8 @@ private boolean newBooking = true;
                 }
                 Booking booking = (Booking) bundle.getSerializable("booking");
                 addBookingToFirebase(booking, existingBookingID);
-                adapter.notifyDataSetChanged();
                 sortBookings();
+                adapter.notifyDataSetChanged();
             }
         }
     }

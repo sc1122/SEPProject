@@ -52,17 +52,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
         cancelButton = (Button) findViewById(R.id.cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
-                if (userType.equals("Student")) {
-                    if (currentBooking.getStudents().size() > 1) {
-                        ref.child("students").child(userID).setValue(null);
-                    } else {
-                        ref.setValue(null);
-                    }
-                } else if (userType.equals("Tutor")) {
-                    ref.setValue(null);
-                }
+                currentBooking.remove(userType, currentBooking, userID);
                 finish();
             }
         });
@@ -93,7 +83,5 @@ public class Controller_ViewBooking extends AppCompatActivity {
         location.setText(currentBooking.getLocation());
         capacity.setText(  currentBooking.getStudents().size() + " / "+ currentBooking.getCapacity());
     }
-
-
 
 }

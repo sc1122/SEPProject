@@ -12,8 +12,9 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="title_activity_studentmenu">Consulation Booker</string>
-    <string name="title_home">Bookings</string>
-    <string name="title_dashboard">Subjects</string>
+    <string name="title_bookings">Bookings</string>
+    <string name="title_subjects">Subjects</string>
+    <string name="title_availabilities">Availabilities</string>
     <string name="title_notifications">Notifications</string>
     <string name="home_placeholder">No bookings to show</string>
     <string name="subjects_placeholder">Not enrolled in any subjects</string>

@@ -117,6 +117,29 @@ public class Booking implements Serializable {
         return this.students;
     }
 
+    public void remove(String userType, Booking currentBooking, String userID) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
+        if (userType.equals("Student")) {
+            if (currentBooking.getStudents().size() > 1) {
+                ref.child("students").child(userID).setValue(null);
+            } else {
+                ref.setValue(null);
+            }
+        } else if (userType.equals("Tutor")) {
+            sendNotifications(new Notification(currentBooking));
+            ref.setValue(null);
+        }
+    }
+
+    public void sendNotifications(Notification notification) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Users");
+        for (String s : students) {
+            ref.child(s).child("Notifications").push().setValue(notification);
+        }
+    }
+
     @Override
     public String toString(){
         return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;

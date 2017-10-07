@@ -112,9 +112,13 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                String correctDay = String.valueOf(dayOfMonth);
+                if (correctDay.length() == 1) {
+                    correctDay = "0" + String.valueOf(dayOfMonth);
+                }
                 int correctMonth = month+1;
                 String correctYear = String.valueOf(year).substring(2);
-                date = String.valueOf(dayOfMonth + "/" + correctMonth + "/") + correctYear;
+                date = String.valueOf(correctDay + "/" + correctMonth + "/") + correctYear;
             }
         });
         startTP = (TimePicker) findViewById(R.id.startTime);
