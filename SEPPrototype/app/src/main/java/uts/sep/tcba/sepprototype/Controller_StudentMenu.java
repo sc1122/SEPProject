@@ -251,7 +251,7 @@ private boolean newBooking = true;
     }
 
     public void setAttendingBooking(DatabaseReference bookingStudentStatus) {
-        bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).child("BookingStatus").setValue("Attending");
+        bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).setValue(currentStudent.getFirstName() + " " + currentStudent.getLastName());
     }
 
 

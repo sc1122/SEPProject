@@ -21,6 +21,8 @@ import java.util.LinkedList;
 public class Controller_ViewBooking extends AppCompatActivity {
 
     public Booking currentBooking;
+    private String userID;
+    private String userType;
     private Button cancelButton, editButton;
     private TextView subject , tutor, date, time, location, capacity;
 
@@ -32,13 +34,15 @@ public class Controller_ViewBooking extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         currentBooking = (Booking) bundle.getSerializable("booking");
+        userID = bundle.getString("id");
+        userType = bundle.getString("userType");
 
         //Toolbar setting, disable edit button for student
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if(getIntent().getStringExtra("userType").equals("Student")) {
-            cancelButton = (Button) findViewById(R.id.edit);
-            cancelButton.setVisibility(View.GONE);
+        if(userType.equals("Student")) {
+            editButton = (Button) findViewById(R.id.edit);
+            editButton.setVisibility(View.GONE);
         }
 
         //Log.d("DETAIL", currentBooking.toString());
@@ -50,7 +54,15 @@ public class Controller_ViewBooking extends AppCompatActivity {
             public void onClick(View v) {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
-                ref.setValue(null);
+                if (userType.equals("Student")) {
+                    if (currentBooking.getStudents().size() > 1) {
+                        ref.child("students").child(userID).setValue(null);
+                    } else {
+                        ref.setValue(null);
+                    }
+                } else if (userType.equals("Tutor")) {
+                    ref.setValue(null);
+                }
                 finish();
             }
         });
@@ -60,9 +72,6 @@ public class Controller_ViewBooking extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 Intent intent = new Intent(getApplicationContext(),Controller_EditBooking.class);
-                Bundle bundle =  getIntent().getExtras();
-                intent.putExtras(bundle);
-                intent.putExtra("userType", getIntent().getStringExtra("userType"));
                 startActivityForResult(intent, 2);
             }
         });

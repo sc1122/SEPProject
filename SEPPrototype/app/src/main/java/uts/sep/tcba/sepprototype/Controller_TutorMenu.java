@@ -52,14 +52,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
                         case R.id.navigation_home:
                             bookingTab = true;
                             newAvailabilityButton.setVisibility(View.VISIBLE);
-                            for (Booking b: bookings) {
-                                pageList.add(b.toString());
-                            }
+                            refreshBookings();
                             adapter.notifyDataSetChanged();
-                            if (bookings.size() > 0) {
-                                mTextMessage.setVisibility(View.GONE);
-                                listView.setVisibility(View.VISIBLE);
-                            }
                             return true;
                         case R.id.navigation_dashboard:
                             bookingTab = false;
@@ -172,6 +166,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
         pageList.clear();
         for (Booking b: bookings) {
             pageList.add(b.toString());
+        }
+        if (bookings.size() > 0) {
+            mTextMessage.setVisibility(View.GONE);
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE);
         }
     }
 

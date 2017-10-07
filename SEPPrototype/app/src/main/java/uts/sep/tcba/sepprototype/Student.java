@@ -49,18 +49,6 @@ public class Student extends User implements Serializable {
         });
     }
 
-    public void selectTimeslot() {
-
-    }
-
-    public void makeConsultation() {
-
-    }
-
-    public void viewTutAvailability() {
-        
-    }
-
     public LinkedList<Integer> getTutors() {
         return tutors;
     }

@@ -12,7 +12,7 @@ public class Controller_EditBooking extends AppCompatActivity {
     private TextView subject , tutor;
     private Spinner date, time;
 
-    //private double ime;
+    //private double time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -12,24 +12,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
-/**
- * Created by Sean Crimmins on 15/09/2017.
- * Class which handles the availabilities of the seperate tutors
- *
- */
-
 public class Availability implements Serializable {
 
-    private String ID;
-    private String date;
-    private double startTime;
-    private double endTime;
-    private int capacity;
-    private String location;
+    private String ID; // Stores availability ID, only used when fetching data from Firebase
+    private String date; // Stores the date of the availability
+    private double startTime; // Stores the start time of the availability
+    private double endTime; // Stores the end time of the availability
+    private int capacity; // Stores the student limit of the availability
+    private String location; // Stores the location of the availability
 
-    public Availability() { }
-
-    public Availability(DataSnapshot ds) {
+    public Availability(DataSnapshot ds) { // Constructor for fetching the availability from Firebase
         ID = ds.getKey().toString();
         date = ds.child("date").getValue().toString();
         startTime = Double.parseDouble(ds.child("startTime").getValue().toString().replace(':','.'));
@@ -38,7 +30,7 @@ public class Availability implements Serializable {
         location = ds.child("location").getValue().toString();
     }
 
-    public Availability(String date, Double sTime, Double eTime, String loc, int cap) {
+    public Availability(String date, Double sTime, Double eTime, String loc, int cap) { // Constructor for creating a new availability to be used locally and stored to Firebase
         this.date = date;
         this.startTime = sTime;
         this.endTime = eTime;
@@ -46,10 +38,7 @@ public class Availability implements Serializable {
         this.capacity = cap;
     }
 
-    /*
-    divides the total available time, up into the 30min timeslots for consulatation
-     */
-    public LinkedList<String> generateTimeslots(){
+    public LinkedList<String> generateTimeslots(){ // Divides the total availability time up into the 30 minute timeslots for bookings
         LinkedList<String> timeSlots = new LinkedList<String>();
         double t = startTime;
         while (t < endTime) {
@@ -64,7 +53,7 @@ public class Availability implements Serializable {
         return timeSlots;
     }
 
-    private String timeDivide(double time) {
+    private String timeDivide(double time) { //TODO: Add comments to explain what this does
         if (String.format("%.2f", time).endsWith(".30"))
             return (String.format("%.2f", time) + " - " + String.format("%.2f", (time+0.7)));
         else
@@ -98,11 +87,11 @@ public class Availability implements Serializable {
         return endTime;
     }
 
-    public String getStartTime() {
+    public String getStartTime() { // returns a string of the start time to saved to Firebase
         return String.format("%.2f", startTime).replace('.',':');
     }
 
-    public String getEndTime() {
+    public String getEndTime() { // returns a string of the end time to saved to Firebase
         return String.format("%.2f", endTime).replace('.',':');
     }
 }
