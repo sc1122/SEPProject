@@ -123,7 +123,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     intent.putExtra("subject", currentTutor.getSubjects());
                     intent.putExtra("userType", currentTutor.getType());
                     intent.putExtra("subject", currentTutor.getSubjectFromSubjects(selectedItem.getSubject()));
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(intent, 2);
                 }
             }
         });
@@ -137,7 +137,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 Bundle b = new Bundle();
                 b.putSerializable("user", currentTutor);
                 intent.putExtras(b);
-                startActivityForResult(intent, 2);
+                startActivityForResult(intent, 1);
             }
         });
     }
