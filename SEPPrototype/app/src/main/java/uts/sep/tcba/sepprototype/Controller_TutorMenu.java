@@ -46,9 +46,6 @@ public class Controller_TutorMenu extends AppCompatActivity {
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                    pageList.clear();
-                    mTextMessage.setVisibility(View.VISIBLE);
-                    listView.setVisibility(View.GONE);
                     switch(item.getItemId()){
                         case R.id.navigation_home:
                             mTextMessage.setText(R.string.bookings_placeholder);
@@ -56,7 +53,6 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             availTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
                             refreshListView();
-                            adapter.notifyDataSetChanged();
                             return true;
                         case R.id.navigation_dashboard:
                             mTextMessage.setText(R.string.availabilites_placeholder);
@@ -70,6 +66,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                             bookingTab = false;
                             availTab = false;
                             newAvailabilityButton.setVisibility(View.GONE);
+                            refreshListView();
                             return true;
                     }
                     return false;
@@ -92,28 +89,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
         int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
         currentTutor = new Tutor(loggedInUserID);
 
-        // Set a listener for when data is updated/loaded to refresh the view
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + loggedInUserID);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!getTitle().toString().contains(currentTutor.getFirstName())) {
-                    setTitle(getTitle() + " - " + currentTutor.getFirstName() + " " + currentTutor.getLastName() + " (T)");
-                }
-                // Populate user bookings
-                getBookings(String.valueOf(currentTutor.getID()));
-                sortBookings();
-                // Populate user availabilities
-                getAvailabilities(dataSnapshot);
-                sortAvailabilities();
-                refreshListView();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });
+        // Configure Firebase listeners
+        initFirebase();
 
         // Set ListView UI element to display different lists based on tab selected
         listView = (ListView) findViewById(R.id.list);
@@ -165,53 +142,47 @@ public class Controller_TutorMenu extends AppCompatActivity {
         });
     }
 
-    public void refreshListView() {
-        pageList.clear();
-        if (bookingTab) {
-            for (Booking b : bookings) {
-                pageList.add(b.toString());
-            }
-        } else if (availTab) {
-            for (Availability a : availabilities) {
-                pageList.add(a.toString());
-            }
-        }
-        if (pageList.size() > 0) {
-            mTextMessage.setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
-        } else {
-            mTextMessage.setVisibility(View.VISIBLE);
-            listView.setVisibility(View.GONE);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    public void getBookings(final String ID) {
-        bookings.clear();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        ref.addValueEventListener(new ValueEventListener() {
+    public void initFirebase() {
+        // Set a listener on Bookings reference in Firebase so that when a booking is created/updated/removed, the changes will be pulled to device
+        DatabaseReference refBooking = FirebaseDatabase.getInstance().getReference("Bookings");
+        refBooking.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                bookings.clear();
-                for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-//                    Log.d("BOOKING", booking.toString());
-                    String tutorName = currentTutor.getFirstName() + " " + currentTutor.getLastName();
-                    if (booking.child("tutor").getValue().toString().equals(ID)) {
-                        Booking b = new Booking(booking, tutorName);
-                        bookings.add(b);
-                    }
-                }
-                sortBookings();
-                refreshListView();
-                adapter.notifyDataSetChanged();
+                getBookings(dataSnapshot); // Populate user bookings
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
+                Log.d("FirebaseFailure", databaseError.toString());
             }
         });
+
+        // Set a listener on the user's ID reference in Firebase so that when any data is created/updated/removed (namely Notifications & Availabilities), the changes will be pulled to device
+        DatabaseReference refUser = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID());
+        refUser.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!getTitle().toString().contains(currentTutor.getFullName())) {
+                    setTitle(getTitle() + " - " + currentTutor.getFullName() + " (T)");
+                }
+                getAvailabilities(dataSnapshot); // Populate user availabilities
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("FirebaseFailure", databaseError.toString());
+            }
+        });
+    }
+
+    public void getBookings(DataSnapshot dataSnapshot) {
+        bookings.clear(); // clears currently stored bookings
+        for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) { // for each booking
+            //Log.d("GetBooking", booking.toString());
+            if (booking.child("tutor").getValue().toString().equals(currentTutor.getID())) { // if the the logged in tutor is the tutor hosting the booking
+                bookings.add(new Booking(booking, currentTutor.getFullName())); // create a new booking object to be stored locally
+            }
+        }
+        sortBookings(); // sorts bookings chronologically
+        refreshListView(); // refresh list UI
     }
 
     public void sortBookings() {
@@ -219,12 +190,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
             public int compare(Booking b1, Booking b2) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
                 try {
-                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime());
-                    Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
-                    return date1.compareTo(date2);
+                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime()); // convert date-time string of first booking into date object for comparison
+                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime()); // convert date-time string of second booking into date object for comparison
+                    return date1.compareTo(date2); // compare the two date objects to which precedes the other and sort chronologically
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -236,8 +204,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
     public void getAvailabilities(DataSnapshot dataSnapshot) {
         availabilities.clear();
         for (DataSnapshot data : dataSnapshot.child("Availabilities").getChildren()) {
-            availabilities.add(new Availability(data));
+            availabilities.add(new Availability(data)); // create a new availability object to be stored locally
         }
+        sortAvailabilities(); // sorts bookings chronologically
+        refreshListView(); // refresh list UI
     }
 
     public void sortAvailabilities() {
@@ -246,12 +216,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
             public int compare(Availability a1, Availability a2) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
                 try {
-                    Date date1 = formatter.parse(a1.getDate() + " " + a1.getStartTime());
-                    Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(a2.getDate() + " " + a2.getStartTime());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
-                    return date1.compareTo(date2);
+                    Date date1 = formatter.parse(a1.getDate() + " " + a1.getStartTime()); // convert date-time string of first availability into date object for comparison
+                    Date date2 = formatter.parse(a2.getDate() + " " + a2.getStartTime()); // convert date-time string of second availabilty into date object for comparison
+                    return date1.compareTo(date2); // compare the two date objects to which precedes the other and sort chronologically
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -260,28 +227,23 @@ public class Controller_TutorMenu extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed(){
-        AlertDialog alertDialog = new AlertDialog.Builder(Controller_TutorMenu.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setMessage("Would you like to log out?");
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mAuth = FirebaseAuth.getInstance();
-                        mAuth.signOut();
-                        finish();
-                    }
-                });
-        alertDialog.show();
+    public void refreshListView() {
+        pageList.clear(); // clear the list
+        if (bookingTab) { // if the booking tab is the active tab
+            for (Booking b : bookings) {
+                pageList.add(b.toString()); // load bookings into the list
+            }
+        } else if (availTab) { // if the availabilities tab is the active tab
+            for (Availability a : availabilities) {
+                pageList.add(a.toString()); // load availabilities into the list
+            }
+        }
+        if (pageList.size() > 0) { // if the list is not empty
+            mTextMessage.setVisibility(View.GONE); // hide list empty message
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE); // display list empty message
+        }
+        adapter.notifyDataSetChanged(); // notify the list that the data has changed
     }
 
     // Return method from make availability and from view booking
@@ -301,12 +263,6 @@ public class Controller_TutorMenu extends AppCompatActivity {
             BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
             view.setSelectedItemId(R.id.navigation_dashboard);
         }
-    }
-
-    public void addAvailabilityToFirebase(Availability availability) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
-        DatabaseReference bookingStatus = ref.push();
-        bookingStatus.setValue(availability);
     }
 
     private boolean selectedTimeIsCorrect(Availability availability){
@@ -359,6 +315,13 @@ public class Controller_TutorMenu extends AppCompatActivity {
         });
     }
 
+    public void addAvailabilityToFirebase(Availability availability) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
+        DatabaseReference bookingStatus = ref.push();
+        bookingStatus.setValue(availability);
+    }
+
+
     private void showErrorDialog(String title, String errorMessage){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle(title);
@@ -373,6 +336,27 @@ public class Controller_TutorMenu extends AppCompatActivity {
         alertDialog.show();
     }
 
+    @Override
+    public void onBackPressed(){
+        AlertDialog alertDialog = new AlertDialog.Builder(Controller_TutorMenu.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Would you like to log out?");
 
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAuth = FirebaseAuth.getInstance();
+                        mAuth.signOut();
+                        finish();
+                    }
+                });
+        alertDialog.show();
+    }
 }

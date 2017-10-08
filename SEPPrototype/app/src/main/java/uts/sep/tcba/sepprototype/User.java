@@ -61,6 +61,10 @@ public class User implements Serializable {
         return this.lastName;
     }
 
+    public String getFullName() {
+        return this.firstName + " " + this.getLastName();
+    }
+
     public LinkedList<String> getSubjects() {
         return this.subjects;
     }
