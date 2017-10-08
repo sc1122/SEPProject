@@ -286,7 +286,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
 
     // Return method from make availability and from view booking
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && data != null) {
+        if (requestCode == 2 && data != null) {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 Availability availability = (Availability) bundle.getSerializable("availability");
@@ -321,28 +321,30 @@ public class Controller_TutorMenu extends AppCompatActivity {
         String tutorId = String.valueOf(currentTutor.getID());
         final String date = availability.getDate();
         final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
-        final double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
-        Log.d("REF", ref.toString());
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mainloop:
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
 
                     String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
                     String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
-
-                    Log.d("WWWW", snapshot.child("date").getValue().toString());
-
+                    //If availability with the same date is found
                     if(snapshot.child("date").getValue().equals(date)) {
+                        //if the start time is within the range of existing availability with the same date
                         if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
+                            //show error if it is
                             showErrorDialog("Availability Error", "Input availability already existed");
                             existingAvailability = true;
+                            //Break out of the main loop to prevent checking for another round
+                            break mainloop;
                         }else {
-                            addAvailabilityToFirebase(availability);
-                            existingAvailability = true;
-                        }
-                    }else{
+                            //Check again if there is existing availability because there might be multiple availability period on one day
+                                existingAvailability = false;
+                            }
+                        } else{
                         existingAvailability = false;
                     }
                 }
