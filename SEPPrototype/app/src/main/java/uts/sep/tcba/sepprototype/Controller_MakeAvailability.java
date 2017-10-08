@@ -66,8 +66,16 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
+                Intent intent = getIntent();
+                Bundle b = new Bundle();
                 Availability a = getDetails();
                 validateData(a);
+                if(!existingAvailability) {
+                    b.putSerializable("availability", a);
+                    intent.putExtras(b);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
             }
         });
 
@@ -91,11 +99,6 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         });
     }
 
-    private void validateData(Availability a) {
-        if(selectedTimeIsCorrect(a)) {
-            availabilityDoesNotExist(a);
-        }
-    }
 
     /*
     Method which gets the details of the availability as selected
@@ -146,7 +149,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         capacity = Integer.parseInt(capText.getText().toString());
         location = locText.getText().toString();
     }
-    
+
     /*
     Returns the time from the time picker as a double, formats as HH.MM
      */
@@ -187,6 +190,17 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         }
     }
 
+    private void validateData(Availability a) {
+        //Check if time selected makes sense
+        if(selectedTimeIsCorrect(a)) {
+            //Check if the availability selected makes sense
+            availabilityDoesNotExist(a);
+        }else{
+            showErrorDialog("Improper Time Selected", "Please select proper time slot");
+            existingAvailability = true;
+        }
+    }
+
     private boolean selectedTimeIsCorrect(Availability availability){
         double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
         double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
@@ -195,42 +209,40 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         return true;
     }
 
+
+
     private void availabilityDoesNotExist(final Availability availability) {
         String tutorId = String.valueOf(currentUser.getID());
         final String date = availability.getDate();
         final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
-        existingAvailability = false;
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mainloop:
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Double ssStartTime = Double.parseDouble(snapshot.child("startTime").getValue().toString().replace(':', '.'));
-                    Double ssEndTime = Double.parseDouble(snapshot.child("endTime").getValue().toString().replace(':', '.'));
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
+                    String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
                     //If availability with the same date is found
-                    if (snapshot.child("date").getValue().equals(date)) {
-                        // if the start time or end time of the new availability is within the time range of existing availability with the same date OR
-                        // if the new availability's time range will encompass the start time or end time of an existing availability
-                        if (((startTime >= ssStartTime && startTime < ssEndTime) || (endTime >= ssStartTime && endTime < ssEndTime)) ||
-                                ((ssStartTime >= startTime && ssStartTime < endTime) || (ssEndTime >= startTime && ssEndTime < endTime))) {
+                    if(snapshot.child("date").getValue().equals(date)) {
+                        //if the start time is within the range of existing availability with the same date
+                        if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
                             //show error if it is
-                            showErrorDialog("Availability Error", "Clashes with an existing avialability!");
+                            showErrorDialog("Availability Error", "Input availability already existed");
                             existingAvailability = true;
-                            //Break out of the main loop to prevent checking for another round
-                            break mainloop;
+                            //Break out of the main loop to prevent checking another availability
+                            break;
+                        }else {
+                            //Keep the loop going, and check again if there is existing availability because there might be multiple availability period on one day
+                            existingAvailability = false;
                         }
+                    } else{
+                        existingAvailability = false;
                     }
                 }
-                if(!existingAvailability) {
-                    Intent intent = getIntent();
-                    Bundle b = new Bundle();
-                    b.putSerializable("availability", availability);
-                    intent.putExtras(b);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
             }
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -252,5 +264,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                 });
         alertDialog.show();
     }
+
+
+
 
 }
