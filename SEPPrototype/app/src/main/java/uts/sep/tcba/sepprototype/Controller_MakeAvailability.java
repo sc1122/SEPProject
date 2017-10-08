@@ -37,12 +37,15 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     public String location;
     public int capacity;
 
+
     private CalendarView cal;
     private TimePicker startTP;
     private TimePicker endTP;
     private EditText locText;
     private TextView capText;
     private NumberPicker minutePicker , minutePickerEnd;
+
+    private boolean existingAvailability = true;
 
     //Field for interval
     private final static int INTERVAL = 30;
@@ -65,7 +68,9 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             public void onClick(View v){
                 Intent intent = getIntent();
                 Bundle b = new Bundle();
-                b.putSerializable("availability", getDetails());
+                Availability a = getDetails();
+                validateData(a);
+                b.putSerializable("availability", a);
                 intent.putExtras(b);
                 setResult(RESULT_OK, intent);
                 finish();
@@ -90,6 +95,12 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void validateData(Availability a) {
+        if(selectedTimeIsCorrect(a)) {
+//            availabilityDoesNotExist(a);
+        }
     }
 
     /*
@@ -182,5 +193,70 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         }
     }
 
+    private boolean selectedTimeIsCorrect(Availability availability){
+        double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+        double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
+        if(startTime >= endTime)
+            return false;
+        return true;
+    }
+
+//    private void availabilityDoesNotExist(final Availability availability) {
+//        String tutorId = String.valueOf(currentUser.getID());
+//        final String date = availability.getDate();
+//        final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
+//
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                mainloop:
+//                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+//
+//                    String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
+//                    String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
+//                    //If availability with the same date is found
+//                    if(snapshot.child("date").getValue().equals(date)) {
+//                        //if the start time is within the range of existing availability with the same date
+//                        if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
+//                            //show error if it is
+//                            showErrorDialog("Availability Error", "Input availability already existed");
+//                            existingAvailability = true;
+//                            //Break out of the main loop to prevent checking for another round
+//                            break mainloop;
+//                        }else {
+//                             //Check again if there is existing availability because there might be multiple availability period on one day
+//                              existingAvailability = false;
+//                            }
+//                        }
+//                    }else{
+//                        existingAvailability = false;
+//                    }
+//                }
+//                if(existingAvailability == false){
+//                    addAvailabilityToFirebase(availability);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+
+    private void showErrorDialog(String title, String errorMessage){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(errorMessage);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 
 }
