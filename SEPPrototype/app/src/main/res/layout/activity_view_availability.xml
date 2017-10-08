@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    tools:context="uts.sep.tcba.sepprototype.Controller_ViewBooking">
+    tools:context="uts.sep.tcba.sepprototype.Controller_ViewAvailability">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -29,14 +29,14 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
             <Button
-                android:id="@+id/edit"
+                android:id="@+id/save"
                 style="@style/AppTheme.AppBarOverlay"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="30px"
                 android:layout_marginTop="10px"
                 android:layout_weight="1"
-                android:text="Edit" />
+                android:text="Save" />
         </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
@@ -45,7 +45,8 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:focusableInTouchMode="true"
+        >
 
         <ScrollView
             android:layout_width="match_parent"
@@ -55,42 +56,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingTop="15dp"
-                    android:text="Subject"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:id="@+id/subject"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="Software Engineering Practice (00000)"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingTop="15dp"
-                    android:text="Tutor"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:id="@+id/tutor"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="Tutor Name (ID)"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -115,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="15dp"
                     android:paddingTop="15dp"
-                    android:text="Time"
+                    android:text="Time Range"
                     android:textSize="22sp" />
 
                 <TextView
@@ -137,15 +102,14 @@
                     android:text="Location"
                     android:textSize="22sp" />
 
-                <TextView
+                <EditText
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingStart="15dp"
-                    android:text="CB11.04.629"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
+                    android:ems="10"
+                    android:hint="Location Unspecified"
+                    android:inputType="textPersonName"
+                    android:text="CB11.04.629" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -165,13 +129,13 @@
                     android:textSize="18sp" />
 
                 <Button
-                    android:id="@+id/cancel"
+                    android:id="@+id/delete"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="15dp"
                     android:layout_margin="10dp"
-                    android:text="Cancel"
+                    android:paddingTop="15dp"
+                    android:text="Delete Availability"
                     android:textStyle="bold" />
 
             </LinearLayout>

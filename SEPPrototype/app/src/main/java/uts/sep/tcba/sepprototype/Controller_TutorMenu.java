@@ -125,6 +125,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     intent.putExtra("userType", currentTutor.getType());
                     intent.putExtra("subject", currentTutor.getSubjectFromSubjects(selectedItem.getSubject()));
                     startActivityForResult(intent, 2);
+                }else if(availTab){
+                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewAvailability.class);
+                    Availability selectedAvailability = availabilities.get(position);
+                    intent.putExtra("availability", selectedAvailability);
+                    startActivityForResult(intent, 3);
                 }
             }
         });

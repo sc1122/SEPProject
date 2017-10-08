@@ -42,11 +42,15 @@
         <activity
             android:name=".Controller_ViewBooking"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".Controller_EditBooking"
+        <activity
+            android:name=".Controller_EditBooking"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
-
+        <activity
+            android:name=".Controller_ViewAvailability"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"
+            />
     </application>
 
 </manifest>

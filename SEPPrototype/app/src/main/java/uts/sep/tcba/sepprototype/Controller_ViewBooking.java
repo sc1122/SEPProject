@@ -6,7 +6,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -16,7 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class Controller_ViewBooking extends AppCompatActivity {
 
@@ -24,7 +33,8 @@ public class Controller_ViewBooking extends AppCompatActivity {
     private String userID;
     private String userType;
     private Button cancelButton, editButton;
-    private TextView subject , tutor, date, time, location, capacity;
+    private TextView subject , tutor, date, time, locationText, location, capacity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +55,6 @@ public class Controller_ViewBooking extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
         }
 
-        //Log.d("DETAIL", currentBooking.toString());
         setContent(bundle.getString("subject"));
 
         //Cancel Button Code
@@ -72,6 +81,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
         this.tutor = (TextView) findViewById(R.id.tutor);
         this.date = (TextView) findViewById(R.id.date);
         this.time = (TextView) findViewById(R.id.time);
+        this.locationText = (TextView) findViewById(R.id.locationText);
         this.location = (TextView) findViewById(R.id.location);
         this.capacity = (TextView) findViewById(R.id.capacity);
 
@@ -80,8 +90,15 @@ public class Controller_ViewBooking extends AppCompatActivity {
         tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");
         date.setText(currentBooking.getDate());
         time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
-        location.setText(currentBooking.getLocation());
-        capacity.setText(  currentBooking.getStudents().size() + " / "+ currentBooking.getCapacity());
+        if(currentBooking.getLocation() == "") {
+            locationText.setVisibility(View.GONE);
+            location.setVisibility(View.GONE);
+        }else{
+            location.setText(currentBooking.getLocation());
+        }
+        capacity.setText(currentBooking.getStudents().size() + " / "+ currentBooking.getCapacity());
     }
+
+
 
 }
