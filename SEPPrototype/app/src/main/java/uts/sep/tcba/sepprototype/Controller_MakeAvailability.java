@@ -105,7 +105,21 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     Then stores this object on firebase
      */
     public Availability getDetails(){
-        setParameters(cal, startTP, endTP);
+        setParameters(startTP, endTP);
+        if (date == null) {
+            Date d = new Date(cal.getDate());
+            String correctDay = String.valueOf(d.getDate());
+            if (correctDay.length() == 1) {
+                correctDay = "0" + correctDay;
+            }
+            String correctMonth = String.valueOf(d.getMonth());
+            if (correctMonth.length() == 1) {
+                correctMonth = "0" + correctMonth;
+            }
+            String correctYear = String.valueOf(d.getYear()).substring(1);
+            date = String.valueOf(correctDay + "/" + correctMonth + "/") + correctYear;
+            Log.d("TRIGGER", date);
+        }
         Availability availability = new Availability(date, startTime, endTime, location, capacity);
         return availability;
     }
@@ -121,9 +135,13 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 String correctDay = String.valueOf(dayOfMonth);
                 if (correctDay.length() == 1) {
-                    correctDay = "0" + String.valueOf(dayOfMonth);
+                    correctDay = "0" + correctDay;
                 }
-                int correctMonth = month+1;
+                month = month+1;
+                String correctMonth = String.valueOf(month);
+                if (correctMonth.length() == 1) {
+                    correctMonth = "0" + correctMonth;
+                }
                 String correctYear = String.valueOf(year).substring(2);
                 date = String.valueOf(correctDay + "/" + correctMonth + "/") + correctYear;
             }
@@ -142,7 +160,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     /*
     Method that sets the parameters in preparation for the creation of the availability object
      */
-    private void setParameters(CalendarView cal, TimePicker start, TimePicker end) {
+    private void setParameters(TimePicker start, TimePicker end) {
         startTime = getTime(start);
         endTime = getTime(end);
         capacity = Integer.parseInt(capText.getText().toString());
