@@ -66,14 +66,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-                Intent intent = getIntent();
-                Bundle b = new Bundle();
                 Availability a = getDetails();
                 validateData(a);
-                b.putSerializable("availability", a);
-                intent.putExtras(b);
-                setResult(RESULT_OK, intent);
-                finish();
             }
         });
 
@@ -99,7 +93,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
 
     private void validateData(Availability a) {
         if(selectedTimeIsCorrect(a)) {
-//            availabilityDoesNotExist(a);
+            availabilityDoesNotExist(a);
         }
     }
 
@@ -201,49 +195,49 @@ public class Controller_MakeAvailability extends AppCompatActivity {
         return true;
     }
 
-//    private void availabilityDoesNotExist(final Availability availability) {
-//        String tutorId = String.valueOf(currentUser.getID());
-//        final String date = availability.getDate();
-//        final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
-//
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                mainloop:
-//                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-//
-//                    String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
-//                    String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
-//                    //If availability with the same date is found
-//                    if(snapshot.child("date").getValue().equals(date)) {
-//                        //if the start time is within the range of existing availability with the same date
-//                        if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
-//                            //show error if it is
-//                            showErrorDialog("Availability Error", "Input availability already existed");
-//                            existingAvailability = true;
-//                            //Break out of the main loop to prevent checking for another round
-//                            break mainloop;
-//                        }else {
-//                             //Check again if there is existing availability because there might be multiple availability period on one day
-//                              existingAvailability = false;
-//                            }
-//                        }
-//                    }else{
-//                        existingAvailability = false;
-//                    }
-//                }
-//                if(existingAvailability == false){
-//                    addAvailabilityToFirebase(availability);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+    private void availabilityDoesNotExist(final Availability availability) {
+        String tutorId = String.valueOf(currentUser.getID());
+        final String date = availability.getDate();
+        final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
+        existingAvailability = false;
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mainloop:
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Double ssStartTime = Double.parseDouble(snapshot.child("startTime").getValue().toString().replace(':', '.'));
+                    Double ssEndTime = Double.parseDouble(snapshot.child("endTime").getValue().toString().replace(':', '.'));
+                    //If availability with the same date is found
+                    if (snapshot.child("date").getValue().equals(date)) {
+                        // if the start time or end time of the new availability is within the time range of existing availability with the same date OR
+                        // if the new availability's time range will encompass the start time or end time of an existing availability
+                        if (((startTime >= ssStartTime && startTime < ssEndTime) || (endTime >= ssStartTime && endTime < ssEndTime)) ||
+                                ((ssStartTime >= startTime && ssStartTime < endTime) || (ssEndTime >= startTime && ssEndTime < endTime))) {
+                            //show error if it is
+                            showErrorDialog("Availability Error", "Clashes with an existing avialability!");
+                            existingAvailability = true;
+                            //Break out of the main loop to prevent checking for another round
+                            break mainloop;
+                        }
+                    }
+                }
+                if(!existingAvailability) {
+                    Intent intent = getIntent();
+                    Bundle b = new Bundle();
+                    b.putSerializable("availability", availability);
+                    intent.putExtras(b);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void showErrorDialog(String title, String errorMessage){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();

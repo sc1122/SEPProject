@@ -248,94 +248,21 @@ public class Controller_TutorMenu extends AppCompatActivity {
 
     // Return method from make availability and from view booking
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && data != null) {
+        if (requestCode == 1 && data != null) { // if returning from the new availability screen
             if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                Availability availability = (Availability) bundle.getSerializable("availability");
-                //Check if selected Time period makes sense to none-time traveller;
-                if(selectedTimeIsCorrect(availability)) {
-                    availabilityDoesNotExist(availability);
-                }else{
-                    showErrorDialog("Improper Time Selected", "Please select proper time slot");
-                }
-                //TODO: Add availability to availability list
+                Bundle bundle = data.getExtras(); // get data parsed in Intent
+                Availability availability = (Availability) bundle.getSerializable("availability"); // extract Availability object from data
+                addAvailabilityToFirebase(availability);
             }
             BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
             view.setSelectedItemId(R.id.navigation_dashboard);
         }
     }
 
-    private boolean selectedTimeIsCorrect(Availability availability){
-        double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
-        double endTime = Double.parseDouble(availability.getEndTime().replace(':','.'));
-        if(startTime >= endTime)
-            return false;
-        return true;
-    }
-
-    private void availabilityDoesNotExist(final Availability availability) {
-        String tutorId = String.valueOf(currentTutor.getID());
-        final String date = availability.getDate();
-        final double startTime = Double.parseDouble(availability.getStartTime().replace(':','.'));
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(tutorId).child("Availabilities");
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mainloop:
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-
-                    String ssStartTime = snapshot.child("startTime").getValue().toString().replace(':','.');
-                    String ssEndTime = snapshot.child("endTime").getValue().toString().replace(':','.');
-                    //If availability with the same date is found
-                    if(snapshot.child("date").getValue().equals(date)) {
-                        //if the start time is within the range of existing availability with the same date
-                        if((startTime >= Double.parseDouble(ssStartTime) && startTime < Double.parseDouble(ssEndTime))){
-                            //show error if it is
-                            showErrorDialog("Availability Error", "Input availability already existed");
-                            existingAvailability = true;
-                            //Break out of the main loop to prevent checking for another round
-                            break mainloop;
-                        }else {
-                            //Check again if there is existing availability because there might be multiple availability period on one day
-                                existingAvailability = false;
-                            }
-                        } else{
-                        existingAvailability = false;
-                    }
-                }
-
-                if(existingAvailability == false){
-                    addAvailabilityToFirebase(availability);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     public void addAvailabilityToFirebase(Availability availability) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
         DatabaseReference bookingStatus = ref.push();
         bookingStatus.setValue(availability);
-    }
-
-
-    private void showErrorDialog(String title, String errorMessage){
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(errorMessage);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 
     @Override
