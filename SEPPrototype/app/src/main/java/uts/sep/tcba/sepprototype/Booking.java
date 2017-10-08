@@ -27,7 +27,7 @@ public class Booking implements Serializable {
     private LinkedList<String> students = new LinkedList<String>(); // Stores the students attending the booking
     private String availabilityID; // Stores the ID of the availability in which the booking resides
 
-    public Booking(DataSnapshot booking, String tutorName) { // Constructor for fetching the Booking from Firebase
+    public Booking(DataSnapshot booking) { // Constructor for fetching the Booking from Firebase
         this.bookingID = booking.getKey().toString();
         Log.d("KEYS", bookingID);
         this.date = booking.child("date").getValue().toString();
@@ -35,7 +35,7 @@ public class Booking implements Serializable {
         this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
         this.location = booking.child("location").getValue().toString();
         this.tutor = booking.child("tutor").getValue(Integer.class);
-        this.tutorName = tutorName;
+        this.tutorName = booking.child("tutorName").getValue().toString();
         this.subject = booking.child("subject").getValue(Integer.class);
         this.capacity = booking.child("capacity").getValue(Integer.class);
         for (DataSnapshot d: booking.child("students").getChildren()){
@@ -50,7 +50,7 @@ public class Booking implements Serializable {
         this.endTime = eTime;
         this.location = a.getLocation();
         this.tutor = t.getID();
-        this.tutorName = t.getFirstName() + " " + t.getLastName();
+        this.tutorName = t.getFullName();
         this.subject = sub;
         this.capacity = a.getCapacity();
         this.students.add(String.valueOf(s.getID()));

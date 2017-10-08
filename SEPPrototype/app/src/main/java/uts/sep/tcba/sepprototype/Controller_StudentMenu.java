@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,16 +18,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Controller_StudentMenu extends AppCompatActivity{
@@ -36,56 +31,44 @@ public class Controller_StudentMenu extends AppCompatActivity{
 private TextView mTextMessage;
 private ListView listView;
 private FloatingActionButton newBookingButton;
-private ArrayList<Booking> bookings = new ArrayList<Booking>();
-private ArrayList<String> subjects = new ArrayList<String>();
-private ArrayList<Notification> notifications = new ArrayList<Notification>();
-private ArrayList<String> pageList = new ArrayList<String>();
+private LinkedList<Booking> bookings = new LinkedList<Booking>();
+private LinkedList<String> subjects = new LinkedList<String>();
+private LinkedList<Notification> notifications = new LinkedList<Notification>();
+private LinkedList<String> pageList = new LinkedList<String>();
 private ArrayAdapter adapter;
 private FirebaseAuth mAuth;
 private Student currentStudent;
 private boolean bookingTab = true;
-final Context context = this;
+private boolean subjectTab = false;
+private boolean notifTab = false;
+final Context context = this; //TODO: not sure what this is doing
 private boolean newBooking = true;
-
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                    pageList.clear();
-                    mTextMessage.setVisibility(View.VISIBLE);
-                    listView.setVisibility(View.GONE);
+                    bookingTab = false;
+                    subjectTab = false;
+                    notifTab = false;
                     switch(item.getItemId()){
                         case R.id.navigation_home:
-                            mTextMessage.setText(R.string.bookings_placeholder);
                             bookingTab = true;
+                            mTextMessage.setText(R.string.bookings_placeholder);
                             newBookingButton.setVisibility(View.VISIBLE);
-                            refreshBookings();
-                            adapter.notifyDataSetChanged();
+                            refreshListView();
                             return true;
                         case R.id.navigation_dashboard:
+                            subjectTab = true;
                             mTextMessage.setText(R.string.subjects_placeholder);
-                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
-                            pageList.addAll(subjects);
-                            adapter.notifyDataSetChanged();
-                            if (subjects.size() > 0) {
-                                mTextMessage.setVisibility(View.GONE);
-                                listView.setVisibility(View.VISIBLE);
-                            }
+                            refreshListView();
                             return true;
                         case R.id.navigation_notifications:
+                            notifTab = true;
                             mTextMessage.setText(R.string.notifications_placeholder);
-                            bookingTab = false;
                             newBookingButton.setVisibility(View.GONE);
-                            for (Notification not : notifications) {
-                                pageList.add(not.toString());
-                            }
-                            if (notifications.size() > 0) {
-                                mTextMessage.setVisibility(View.GONE);
-                                listView.setVisibility(View.VISIBLE);
-                            }
-                            adapter.notifyDataSetChanged();
+                            refreshListView();
                             return true;
                     }
                     return false;
@@ -109,42 +92,7 @@ private boolean newBooking = true;
         String loggedInUserType = intent.getStringExtra("type");
         currentStudent = new Student(loggedInUserID);
 
-        // Set a listener for when data is updated/loaded to refresh the view
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("Users/" + loggedInUserID);
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Populate user subjects
-                subjects.addAll(currentStudent.getSubjects());
-                //  get all notifications for user
-                for (DataSnapshot d : dataSnapshot.child("Notifications").getChildren()) {
-                    notifications.add(new Notification(d));
-                }
-                // Clears notifications from Firebase
-                FirebaseDatabase.getInstance().getReference("Users/" + currentStudent.getID()).child("Notifications").setValue(null);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!getTitle().toString().contains(currentStudent.getFirstName())) {
-                    setTitle(getTitle() + " - " + currentStudent.getFirstName() + " " + currentStudent.getLastName() + " (S)");
-                }
-                // Populate user bookings
-                getBookings(String.valueOf(currentStudent.getID()));
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });
+        initFirebase();
 
         // Set ListView UI element to display different lists based on tab selected
         listView = (ListView) findViewById(R.id.list);
@@ -174,9 +122,6 @@ private boolean newBooking = true;
                 if (bookingTab) {
                     Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
                     Booking selectedItem = bookings.get(position);
-                    Log.d("BOOKING", selectedItem.toString());
-                    Log.d("BOOKINGID", selectedItem.getAvailabilityID());
-                    Log.d("USERID", currentStudent.getID()+"");
                     intent.putExtra("booking", selectedItem);
                     intent.putExtra("id",currentStudent.getID()+"");
                     intent.putExtra("userType" , currentStudent.getType());
@@ -199,34 +144,49 @@ private boolean newBooking = true;
         });
     }
 
-    public void getBookings(final String ID) {
-        bookings.clear();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        ref.addValueEventListener(new ValueEventListener() {
+    public void initFirebase() {
+        // Set a listener on Bookings reference in Firebase so that when a booking is created/updated/removed, the changes will be pulled to device
+        DatabaseReference refBooking = FirebaseDatabase.getInstance().getReference("Bookings");
+        refBooking.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                bookings.clear();
-                Log.d("HelloMemes", dataSnapshot.toString());
-                for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) {
-                    String tutorID = booking.child("tutor").getValue().toString();
-                    DataSnapshot tutorBooked = dataSnapshot.child("Users").child(tutorID);
-                    String tutorName = tutorBooked.child("FirstName").getValue().toString() + " " + tutorBooked.child("LastName").getValue().toString();
-                    if (booking.child("students").child(ID).exists()) {
-                        Log.d("STUDENT", booking.getValue().toString());
-                        Booking b = new Booking(booking, tutorName);
-                        bookings.add(b);
-                    }
-                }
-                sortBookings();
-                adapter.notifyDataSetChanged();
+                getBookings(dataSnapshot); // Populate user bookings
             }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("FirebaseFailure", databaseError.toString());
+            }
+        });
 
+        // Set a listener for when the student logs in to fetch the student's subjects and their notifications since last log in
+        DatabaseReference refUser = FirebaseDatabase.getInstance().getReference("Users/" + currentStudent.getID());
+        refUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setTitle(getTitle() + " - " + currentStudent.getFullName() + " (S)");
+                subjects.addAll(currentStudent.getSubjects()); // Populate user subjects
+                for (DataSnapshot d : dataSnapshot.child("Notifications").getChildren()) {
+                    notifications.add(new Notification(d)); //  get all notifications for user
+                }
+                FirebaseDatabase.getInstance().getReference("Users/" + currentStudent.getID()).child("Notifications").setValue(null); // Clear notifications from Firebase
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("RLdatabase", "Failed");
             }
         });
+    }
+
+    public void getBookings(DataSnapshot dataSnapshot) {
+        bookings.clear(); // clears currently stored bookings
+        for (DataSnapshot booking : dataSnapshot.getChildren()) { // for each booking
+            //Log.d("GetBooking", booking.toString());
+            if (booking.child("students").child(String.valueOf(currentStudent.getID())).exists()) { // if the the logged in tutor is the tutor hosting the booking
+                bookings.add(new Booking(booking)); // create a new booking object to be stored locally
+            }
+        }
+        sortBookings(); // sorts bookings chronologically
+        refreshListView(); // refresh list UI
     }
 
     public void sortBookings() {
@@ -246,23 +206,27 @@ private boolean newBooking = true;
                 return 0;
             }
         });
-        refreshBookings();
     }
 
-    public void refreshBookings() {
-        if (bookingTab) {
-            pageList.clear();
-            for (Booking b: bookings) {
-                pageList.add(b.toString());
+    public void refreshListView() {
+        pageList.clear(); // clear the list
+        if (bookingTab) { // if the bookings tab is the active tab
+            for (Booking b : bookings) {
+                pageList.add(b.toString()); // load bookings into the list
             }
-            if (bookings.size() > 0) {
-                mTextMessage.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-            } else {
-                mTextMessage.setVisibility(View.VISIBLE);
-                listView.setVisibility(View.GONE);
+        } else if (subjectTab) { // if the subjects tab is the active tab
+            pageList.addAll(subjects);
+        } else if (notifTab) { // if the notifications tab is the active tab
+            for (Notification not : notifications) {
+                pageList.add(not.toString());
             }
         }
+        if (pageList.size() > 0) { // if the list is not empty
+            mTextMessage.setVisibility(View.GONE); // hide list empty message
+        } else {
+            mTextMessage.setVisibility(View.VISIBLE); // display list empty message
+        }
+        adapter.notifyDataSetChanged(); // notify the list that the data has changed
     }
 
     public void addBookingToFirebase(final Booking booking, String id) {

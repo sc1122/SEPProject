@@ -20,48 +20,49 @@ import com.google.firebase.database.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
-
 
 public class Controller_TutorMenu extends AppCompatActivity {
 
     private TextView mTextMessage;
     private ListView listView;
     private FloatingActionButton newAvailabilityButton;
-    private ArrayList<Booking> bookings = new ArrayList<Booking>();
-    private ArrayList<Availability> availabilities = new ArrayList<Availability>();
-    private ArrayList<String> pageList = new ArrayList<String>();
+    private LinkedList<Booking> bookings = new LinkedList<Booking>();
+    private LinkedList<Availability> availabilities = new LinkedList<Availability>();
+    private LinkedList<String> pageList = new LinkedList<String>();
     private ArrayAdapter adapter;
     private FirebaseAuth mAuth;
     private Tutor currentTutor;
     private boolean bookingTab = true;
     private boolean availTab = false;
-    private boolean existingAvailability = true;
+    private boolean notifTab = false;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                    bookingTab = false;
+                    availTab = false;
+                    notifTab = false;
                     switch(item.getItemId()){
                         case R.id.navigation_home:
-                            mTextMessage.setText(R.string.bookings_placeholder);
                             bookingTab = true;
-                            availTab = false;
+                            mTextMessage.setText(R.string.bookings_placeholder);
                             newAvailabilityButton.setVisibility(View.GONE);
                             refreshListView();
                             return true;
                         case R.id.navigation_dashboard:
-                            mTextMessage.setText(R.string.availabilites_placeholder);
-                            bookingTab = false;
                             availTab = true;
+                            mTextMessage.setText(R.string.availabilites_placeholder);
                             newAvailabilityButton.setVisibility(View.VISIBLE);
                             refreshListView();
                             return true;
                         case R.id.navigation_notifications:
+                            notifTab = true;
                             mTextMessage.setText(R.string.notifications_placeholder);
                             bookingTab = false;
                             availTab = false;
@@ -175,10 +176,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
 
     public void getBookings(DataSnapshot dataSnapshot) {
         bookings.clear(); // clears currently stored bookings
-        for (DataSnapshot booking : dataSnapshot.child("Bookings").getChildren()) { // for each booking
+        for (DataSnapshot booking : dataSnapshot.getChildren()) { // for each booking
             //Log.d("GetBooking", booking.toString());
             if (booking.child("tutor").getValue().toString().equals(currentTutor.getID())) { // if the the logged in tutor is the tutor hosting the booking
-                bookings.add(new Booking(booking, currentTutor.getFullName())); // create a new booking object to be stored locally
+                bookings.add(new Booking(booking)); // create a new booking object to be stored locally
             }
         }
         sortBookings(); // sorts bookings chronologically
@@ -206,7 +207,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         for (DataSnapshot data : dataSnapshot.child("Availabilities").getChildren()) {
             availabilities.add(new Availability(data)); // create a new availability object to be stored locally
         }
-        sortAvailabilities(); // sorts bookings chronologically
+        sortAvailabilities(); // sorts availabilities chronologically
         refreshListView(); // refresh list UI
     }
 
@@ -246,13 +247,12 @@ public class Controller_TutorMenu extends AppCompatActivity {
         adapter.notifyDataSetChanged(); // notify the list that the data has changed
     }
 
-    // Return method from make availability and from view booking
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) { // Return method from make availability and from view booking
         if (requestCode == 1 && data != null) { // if returning from the new availability screen
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras(); // get data parsed in Intent
                 Availability availability = (Availability) bundle.getSerializable("availability"); // extract Availability object from data
-                addAvailabilityToFirebase(availability);
+                addAvailabilityToFirebase(availability); // add the availability to Firebase
             }
             BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
             view.setSelectedItemId(R.id.navigation_dashboard);
@@ -260,13 +260,12 @@ public class Controller_TutorMenu extends AppCompatActivity {
     }
 
     public void addAvailabilityToFirebase(Availability availability) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities");
-        DatabaseReference bookingStatus = ref.push();
-        bookingStatus.setValue(availability);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities"); // gets the tutor's availabilities reference in Firebase
+        ref.push().setValue(availability); // pushes the object to a new reference child to the selected reference in Firebase
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed(){ // handles logging out, creates log out dialog and logs user out if they affirm
         AlertDialog alertDialog = new AlertDialog.Builder(Controller_TutorMenu.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage("Would you like to log out?");
