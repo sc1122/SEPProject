@@ -215,10 +215,10 @@ private boolean newBooking = true;
                 pageList.add(b.toString()); // load bookings into the list
             }
         } else if (subjectTab) { // if the subjects tab is the active tab
-            pageList.addAll(subjects);
+            pageList.addAll(subjects); // load subjects into the list
         } else if (notifTab) { // if the notifications tab is the active tab
             for (Notification not : notifications) {
-                pageList.add(not.toString());
+                pageList.add(not.toString());  // load notifications into the list
             }
         }
         if (pageList.size() > 0) { // if the list is not empty
@@ -229,15 +229,15 @@ private boolean newBooking = true;
         adapter.notifyDataSetChanged(); // notify the list that the data has changed
     }
 
-    public void addBookingToFirebase(final Booking booking, String id) {
-        DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings");
-        DatabaseReference newBookingRef = bookingsRef.push();
+    public void addBookingToFirebase(final Booking booking, String existingBookingID) {
+        DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings"); // get reference of bookings in Firebase
+        DatabaseReference newBookingRef = bookingsRef.push(); // get new reference
         DatabaseReference targetRef;
         if (newBooking) {
             newBookingRef.setValue(booking);
             targetRef = newBookingRef;
         } else {
-            targetRef = bookingsRef.child(id);
+            targetRef = bookingsRef.child(existingBookingID);
         }
         setAttendingBooking(targetRef);
     }

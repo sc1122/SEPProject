@@ -178,7 +178,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         bookings.clear(); // clears currently stored bookings
         for (DataSnapshot booking : dataSnapshot.getChildren()) { // for each booking
             //Log.d("GetBooking", booking.toString());
-            if (booking.child("tutor").getValue().toString().equals(currentTutor.getID())) { // if the the logged in tutor is the tutor hosting the booking
+            if (booking.child("tutor").getValue(Integer.class) == (currentTutor.getID())) { // if the the logged in tutor is the tutor hosting the booking
                 bookings.add(new Booking(booking)); // create a new booking object to be stored locally
             }
         }
@@ -238,6 +238,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
             for (Availability a : availabilities) {
                 pageList.add(a.toString()); // load availabilities into the list
             }
+        } else if (notifTab) { // if the notifications tab is the active tab
+            // load availabilities into the list
         }
         if (pageList.size() > 0) { // if the list is not empty
             mTextMessage.setVisibility(View.GONE); // hide list empty message
