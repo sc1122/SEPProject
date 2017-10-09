@@ -22,7 +22,6 @@ import java.util.*;
 
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Tutor;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_MakeAvailability extends AppCompatActivity {
 
@@ -50,7 +49,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(uts.sep.tcba.sepprototype.R.layout.activity_make_availability);
+        setContentView(R.layout.activity_make_availability);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         Bundle bundle = this.getIntent().getExtras();

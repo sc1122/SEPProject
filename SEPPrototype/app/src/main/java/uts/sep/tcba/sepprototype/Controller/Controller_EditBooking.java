@@ -6,7 +6,6 @@ import android.support.v7.widget.Toolbar;
 import android.widget.*;
 
 import uts.sep.tcba.sepprototype.Model.Booking;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_EditBooking extends AppCompatActivity {
 

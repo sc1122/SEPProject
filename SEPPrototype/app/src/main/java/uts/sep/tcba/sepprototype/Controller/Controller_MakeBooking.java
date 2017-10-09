@@ -16,7 +16,6 @@ import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Booking;
 import uts.sep.tcba.sepprototype.Model.Student;
 import uts.sep.tcba.sepprototype.Model.Tutor;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_MakeBooking extends AppCompatActivity {
 
@@ -41,7 +40,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(uts.sep.tcba.sepprototype.R.layout.activity_makebooking);
+        setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         final Bundle bundle = this.getIntent().getExtras();

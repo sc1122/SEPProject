@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Booking;
 import uts.sep.tcba.sepprototype.Model.Tutor;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_TutorMenu extends AppCompatActivity {
 
@@ -54,7 +53,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     availTab = false;
                     notifTab = false;
                     switch(item.getItemId()){
-                        case uts.sep.tcba.sepprototype.R.id.navigation_home:
+                        case R.id.navigation_home:
                             bookingTab = true;
                             mTextMessage.setText(R.string.bookings_placeholder);
                             newAvailabilityButton.setVisibility(View.GONE);

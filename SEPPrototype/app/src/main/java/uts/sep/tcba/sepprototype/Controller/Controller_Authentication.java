@@ -25,8 +25,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
-import uts.sep.tcba.sepprototype.R;
-
 /**
  * A login screen that offers login via ID/password.
  */
@@ -76,7 +74,7 @@ public class Controller_Authentication extends AppCompatActivity {
                         Log.d("IMPORTANT", "signInWithEmail:onComplete:" + task.isSuccessful());
                         if (!task.isSuccessful()) {
                             Log.d("AUTHFAIL", "signInWithEmail:failed", task.getException());
-                            mPasswordView.setError(getString(uts.sep.tcba.sepprototype.R.string.error_incorrect_password));
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
                             mPasswordView.requestFocus();
                         } else {
                             Intent intent;

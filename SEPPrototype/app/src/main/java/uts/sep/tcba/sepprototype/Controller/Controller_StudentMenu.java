@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import uts.sep.tcba.sepprototype.Model.Booking;
 import uts.sep.tcba.sepprototype.Model.Notification;
 import uts.sep.tcba.sepprototype.Model.Student;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_StudentMenu extends AppCompatActivity{
 
@@ -57,7 +56,7 @@ private boolean newBooking = true;
                     subjectTab = false;
                     notifTab = false;
                     switch(item.getItemId()){
-                        case uts.sep.tcba.sepprototype.R.id.navigation_home:
+                        case R.id.navigation_home:
                             bookingTab = true;
                             mTextMessage.setText(R.string.bookings_placeholder);
                             newBookingButton.setVisibility(View.VISIBLE);

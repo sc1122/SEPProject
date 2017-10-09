@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import uts.sep.tcba.sepprototype.Model.Booking;
-import uts.sep.tcba.sepprototype.R;
 
 public class Controller_ViewBooking extends AppCompatActivity {
 

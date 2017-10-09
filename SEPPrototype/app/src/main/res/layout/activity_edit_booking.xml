@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    tools:context="uts.sep.tcba.sepprototype.Controller.Controller_EditBooking">
+    tools:context="uts.sep.tcba.sepprototype.Controller_EditBooking">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

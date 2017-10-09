@@ -7,10 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 import uts.sep.tcba.sepprototype.Model.Availability;
-import uts.sep.tcba.sepprototype.R;
-
 
 public class Controller_ViewAvailability extends AppCompatActivity {
     private Button deleteButton, saveButton;
@@ -45,13 +42,10 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-                editAvailability(currentAvailability);
                 finish();
             }
         });
     }
-
-
 
     private void setContent(Availability currentAvailability) {
         this.date = (TextView) findViewById(R.id.date);
