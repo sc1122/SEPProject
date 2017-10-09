@@ -102,11 +102,12 @@ public class Availability implements Serializable {
         return this.date + " " + getStartTime() + " - " + getEndTime() + "\n" + this.location;
     }
 
-    public void remove(Availability currentAvailability) {
+    public void remove(Availability currentAvailability,String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference().child("Availability/" + currentAvailability.getID());
-        Log.d("REF", ref.toString());
+        DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
+        Log.d("REF",ref.toString());
         ref.setValue(null);
-        Log.d("REFAFTER",ref.toString());
+        ref.addListenerForSingleValueEvent();
+
     }
 }

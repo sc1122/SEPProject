@@ -134,7 +134,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
                     Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewAvailability.class);
                     Availability selectedAvailability = availabilities.get(position);
                     intent.putExtra("availability", selectedAvailability);
-                    Log.d("Rasdfasdf", selectedAvailability.toString());
+                    intent.putExtra("userID",currentTutor.getID()+"");
                     startActivityForResult(intent, 3);
                 }
             }
