@@ -13,7 +13,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 public class Availability implements Serializable {
-
+    LinkedList<Booking> bookings= new LinkedList<>();
+    LinkedList<String> students = new LinkedList<String>();
     private String ID; // Stores availability ID, only used when fetching data from Firebase
     private String date; // Stores the date of the availability
     private double startTime; // Stores the start time of the availability
@@ -106,7 +107,7 @@ public class Availability implements Serializable {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
         //Remove the availability
-        ref.setValue(null);
+        //ref.setValue(null);
 
         //Remove associated booking
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
@@ -115,10 +116,21 @@ public class Availability implements Serializable {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Find matching availability by comparing ID
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
+                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())) {
                         //Remove all matches
                         bookingRef.child(data.getKey()).setValue(null);
+
+                        //Add the affected bookings to the bookings list
+                        bookings.add(new Booking(data));
                     }
+                }
+                //For each affected booking
+                for (Booking b:bookings) {
+                    for (String student : b.getStudents()) {
+                        students.add(student);
+                    }
+                    //Send the notification to the students in the student list
+                    sendNotifications(new Notification(b));
                 }
             }
 
@@ -136,6 +148,7 @@ public class Availability implements Serializable {
         //Change the location
         ref.setValue(location);
 
+        //Also remove location for associated booking
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
         bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -144,7 +157,7 @@ public class Availability implements Serializable {
                 for(DataSnapshot data: dataSnapshot.getChildren()){
                     if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
                         //Remove all matches
-                      bookingRef.child(data.getKey()).child("location").setValue(location);
+                        bookingRef.child(data.getKey()).child("location").setValue(location);
                     }
                 }
             }
@@ -154,6 +167,13 @@ public class Availability implements Serializable {
 
             }
         });
+    }
 
+    public void sendNotifications(Notification notification) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Users");
+        for (String s : students) {
+            ref.child(s).child("Notifications").push().setValue(notification);
+        }
     }
 }
