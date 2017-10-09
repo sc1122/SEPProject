@@ -18,6 +18,7 @@ import java.util.LinkedList;
 public class Controller_MakeBooking extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> dateAdapter;
     private LinkedList<Availability> availabilities;
     private Availability selectedAvailability;
     private Student currentUser;
@@ -29,6 +30,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private LinkedList<String> timeslots = new LinkedList<String>();
     private String existingBookingID = "";
 
+    private Spinner consDate;
     private Spinner consTime;
     private Bundle bundleSend;
     private Intent intentSend;
@@ -111,7 +113,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 Log.d("SELECTION", "MADE");
                 String subjectString = adapterView.getAdapter().getItem(i).toString();
                 subject = Integer.parseInt(subjectString.substring(subjectString.length()-6,subjectString.length()-1));
-                final int tutorID = currentUser.getTutorsForIndex(i);
+                 final int tutorID = currentUser.getTutorsForIndex(i);
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("Users/" + tutorID);
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -145,10 +147,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     private void setDateList(){
-        Spinner consDate = (Spinner)findViewById(R.id.date);
+        consDate = (Spinner)findViewById(R.id.date);
         consDate.setPrompt("Select Date");
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
-        consDate.setAdapter(adapter);
+        dateAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
+        consDate.setAdapter(dateAdapter);
         consDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -179,6 +181,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
         }
 
         removeClashingTimeslots(startTimes, endTimes);
+
+        if (timeslots.size() == 0) {
+            dateAdapter.remove(consDate.getSelectedItem().toString());
+        }
     }
 
     public void removeClashingTimeslots(final LinkedList<String> startTimes, final LinkedList<String> endTimes){
