@@ -77,6 +77,8 @@ public class Availability implements Serializable {
         return location;
     }
 
+    public void setLocation(String Location) {this.location = Location;}
+
     @Exclude
     public double getStartTimeDouble() {
         return startTime;
