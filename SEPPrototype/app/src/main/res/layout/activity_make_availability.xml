@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    tools:context="uts.sep.tcba.sepprototype.Controller_MakeAvailability">
+    tools:context="uts.sep.tcba.sepprototype.Controller.Controller_MakeAvailability">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
