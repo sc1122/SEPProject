@@ -22,11 +22,11 @@ public class User implements Serializable {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                firstName = dataSnapshot.child("FirstName").getValue().toString();
-                lastName = dataSnapshot.child("LastName").getValue().toString();
-                email = dataSnapshot.child("Email").getValue().toString();
+                firstName = dataSnapshot.child("FirstName").getValue(String.class);
+                lastName = dataSnapshot.child("LastName").getValue(String.class);
+                email = dataSnapshot.child("Email").getValue(String.class);
                 extractAndAddSubjects(dataSnapshot.child("Subjects"));
-                type = dataSnapshot.child("Type").getValue().toString();
+                type = dataSnapshot.child("Type").getValue(String.class);
                 Log.d("USER OBJECT", "CREATED");
             }
 
@@ -39,11 +39,11 @@ public class User implements Serializable {
 
     public User (DataSnapshot data) {
         ID = Integer.parseInt(data.getKey());
-        firstName = data.child("FirstName").getValue().toString();
-        lastName = data.child("LastName").getValue().toString();
-        email = data.child("Email").getValue().toString();
+        firstName = data.child("FirstName").getValue(String.class);
+        lastName = data.child("LastName").getValue(String.class);
+        email = data.child("Email").getValue(String.class);
         extractAndAddSubjects(data.child("Subjects"));
-        type = data.child("Type").getValue().toString();
+        type = data.child("Type").getValue(String.class);
         Log.d("USER OBJECT", "CREATED");
     }
 
@@ -72,7 +72,7 @@ public class User implements Serializable {
     public void extractAndAddSubjects(DataSnapshot data) {
         subjects.clear();
         for (DataSnapshot d : data.getChildren()) {
-            String subject = d.child("Name").getValue().toString() + " (" + d.getKey().toString() + ")";
+            String subject = d.child("Name").getValue(String.class) + " (" + d.getKey() + ")";
             subjects.add(subject);
         }
     }

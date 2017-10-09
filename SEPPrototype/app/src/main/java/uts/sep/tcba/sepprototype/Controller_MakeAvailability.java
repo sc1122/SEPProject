@@ -226,8 +226,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mainloop:
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Double ssStartTime = Double.parseDouble(snapshot.child("startTime").getValue().toString().replace(':', '.'));
-                    Double ssEndTime = Double.parseDouble(snapshot.child("endTime").getValue().toString().replace(':', '.'));
+                    Double ssStartTime = Double.parseDouble(snapshot.child("startTime").getValue(String.class).replace(':', '.'));
+                    Double ssEndTime = Double.parseDouble(snapshot.child("endTime").getValue(String.class).replace(':', '.'));
                     //If availability with the same date is found
                     if (snapshot.child("date").getValue().equals(date)) {
                         // if the start time or end time of the new availability is within the time range of existing availability with the same date OR

@@ -9,9 +9,9 @@ public class Notification {
     private String times;
 
     public Notification (DataSnapshot data) {
-        tutor = data.child("tutor").getValue().toString();
-        date = data.child("date").getValue().toString();
-        times = data.child("times").getValue().toString();
+        tutor = data.child("tutor").getValue(String.class);
+        date = data.child("date").getValue(String.class);
+        times = data.child("times").getValue(String.class);
     }
 
     public Notification (Booking booking) {

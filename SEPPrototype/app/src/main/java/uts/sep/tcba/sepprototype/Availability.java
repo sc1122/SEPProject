@@ -6,10 +6,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 
 public class Availability implements Serializable {
@@ -22,12 +18,12 @@ public class Availability implements Serializable {
     private String location; // Stores the location of the availability
 
     public Availability(DataSnapshot ds) { // Constructor for fetching the availability from Firebase
-        ID = ds.getKey().toString();
-        date = ds.child("date").getValue().toString();
-        startTime = Double.parseDouble(ds.child("startTime").getValue().toString().replace(':','.'));
-        endTime = Double.parseDouble(ds.child("endTime").getValue().toString().replace(':','.'));
+        ID = ds.getKey();
+        date = ds.child("date").getValue(String.class);
+        startTime = Double.parseDouble(ds.child("startTime").getValue(String.class).replace(':','.'));
+        endTime = Double.parseDouble(ds.child("endTime").getValue(String.class).replace(':','.'));
         capacity = ds.child("capacity").getValue(Integer.class);
-        location = ds.child("location").getValue().toString();
+        location = ds.child("location").getValue(String.class);
     }
 
     public Availability(String date, Double sTime, Double eTime, String loc, int cap) { // Constructor for creating a new availability to be used locally and stored to Firebase

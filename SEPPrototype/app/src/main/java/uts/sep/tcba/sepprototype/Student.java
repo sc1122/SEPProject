@@ -33,7 +33,6 @@ public class Student extends User implements Serializable {
     public void fetchTutorsForSubject() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + getID() + "/Subjects");
-        Log.d("STUDENT YAY", ref.toString());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

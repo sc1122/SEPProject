@@ -57,8 +57,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             // If there is a booking at the same time as selected
-                            if (book.getStartTime().equals(data.child("startTime").getValue().toString()) &&
-                                    book.getEndTime().equals(data.child("endTime").getValue().toString()) &&
+                            if (book.getStartTime().equals(data.child("startTime").getValue(String.class)) &&
+                                    book.getEndTime().equals(data.child("endTime").getValue(String.class)) &&
                                     book.getSubject() == data.child("subject").getValue(Integer.class) &&
                                     book.getTutor() == data.child("tutor").getValue(Integer.class)) {
                                 Log.d("MATCH", "FOUND");
@@ -189,8 +189,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     for (int i = 0; i < startTimes.size(); i = i + 1) {
                         // If there is a booking at the same time as selected
-                        if (startTimes.get(i).equals(data.child("startTime").getValue().toString().replace(':', '.')) &&
-                                endTimes.get(i).equals(data.child("endTime").getValue().toString().replace(':', '.'))) {
+                        if (startTimes.get(i).equals(data.child("startTime").getValue(String.class).replace(':', '.')) &&
+                                endTimes.get(i).equals(data.child("endTime").getValue(String.class).replace(':', '.'))) {
                             if (data.child("students").child(String.valueOf(currentUser.getID())).exists()) {
                                 Log.d("Student booked", "WOO");
                                 timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i));

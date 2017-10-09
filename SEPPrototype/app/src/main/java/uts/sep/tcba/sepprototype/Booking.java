@@ -1,17 +1,11 @@
 package uts.sep.tcba.sepprototype;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.google.firebase.database.*;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.LinkedList;
-
-/**
- * Created by CalebAdra on 20/9/17.
- */
 
 public class Booking implements Serializable {
 
@@ -28,20 +22,20 @@ public class Booking implements Serializable {
     private String availabilityID; // Stores the ID of the availability in which the booking resides
 
     public Booking(DataSnapshot booking) { // Constructor for fetching the Booking from Firebase
-        this.bookingID = booking.getKey().toString();
-        Log.d("KEYS", bookingID);
-        this.date = booking.child("date").getValue().toString();
-        this.startTime = Double.valueOf(booking.child("startTime").getValue().toString().replace(':','.'));
-        this.endTime = Double.valueOf(booking.child("endTime").getValue().toString().replace(':','.'));
-        this.location = booking.child("location").getValue().toString();
+        this.bookingID = booking.getKey();
+        Log.d("KEY IS", bookingID);
+        this.date = booking.child("date").getValue(String.class);
+        this.startTime = Double.valueOf(booking.child("startTime").getValue(String.class).replace(':','.'));
+        this.endTime = Double.valueOf(booking.child("endTime").getValue(String.class).replace(':','.'));
+        this.location = booking.child("location").getValue(String.class);
         this.tutor = booking.child("tutor").getValue(Integer.class);
-        this.tutorName = booking.child("tutorName").getValue().toString();
+        this.tutorName = booking.child("tutorName").getValue(String.class);
         this.subject = booking.child("subject").getValue(Integer.class);
         this.capacity = booking.child("capacity").getValue(Integer.class);
         for (DataSnapshot d: booking.child("students").getChildren()){
             this.students.add(d.getKey());
         }
-        this.availabilityID = booking.child("availabilityID").getValue().toString();
+        this.availabilityID = booking.child("availabilityID").getValue(String.class);
     }
 
     public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s, String availID) { // Constructor for creating a new booking to be used locally and stored to Firebase

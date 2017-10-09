@@ -62,8 +62,8 @@ public class Controller_Authentication extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("Email").exists()) {
-                    String email = dataSnapshot.child("Email").getValue().toString();
-                    userType = dataSnapshot.child("Type").getValue().toString();
+                    String email = dataSnapshot.child("Email").getValue(String.class);
+                    userType = dataSnapshot.child("Type").getValue(String.class);
                     login(email, userType);
                 } else {
                     mIdView.setError("Invalid ID");

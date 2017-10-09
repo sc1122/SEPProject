@@ -195,10 +195,7 @@ private boolean newBooking = true;
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
                 try {
                     Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime());
-                    Log.d("DATE1", date1.toString());
                     Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
                     return date1.compareTo(date2);
                 } catch (ParseException e) {
                     e.printStackTrace();
