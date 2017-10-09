@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uts.sep.tcba.sepprototype">
+    package="uts.sep.tcba.sepprototype.Controller">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name=".Authentication"
+            android:name=".Controller_Authentication"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,12 +20,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".StudentMenu"
-            android:label="@string/app_name">
-        </activity>
+            android:name=".Controller_StudentMenu"
+            android:label="@string/title_activity_studentmenu" />
+        <activity
 
+            android:name=".Controller_MakeBooking"
+            android:label="@string/title_activity_makebooking"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Controller_TutorMenu"
+            android:label="@string/title_activity_controller__tutor_menu"
+            android:parentActivityName=".Controller_Authentication">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uts.sep.tcba.sepprototype.Controller.Controller_Authentication" />
+        </activity>
+        <activity
+            android:name=".Controller_MakeAvailability"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Controller_ViewBooking"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Controller_EditBooking"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Controller_ViewAvailability"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"
+            />
     </application>
 
 </manifest>

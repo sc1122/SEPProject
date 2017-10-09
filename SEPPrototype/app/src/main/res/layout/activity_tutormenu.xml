@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controller_StudentMenu"
+    tools:context=".Controller_TutorMenu"
     android:orientation="vertical">
 
     <FrameLayout
@@ -38,7 +38,7 @@
         <include layout="@layout/content_makebooking" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/newBooking"
+            android:id="@+id/newAvailability"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="bottom|end"
@@ -52,11 +52,11 @@
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation_student"
+        android:id="@+id/navigation_tutor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
-        app:menu="@menu/navigation_student" />
+        app:menu="@menu/navigation_tutor" />
 
 </LinearLayout>
