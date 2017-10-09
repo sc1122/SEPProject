@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Controller_Authentication"
+            android:name=".Controller.Controller_Authentication"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,33 +21,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Controller_StudentMenu"
+            android:name=".Controller.Controller_StudentMenu"
             android:label="@string/title_activity_studentmenu" />
         <activity
-            android:name=".Controller_MakeBooking"
+            android:name="Controller.Controller_MakeBooking"
             android:label="@string/title_activity_makebooking"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Controller_TutorMenu"
+            android:name=".Controller.Controller_TutorMenu"
             android:label="@string/title_activity_controller__tutor_menu"
-            android:parentActivityName=".Controller_Authentication">
+            android:parentActivityName="Controller.Controller_Authentication">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uts.sep.tcba.sepprototype.Controller_Authentication" />
+                android:value="uts.sep.tcba.sepprototype.Controller.Controller_Authentication" />
         </activity>
         <activity
-            android:name=".Controller_MakeAvailability"
+            android:name=".Controller.Controller_MakeAvailability"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Controller_ViewBooking"
+            android:name=".Controller.Controller_ViewBooking"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Controller_EditBooking"
+            android:name=".Controller.Controller_EditBooking"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Controller_ViewAvailability"
+            android:name=".Controller.Controller_ViewAvailability"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"
             />

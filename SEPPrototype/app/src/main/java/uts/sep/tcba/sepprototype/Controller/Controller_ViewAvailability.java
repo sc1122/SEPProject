@@ -3,12 +3,17 @@ package uts.sep.tcba.sepprototype.Controller;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.R;
+
+import com.google.firebase.database.FirebaseDatabase;
+
 
 public class Controller_ViewAvailability extends AppCompatActivity {
     private Button deleteButton, saveButton;
@@ -31,6 +36,8 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         deleteButton = (Button) findViewById(R.id.delete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.d("REF", currentAvailability.toString());
+                deleteAvailability(currentAvailability);
                 finish();
             }
         });
@@ -39,10 +46,13 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
+                editAvailability(currentAvailability);
                 finish();
             }
         });
     }
+
+
 
     private void setContent(Availability currentAvailability) {
         this.date = (TextView) findViewById(R.id.date);
@@ -55,5 +65,13 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         time.setText(currentAvailability.getStartTime() + " - " + currentAvailability.getEndTime());
         location.setText(currentAvailability.getLocation());
         capacity.setText(currentAvailability.getCapacity() + "");
+    }
+
+    private void deleteAvailability(Availability currentAvailability) {
+        Log.d("REF", "HI");
+        currentAvailability.remove(currentAvailability);
+    }
+
+    private void editAvailability(Availability currentAvailability) {
     }
 }

@@ -3,7 +3,9 @@ package uts.sep.tcba.sepprototype.Model;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -98,5 +100,13 @@ public class Availability implements Serializable {
     @Override
     public String toString(){
         return this.date + " " + getStartTime() + " - " + getEndTime() + "\n" + this.location;
+    }
+
+    public void remove(Availability currentAvailability) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Availability/" + currentAvailability.getID());
+        Log.d("REF", ref.toString());
+        ref.setValue(null);
+        Log.d("REFAFTER",ref.toString());
     }
 }
