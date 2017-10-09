@@ -103,7 +103,5 @@ public class Availability implements Serializable {
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
         Log.d("REF",ref.toString());
         ref.setValue(null);
-        ref.addListenerForSingleValueEvent();
-
     }
 }
