@@ -36,7 +36,6 @@ public class Controller_ViewAvailability extends AppCompatActivity {
 
         setContent(currentAvailability);
 
-
         location.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -44,10 +43,12 @@ public class Controller_ViewAvailability extends AppCompatActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         //Delete Button Code
@@ -62,16 +63,14 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         //Save Button on Tool bar
         saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                //currentAvailability.setLocation(location.toString()); 
-                if(hasChanged);
+            public void onClick(View v) {
+                if (hasChanged) {
                     currentAvailability.setLocation(location.toString());
+                }
+                editAvailability(currentAvailability, userID, location.getText().toString());
                 finish();
             }
         });
-
-
-
     }
 
     private void setContent(Availability currentAvailability) {
@@ -87,8 +86,12 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         capacity.setText(currentAvailability.getCapacity() + "");
     }
 
-    private void deleteAvailability(Availability currentAvailability,String userID) {
+    private void deleteAvailability(Availability currentAvailability, String userID) {
         currentAvailability.remove(currentAvailability, userID);
+    }
+
+    private void editAvailability(Availability currentAvailability, String userID, String location) {
+        currentAvailability.edit(currentAvailability, userID, location);
     }
 
     private void editAvailability(Availability currentAvailability) {

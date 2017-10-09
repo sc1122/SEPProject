@@ -3,9 +3,11 @@ package uts.sep.tcba.sepprototype.Model;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -100,10 +102,39 @@ public class Availability implements Serializable {
         return this.date + " " + getStartTime() + " - " + getEndTime() + "\n" + this.location;
     }
 
-    public void remove(Availability currentAvailability,String userID) {
+    public void remove(final Availability currentAvailability, String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
-        Log.d("REF",ref.toString());
+        //Remove the availability
         ref.setValue(null);
+
+        //Remove associated booking
+        final DatabaseReference bookingRef = database.getReference().child("Bookings");
+        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Find matching availability by comparing ID
+                for(DataSnapshot data: dataSnapshot.getChildren()){
+                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
+                        //Remove all matches
+                        bookingRef.child(data.getKey()).setValue(null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    //TODO: Change for all booking as well
+    public void edit(Availability currentAvailability, String userID, String location) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID()).child("location");
+        ref.setValue(location);
+
     }
 }
