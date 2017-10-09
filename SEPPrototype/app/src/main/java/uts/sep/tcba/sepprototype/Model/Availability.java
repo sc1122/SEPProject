@@ -130,11 +130,30 @@ public class Availability implements Serializable {
 
     }
 
-    //TODO: Change for all booking as well
-    public void edit(Availability currentAvailability, String userID, String location) {
+    public void edit(final Availability currentAvailability, String userID, final String location) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID()).child("location");
+        //Change the location
         ref.setValue(location);
+
+        final DatabaseReference bookingRef = database.getReference().child("Bookings");
+        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Find matching availability by comparing ID
+                for(DataSnapshot data: dataSnapshot.getChildren()){
+                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
+                        //Remove all matches
+                      bookingRef.child(data.getKey()).child("location").setValue(location);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 }
