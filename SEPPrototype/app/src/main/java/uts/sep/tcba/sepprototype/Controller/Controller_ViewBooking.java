@@ -16,7 +16,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
     private String userID;
     private String userType;
     private Button cancelButton, editButton;
-    private TextView subject , tutor, date, time, locationText, location, capacity;
+    private TextView subject , tutor, date, time, locationText, location, capacity, description;
 
 
     @Override
@@ -67,12 +67,14 @@ public class Controller_ViewBooking extends AppCompatActivity {
         this.locationText = (TextView) findViewById(R.id.locationText);
         this.location = (TextView) findViewById(R.id.location);
         this.capacity = (TextView) findViewById(R.id.capacity);
+        this.description = (TextView) findViewById(R.id.description);
 
         subject.setText(subjectString);
 
         tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");
         date.setText(currentBooking.getDate());
         time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
+        description.setText(currentBooking.getDescription());
         if(currentBooking.getLocation() == "") {
             locationText.setVisibility(View.GONE);
             location.setVisibility(View.GONE);

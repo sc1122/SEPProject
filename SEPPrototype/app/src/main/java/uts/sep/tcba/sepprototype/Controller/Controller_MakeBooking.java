@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -31,11 +33,15 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private int subject;
     private LinkedList<String> timeslots = new LinkedList<String>();
     private String existingBookingID = "";
+    private String desc;
+
+    private boolean hasChanged = false;
 
     private Spinner consDate;
     private Spinner consTime;
     private Bundle bundleSend;
     private Intent intentSend;
+    private EditText description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +97,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID());
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID(), desc);
         return booking;
     }
 
@@ -135,6 +141,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
                         setDateList();
                         TextView tutorName = (TextView) findViewById(R.id.tutor);
                         tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
+
+                        //maybe put desc stuff here???
+
+
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -159,6 +169,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                 date = adapterView.getAdapter().getItem(i).toString();
                 availabilities = tutor.getAvailabilitiesForDate(date);
                 setTimeList();
+                setDesc();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
@@ -250,6 +261,25 @@ public class Controller_MakeBooking extends AppCompatActivity {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+    }
+
+    private void setDesc(){
+        this.description = (EditText) findViewById(R.id.description);
+        description.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hasChanged = true;
+                desc = description.getText().toString();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
