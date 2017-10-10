@@ -13,8 +13,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 public class Availability implements Serializable {
-    LinkedList<Booking> bookings= new LinkedList<>();
-    LinkedList<String> students = new LinkedList<String>();
     private String ID; // Stores availability ID, only used when fetching data from Firebase
     private String date; // Stores the date of the availability
     private double startTime; // Stores the start time of the availability
@@ -107,30 +105,26 @@ public class Availability implements Serializable {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
         //Remove the availability
-        //ref.setValue(null);
+        ref.setValue(null);
 
-        //Remove associated booking
+        //Remove associated booking(s)
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
         bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Find matching availability by comparing ID
+                //Find bookings matching availability by comparing ID
                 for(DataSnapshot data: dataSnapshot.getChildren()){
                     if(data.child("availabilityID").getValue().equals(currentAvailability.getID())) {
-                        //Remove all matches
-                        bookingRef.child(data.getKey()).setValue(null);
+                        //get affected booking
+                        Booking bookingAffected = new Booking(data);
+                        for (String student :bookingAffected.getStudents()) {
+                            //Send notification to each student
+                            sendNotification(new Notification(bookingAffected), student);
+                        }
 
-                        //Add the affected bookings to the bookings list
-                        bookings.add(new Booking(data));
+                        //Remove booking
+                        bookingRef.child(data.getKey()).setValue(null);
                     }
-                }
-                //For each affected booking
-                for (Booking b:bookings) {
-                    for (String student : b.getStudents()) {
-                        students.add(student);
-                    }
-                    //Send the notification to the students in the student list
-                    sendNotifications(new Notification(b));
                 }
             }
 
@@ -148,15 +142,15 @@ public class Availability implements Serializable {
         //Change the location
         ref.setValue(location);
 
-        //Also remove location for associated booking
+        //Also change location for associated booking(s)
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
         bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Find matching availability by comparing ID
+                //Find booking matching availability by comparing ID
                 for(DataSnapshot data: dataSnapshot.getChildren()){
                     if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
-                        //Remove all matches
+                        //Edit all locations for the bookings
                         bookingRef.child(data.getKey()).child("location").setValue(location);
                     }
                 }
@@ -169,11 +163,9 @@ public class Availability implements Serializable {
         });
     }
 
-    public void sendNotifications(Notification notification) {
+    public void sendNotification(Notification notification, String student) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users");
-        for (String s : students) {
-            ref.child(s).child("Notifications").push().setValue(notification);
-        }
+        ref.child(student).child("Notifications").push().setValue(notification);
     }
 }
