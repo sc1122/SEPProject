@@ -35,7 +35,7 @@
             android:layout_margin="10dp"
             android:dividerHeight="15dp" />
 
-        <include layout="@layout/content_makebooking" />
+        <include layout="@layout/content_newBookingAvailability" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/newBooking"
