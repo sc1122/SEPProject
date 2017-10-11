@@ -53,6 +53,7 @@ public class Controller_Authentication extends AppCompatActivity {
                     userType = dataSnapshot.child("Type").getValue(String.class);
                     login(email, userType);
                 } else {
+                    showProgress(false, false); // stop the spinner
                     mIdView.setError("Invalid ID");
                     mIdView.requestFocus();
                 }
@@ -74,9 +75,11 @@ public class Controller_Authentication extends AppCompatActivity {
                         Log.d("IMPORTANT", "signInWithEmail:onComplete:" + task.isSuccessful());
                         if (!task.isSuccessful()) {
                             Log.d("AUTHFAIL", "signInWithEmail:failed", task.getException());
+                            showProgress(false, false); // stop the spinner
                             mPasswordView.setError(getString(R.string.error_incorrect_password));
                             mPasswordView.requestFocus();
                         } else {
+
                             Intent intent;
                             if (userType.equals("Tutor")) {
                                 //If it's a tutor, Go to tutor menu
@@ -92,6 +95,7 @@ public class Controller_Authentication extends AppCompatActivity {
                             pw.setText("");
                             intent.putExtra("user", ID);
                             intent.putExtra("type", userType);
+                            showProgress(false, true); // stop the spinner
                             startActivity(intent);
                         }
                     }
@@ -134,7 +138,7 @@ public class Controller_Authentication extends AppCompatActivity {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to sign in the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
@@ -175,7 +179,7 @@ public class Controller_Authentication extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            //showProgress(true);
+            showProgress(true, false);
             getUserDetails();
         }
     }
@@ -184,7 +188,7 @@ public class Controller_Authentication extends AppCompatActivity {
      * Shows the progress UI and hides the login form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
+    private void showProgress(final boolean show, boolean ending) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
@@ -213,6 +217,10 @@ public class Controller_Authentication extends AppCompatActivity {
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+
+        if (ending) { // Keep the login form hidden if login successful
+            mLoginFormView.setVisibility(View.GONE);
         }
     }
 }
