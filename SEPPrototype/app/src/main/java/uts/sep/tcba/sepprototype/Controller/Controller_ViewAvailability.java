@@ -1,5 +1,7 @@
 package uts.sep.tcba.sepprototype.Controller;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.text.TextWatcher;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import uts.sep.tcba.sepprototype.Model.Availability;
 
 public class Controller_ViewAvailability extends AppCompatActivity {
@@ -20,6 +24,7 @@ public class Controller_ViewAvailability extends AppCompatActivity {
     private EditText location;
     public Availability currentAvailability;
 
+    public boolean confirm;
     public boolean hasChanged = false;
 
     @Override
@@ -55,8 +60,25 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         deleteButton = (Button) findViewById(R.id.delete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                deleteAvailability(currentAvailability, userID);
-                finish();
+                AlertDialog alertDialog = new AlertDialog.Builder(Controller_ViewAvailability.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Are you sure you want to remove this availability?");
+
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteAvailability(currentAvailability, userID);
+                                finish();
+                            }
+                        });
+                alertDialog.show();
             }
         });
 
@@ -64,11 +86,29 @@ public class Controller_ViewAvailability extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (hasChanged) {
-                    currentAvailability.setLocation(location.toString());
-                }
-                editAvailability(currentAvailability, userID, location.getText().toString());
-                finish();
+                AlertDialog alertDialog = new AlertDialog.Builder(Controller_ViewAvailability.this).create();
+                alertDialog.setTitle("Confirm");
+                alertDialog.setMessage("Are you sure you want to save your change");
+
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (hasChanged) {
+                                    currentAvailability.setLocation(location.toString());
+                                    editAvailability(currentAvailability, userID, location.getText().toString());
+                                }
+
+                                finish();
+                            }
+                        });
+                alertDialog.show();
             }
         });
     }
@@ -93,14 +133,4 @@ public class Controller_ViewAvailability extends AppCompatActivity {
     private void editAvailability(Availability currentAvailability, String userID, String location) {
         currentAvailability.edit(currentAvailability, userID, location);
     }
-
-    private void editAvailability(Availability currentAvailability) {
-
-    }
-
-    private void changeLocation() {
-        currentAvailability.setLocation(location.toString());
-        Log.d("HOPE THIS WORKS!?!?", "YESSSS");
-    }
-
 }

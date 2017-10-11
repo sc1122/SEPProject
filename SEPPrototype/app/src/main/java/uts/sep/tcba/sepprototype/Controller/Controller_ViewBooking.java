@@ -1,9 +1,12 @@
 package uts.sep.tcba.sepprototype.Controller;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,7 +19,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
     private String userID;
     private String userType;
     private Button cancelButton, editButton;
-    private TextView subject , tutor, date, time, locationText, location, capacity, description;
+    private TextView subject , tutor, date, time, locationText, location, capacity, description, descriptionText;
 
 
     @Override
@@ -44,8 +47,25 @@ public class Controller_ViewBooking extends AppCompatActivity {
         cancelButton = (Button) findViewById(R.id.cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                currentBooking.remove(userType, currentBooking, userID);
-                finish();
+                AlertDialog alertDialog = new AlertDialog.Builder(Controller_ViewBooking.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Are you sure you want to remove this booking?");
+
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                currentBooking.remove(userType, currentBooking, userID);
+                                finish();
+                            }
+                        });
+                alertDialog.show();
             }
         });
 
@@ -68,12 +88,18 @@ public class Controller_ViewBooking extends AppCompatActivity {
         this.location = (TextView) findViewById(R.id.location);
         this.capacity = (TextView) findViewById(R.id.capacity);
         this.description = (TextView) findViewById(R.id.description);
+        this.descriptionText = (TextView) findViewById(R.id.descriptionText);
 
         subject.setText(subjectString);
-
         tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");
         date.setText(currentBooking.getDate());
         time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
+        if(currentBooking.getDescription()== null){
+            descriptionText.setVisibility(View.GONE);
+            description.setVisibility(View.GONE);
+        }else{
+            description.setText(currentBooking.getDescription());
+        }
         description.setText(currentBooking.getDescription());
         if(currentBooking.getLocation() == "") {
             locationText.setVisibility(View.GONE);

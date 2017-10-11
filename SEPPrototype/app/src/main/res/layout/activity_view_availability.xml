@@ -94,24 +94,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/locationText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingTop="15dp"
-                    android:text="Location"
-                    android:textSize="22sp" />
-
-                <EditText
-                    android:id="@+id/location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Location Unspecified"
-                    android:inputType="textPersonName"
-                    android:text="CB11.04.629" />
-
-                <TextView
+                    android:id="@+id/textView6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="15dp"
@@ -128,13 +111,32 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
+                <TextView
+                    android:id="@+id/locationText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:text="Location"
+                    android:textSize="22sp" />
+
+                <EditText
+                    android:id="@+id/location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Location Unspecified"
+                    android:inputType="textPersonName"
+                    android:paddingLeft="20dp"
+                    android:text="CB11.04.629"
+                    android:textColorLink="@color/colorAccent" />
+
                 <Button
                     android:id="@+id/delete"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:paddingTop="15dp"
+                    android:layout_marginTop="50dp"
                     android:text="Delete Availability"
                     android:textStyle="bold" />
 
