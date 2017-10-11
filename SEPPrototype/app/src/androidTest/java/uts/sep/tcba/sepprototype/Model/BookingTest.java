@@ -22,12 +22,12 @@ public class BookingTest {
     private int subject = 31272; // Stores the subject ID of the booking
     private LinkedList<String> students = new LinkedList<String>(); // Stores the students attending the booking
     private String availabilityID = "-KvlUIh7Gn8fyX00Q2X3"; // Stores the ID of the availability in which the booking resides
-
+    private String description = "I want to break free from your love you're so self satisfied i don't need you";
     Student s = new Student();
     Availability a = new Availability("31/10/17", 8.30, 9.0, "Death Star", 2);
     Tutor t = new Tutor();
 
-    Booking testBook = new Booking(startTime, endTime, subject, t, a , s, availabilityID);
+    Booking testBook = new Booking(startTime, endTime, subject, t, a , s, availabilityID, description);
 
 
     // can use main to test with real students/tutors later
