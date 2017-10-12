@@ -21,13 +21,13 @@ public class UserTest {
     // Create test user
 
 
-    int ID = 456;
-    String type = "Student";
-    String first = "Seven";
-    String last = "Nine";
+    private int ID = 456;
+    private String type = "Student";
+    private String first = "Seven";
+    private String last = "Nine";
 
 
-    public static User testUser = new User();
+    private static User testUser = new User();
 
     public UserTest() throws InterruptedException {
 
@@ -91,6 +91,7 @@ public class UserTest {
     @Test
     public void getSubjects() throws Exception {
         LinkedList<String> sbj = new LinkedList<String>();
+        sbj.add("Test Subject One (13418)");
         sbj.add("Fundamentals of Security (41900)");
         assertEquals(testUser.getSubjects(), sbj);
     }

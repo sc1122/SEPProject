@@ -26,14 +26,11 @@ public class TutorTest {
     // start of student construction
 
     int ID = 121314;
-    String type = "Tutor";
-    String first = "Test Tutor";
-    String last = "Tutor";
 
-    public LinkedList<Availability> availabilities = new LinkedList<Availability>();
+    private LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
 
-    public static Tutor testTutor = new Tutor();
+    private static Tutor testTutor = new Tutor();
 
     public TutorTest() throws InterruptedException {
 
@@ -66,25 +63,41 @@ public class TutorTest {
 
     @Test
     public void getAvailabilities() throws Exception {
+        availabilities.clear();
         Availability newAvail = new Availability("20/10/17", 12.30, 15.30, "here", 2);
         availabilities.add(newAvail);
-        assertEquals(availabilities , testTutor.getAvailabilities());
+        assertEquals(availabilities.toString() , testTutor.getAvailabilities().toString());
 
 
     }
 
     @Test
     public void sortAvailabilities() throws Exception {
+        availabilities.clear();
+
+        Availability newAvail = new Availability("20/9/17", 12.30, 15.30, "here", 2);
+        Availability newAvail2 = new Availability("20/10/17", 12.30, 15.30, "here", 2);
+        testTutor.availabilities.add(newAvail);
+        availabilities.add(newAvail);
+        availabilities.add(newAvail2);
+        testTutor.sortAvailabilities();
+        assertEquals(availabilities.toString() , testTutor.getAvailabilities().toString());
 
     }
 
     @Test
     public void getAvailableDates() throws Exception {
+        LinkedList<String> avail = new LinkedList<String>();
+        avail.add("20/10/17");
+        assertEquals(avail, testTutor.getAvailableDates());
 
     }
 
     @Test
     public void getAvailabilitiesForDate() throws Exception {
+        Thread.sleep(5000);
+        LinkedList<Availability> avail = testTutor.getAvailabilities();
+        assertEquals(avail,testTutor.getAvailabilitiesForDate("20/10/17"));
 
     }
 
