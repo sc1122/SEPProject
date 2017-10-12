@@ -85,6 +85,7 @@ private boolean newBooking = true;
         // Activity Initialisation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studentmenu);
+
         mTextMessage = (TextView) findViewById(R.id.message);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_student);
@@ -217,9 +218,11 @@ private boolean newBooking = true;
             }
         } else if (subjectTab) { // if the subjects tab is the active tab
             pageList.addAll(subjects); // load subjects into the list
-        } else if (notifTab) { // if the notifications tab is the active tab
+        }
+        else if (notifTab) { // if the notifications tab is the active tab
             for (Notification not : notifications) {
-                pageList.add(not.toString());  // load notifications into the list
+                //pageList.add(not.toString());  // load notifications into the list
+                pageList.add(not.CreatedMessagetoStudent());
             }
         }
         if (pageList.size() > 0) { // if the list is not empty

@@ -22,6 +22,24 @@ public class Booking implements Serializable {
     private String availabilityID; // Stores the ID of the availability in which the booking resides
     private String description; //stores description made alongside booking
 
+    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s, String availID, String description) { // Constructor for creating a new booking to be used locally and stored to Firebase
+        this.date = a.getDate();
+        this.startTime = sTime;
+        this.endTime = eTime;
+        this.location = a.getLocation();
+        this.tutor = t.getID();
+        this.tutorName = t.getFullName();
+        this.subject = sub;
+        this.capacity = a.getCapacity();
+        this.students.add(String.valueOf(s.getID()));
+        this.availabilityID = availID;
+        this.description = description;
+
+        //send notifications to studnet and tutor
+        new Notification(this, "student", "create").saveNotificationFirebase(); //but this isn't really necessary since student the one making booking
+        new Notification(this, "tutor", "create").saveNotificationFirebase();
+    }
+
     public Booking(DataSnapshot booking) { // Constructor for fetching the Booking from Firebase
         this.bookingID = booking.getKey();
         Log.d("KEY IS", bookingID);
@@ -38,21 +56,11 @@ public class Booking implements Serializable {
         }
         this.availabilityID = booking.child("availabilityID").getValue(String.class);
         this.description = booking.child("description").getValue(String.class);
+
+
     }
 
-    public Booking(Double sTime, Double eTime, int sub, Tutor t, Availability a, Student s, String availID, String description) { // Constructor for creating a new booking to be used locally and stored to Firebase
-        this.date = a.getDate();
-        this.startTime = sTime;
-        this.endTime = eTime;
-        this.location = a.getLocation();
-        this.tutor = t.getID();
-        this.tutorName = t.getFullName();
-        this.subject = sub;
-        this.capacity = a.getCapacity();
-        this.students.add(String.valueOf(s.getID()));
-        this.availabilityID = availID;
-        this.description = description;
-    }
+
 
     @Exclude
     public String getBookingID() {
@@ -116,6 +124,23 @@ public class Booking implements Serializable {
         return this.students;
     }
 
+    /*
+    public String getStudentsToString(LinkedList<String> students) {
+        if (head == null) {
+            return "no one";
+        }
+        String result = "";
+        Node curr = head;
+        while (curr.next != null) {
+            curr = curr.next;
+            result += curr.data;
+            if (curr.next != null)
+                result += ", ";
+        }
+        return "";
+    }
+    */
+
     public void remove(String userType, Booking currentBooking, String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
@@ -124,20 +149,35 @@ public class Booking implements Serializable {
                 ref.child("students").child(userID).setValue(null);
             } else {
                 ref.setValue(null);
+                //send cancellation notification to tutor
+                new Notification(currentBooking, "tutor", "cancel");
             }
         } else if (userType.equals("Tutor")) {
-            sendNotifications(new Notification(currentBooking));
+            new Notification(currentBooking, userType, "cancel");
             ref.setValue(null);
+            //send cancellation notification to student
+            new Notification(currentBooking, "student", "cancel");
+
         }
     }
 
-    public void sendNotifications(Notification notification) {
+
+
+
+/*
+    public void sendTutorNotification(Notification notification, String notificationType) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users");
         for (String s : students) {
-            ref.child(s).child("Notifications").push().setValue(notification);
+            if (notificationType == "cancel")
+                ref.child(s).child("Notifications").push().setValue(notification.cancelledMessagetoStudent());
+            else if (notificationType == "create")
+                ref.child(s).child("Notifications").push().setValue(notification.CreatedMessagetoStudent());
         }
     }
+
+    */
+
 
     @Override
     public String toString(){

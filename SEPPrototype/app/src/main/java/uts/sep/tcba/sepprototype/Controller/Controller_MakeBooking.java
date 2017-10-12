@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Booking;
+import uts.sep.tcba.sepprototype.Model.Notification;
 import uts.sep.tcba.sepprototype.Model.Student;
 import uts.sep.tcba.sepprototype.Model.Tutor;
 
@@ -59,7 +60,11 @@ public class Controller_MakeBooking extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 bundleSend = new Bundle();
-                final Booking book = getDetails();
+
+                final Booking book = getDetails(); //creates booking?
+
+
+
                 // iterate through all bookings for that tutor on that date at that time for that subject
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -97,8 +102,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID(), desc);
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability,
+                currentUser, selectedAvailability.getID(), desc);
         return booking;
+
     }
 
     /*

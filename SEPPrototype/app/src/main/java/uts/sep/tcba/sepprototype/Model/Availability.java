@@ -117,13 +117,15 @@ public class Availability implements Serializable {
                     if(data.child("availabilityID").getValue().equals(currentAvailability.getID())) {
                         //get affected booking
                         Booking bookingAffected = new Booking(data);
+
                         for (String student :bookingAffected.getStudents()) {
-                            //Send notification to each student
-                            sendNotification(new Notification(bookingAffected), student);
+                            bookingAffected.remove("tutor", bookingAffected, student);
+                            //Send notification to each student - Alina: will be handled in remove method
+                            //sendNotification(new Notification(bookingAffected), student);
                         }
 
-                        //Remove booking
-                        bookingRef.child(data.getKey()).setValue(null);
+                        //Remove booking - Alina: will be handled in remvoe method
+                       // bookingRef.child(data.getKey()).setValue(null);
                     }
                 }
             }
