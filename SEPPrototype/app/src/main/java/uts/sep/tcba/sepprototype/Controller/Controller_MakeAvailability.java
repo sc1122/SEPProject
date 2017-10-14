@@ -54,10 +54,10 @@ public class Controller_MakeAvailability extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (Tutor) bundle.getSerializable("user");
-
         setContent();
-
         setSupportActionBar(toolbar);
+
+        // Sets listner for button to save availability
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
@@ -66,6 +66,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
             }
         });
 
+        // Sets listener for button to increment capacity field
         Button addButton = (Button) findViewById(R.id.addCapacity);
         addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
@@ -74,6 +75,8 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                 capText.setText(String.valueOf(c));
             }
         });
+
+        // Sets listener for button to decrement capacity field
         Button removeButton = (Button) findViewById(R.id.removeCapacity);
         removeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
@@ -97,7 +100,7 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     /*
     Method which gets the details of the availability as selected
     Then creates a new availability object with these parameters
-    Then stores this object on firebase
+    Then stores this object on creation in Firebase
      */
     public Availability getDetails(){
         setParameters(startTP, endTP);
@@ -124,6 +127,19 @@ public class Controller_MakeAvailability extends AppCompatActivity {
     required parameters
      */
     private void setContent(){
+        getCalendarDate();
+        startTP = (TimePicker) findViewById(R.id.startTime);
+        startTP.setIs24HourView(true);
+        startTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        endTP = (TimePicker) findViewById(R.id.endTime);
+        endTP.setIs24HourView(true);
+        endTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        capText = (TextView) findViewById(R.id.capacityText);
+        locText = (EditText) findViewById(R.id.locationText);
+        setMinutePicker();
+    }
+
+    private void getCalendarDate(){
         cal = (CalendarView) findViewById(R.id.calendarView);
         cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
             @Override
@@ -141,15 +157,6 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                 date = String.valueOf(correctDay + "/" + correctMonth + "/") + correctYear;
             }
         });
-        startTP = (TimePicker) findViewById(R.id.startTime);
-        startTP.setIs24HourView(true);
-        startTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
-        endTP = (TimePicker) findViewById(R.id.endTime);
-        endTP.setIs24HourView(true);
-        endTP.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
-        capText = (TextView) findViewById(R.id.capacityText);
-        locText = (EditText) findViewById(R.id.locationText);
-        setMinutePicker();
     }
 
     /*
