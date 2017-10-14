@@ -36,8 +36,8 @@ public class Booking implements Serializable {
         this.description = description;
 
         //send notifications to studnet and tutor
-        new Notification(this, "student", "create").saveNotificationFirebase(); //but this isn't really necessary since student the one making booking
-        new Notification(this, "tutor", "create").saveNotificationFirebase();
+        //new Notification(this, "student", "create").saveNotificationFirebase(); //but this isn't really necessary since student the one making booking
+        new Notification(this, "create").saveNotificationFirebase();
     }
 
     public Booking(DataSnapshot booking) { // Constructor for fetching the Booking from Firebase
@@ -56,7 +56,6 @@ public class Booking implements Serializable {
         }
         this.availabilityID = booking.child("availabilityID").getValue(String.class);
         this.description = booking.child("description").getValue(String.class);
-
 
     }
 
@@ -124,23 +123,6 @@ public class Booking implements Serializable {
         return this.students;
     }
 
-    /*
-    public String getStudentsToString(LinkedList<String> students) {
-        if (head == null) {
-            return "no one";
-        }
-        String result = "";
-        Node curr = head;
-        while (curr.next != null) {
-            curr = curr.next;
-            result += curr.data;
-            if (curr.next != null)
-                result += ", ";
-        }
-        return "";
-    }
-    */
-
     public void remove(String userType, Booking currentBooking, String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
@@ -149,15 +131,12 @@ public class Booking implements Serializable {
                 ref.child("students").child(userID).setValue(null);
             } else {
                 ref.setValue(null);
-                //send cancellation notification to tutor
-                new Notification(currentBooking, "tutor", "cancel");
             }
         } else if (userType.equals("Tutor")) {
-            new Notification(currentBooking, userType, "cancel");
             ref.setValue(null);
             //send cancellation notification to student
-            new Notification(currentBooking, "student", "cancel");
-
+            Notification cancelNotification = new Notification(currentBooking, "cancel");
+            cancelNotification.saveNotificationFirebase();
         }
     }
 

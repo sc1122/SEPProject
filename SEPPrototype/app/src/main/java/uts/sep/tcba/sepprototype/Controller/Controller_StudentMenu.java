@@ -221,8 +221,7 @@ private boolean newBooking = true;
         }
         else if (notifTab) { // if the notifications tab is the active tab
             for (Notification not : notifications) {
-                //pageList.add(not.toString());  // load notifications into the list
-                pageList.add(not.CreatedMessagetoStudent());
+                pageList.add(not.cancelledMessagetoStudent());  // load notifications into the list
             }
         }
         if (pageList.size() > 0) { // if the list is not empty
