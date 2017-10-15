@@ -25,89 +25,28 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
-/**
- * A login screen that offers login via ID/password.
- */
 public class Controller_Authentication extends AppCompatActivity {
 
-    // UI references.
+    // UI elements
     private AutoCompleteTextView mIdView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
 
-    public String ID;
-    public String password;
-    public String userType;
-
-    public void getUserDetails() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String userPath = "Users/" + ID;
-        DatabaseReference ref = database.getReference(userPath);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("Email").exists()) {
-                    String email = dataSnapshot.child("Email").getValue(String.class);
-                    userType = dataSnapshot.child("Type").getValue(String.class);
-                    login(email, userType);
-                } else {
-                    showProgress(false, false); // stop the spinner
-                    mIdView.setError("Invalid ID");
-                    mIdView.requestFocus();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
-            }
-        });
-    }
-
-    public void login(String email, final String userType) {
-        mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("IMPORTANT", "signInWithEmail:onComplete:" + task.isSuccessful());
-                        if (!task.isSuccessful()) {
-                            Log.d("AUTHFAIL", "signInWithEmail:failed", task.getException());
-                            showProgress(false, false); // stop the spinner
-                            mPasswordView.setError(getString(R.string.error_incorrect_password));
-                            mPasswordView.requestFocus();
-                        } else {
-
-                            Intent intent;
-                            if (userType.equals("Tutor")) {
-                                //If it's a tutor, Go to tutor menu
-                                intent = new Intent(Controller_Authentication.this, Controller_TutorMenu.class);
-                            } else {
-                                //If it's a student, Go to student menu
-                                intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
-                            }
-
-                            TextView id = (TextView) findViewById(R.id.IDnumber);
-                            TextView pw = (TextView) findViewById(R.id.password);
-                            id.setText("");
-                            pw.setText("");
-                            intent.putExtra("user", ID);
-                            intent.putExtra("type", userType);
-                            showProgress(false, true); // stop the spinner
-                            startActivity(intent);
-                        }
-                    }
-                });
-    }
+    public String ID; // String containing the UTS user entered
+    public String password; // String containing the password entered
+    public String userType; // String containing the type of user logging in
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
+
         // Set up the login form.
         mIdView = (AutoCompleteTextView) findViewById(R.id.IDnumber);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -132,19 +71,11 @@ public class Controller_Authentication extends AppCompatActivity {
                 attemptLogin();
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
 
-    /**
-     * Attempts to sign in the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
+     // Performs pre-login validation of the login form before calling Firebase
     private void attemptLogin() {
-
-        // Reset errors.
+        // Clear any input errors
         mIdView.setError(null);
         mPasswordView.setError(null);
 
@@ -152,69 +83,131 @@ public class Controller_Authentication extends AppCompatActivity {
         ID = mIdView.getText().toString();
         password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
+        boolean preDatabaseValidation = true; // assume validation will pass
         View focusView = null;
 
-        // Check for a valid ID.
+        // Check if a UTS user ID has been entered
         if (TextUtils.isEmpty(ID)) {
-            mIdView.setError(getString(R.string.error_field_required));
-            focusView = mIdView;
-            cancel = true;
+            mIdView.setError(getString(R.string.error_field_required)); // set message saying field is mandatory
+            focusView = mIdView; // switch focus to this field
+            preDatabaseValidation = false; // validation failed
         }
 
-        if (password.length() < 6) {
-            if (TextUtils.isEmpty(password)) {
-                mPasswordView.setError(getString(R.string.error_field_required));
-            } else {
-                mPasswordView.setError("Password is too short");
+        // Check password has been entered and is longer than the password minimum character limit (defined by Firebase Authentication)
+        if (password.length() < 8) {
+            if (TextUtils.isEmpty(password)) { // if empty
+                mPasswordView.setError(getString(R.string.error_field_required)); // set message saying field is mandatory
+            } else { // otherwise too short
+                mPasswordView.setError("Password is too short - 8 charaters minimum"); // set message password is too short
             }
-            focusView = mPasswordView;
-            cancel = true;
+            focusView = mPasswordView; // switch focus to this field
+            preDatabaseValidation = false; // validation failed
         }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+        if (preDatabaseValidation) { // if validation has not been failed by checks
+            // Show a progress spinner, and kick off a background task to perform the user login attempt.
             showProgress(true, false);
             getUserDetails();
+        } else {
+            // There was an error in validation, set focus to error and display message. No login attempt made to database
+            focusView.requestFocus();
         }
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
+    // Ensure user is in the Firebase real-time database and get their email if they are
+    public void getUserDetails() {
+        String userPath = "Users/" + ID;
+        DatabaseReference ref =  FirebaseDatabase.getInstance().getReference(userPath); // sets database reference to the user ID entered
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("Email").exists()) { // if the reference to the user ID exists and has an email attribute
+                    String email = dataSnapshot.child("Email").getValue(String.class); // extract user's email from Firebase
+                    userType = dataSnapshot.child("Type").getValue(String.class); // get the user type from Firebase
+                    login(email, userType); // Attempt to log in with the user's email and the password they provided
+                } else {
+                    showProgress(false, false); // stop the progress spinner
+                    mIdView.setError("Invalid ID"); // set message saying ID not found
+                    mIdView.requestFocus(); // switch focus to this field
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
+            }
+        });
+    }
+
+    // Use user's email and password to attempt authentication with Firebase authentication database
+    public void login(String email, final String userType) {
+        mAuth = FirebaseAuth.getInstance(); // Database connection to Firebase authentication database
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.i("IMPORTANT", "signInWithEmail:onComplete:" + task.isSuccessful()); // informational debug statement written to log as to whether login succeeded
+                        if (task.isSuccessful()) { // if login was successful
+                            Intent intent; // create new intent to parse data to next screen/activity
+                            if (userType.equals("Tutor")) {
+                                // if the user is a tutor, set destination to tutor menu
+                                intent = new Intent(Controller_Authentication.this, Controller_TutorMenu.class);
+                            } else {
+                                // if the user is a student, set destination to student menu
+                                intent = new Intent(Controller_Authentication.this, Controller_StudentMenu.class);
+                            }
+                            intent.putExtra("user", ID); // Pass the user's ID to the their menu
+                            clearInputCredentials(); // Reset for next login on device
+                            showProgress(false, true); // stop the spinner
+                            startActivity(intent); // Go to main menu
+                        } else { // if login failed
+                            Log.e("AUTHFAIL", "signInWithEmail:failed", task.getException()); // error debug statement written to log
+                            showProgress(false, false); // stop the spinner
+                            mPasswordView.setError(getString(R.string.error_incorrect_password)); // set message saying password incorrect
+                            mPasswordView.requestFocus(); // switch focus to this field
+                        }
+                    }
+                });
+    }
+
+    public void clearInputCredentials() {
+        // Clear the credential input fields
+        TextView id = (TextView) findViewById(R.id.IDnumber);
+        TextView pw = (TextView) findViewById(R.id.password);
+        id.setText("");
+        pw.setText("");
+        // Reset ID and password
+        ID = "";
+        password = "";
+    }
+
+    //Shows the progress wheel UI and hides the login form.
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show, boolean ending) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) { // if animation supported
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
+            // Hide the login form with animation depending on the show variable (false). Opposite, if true
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
+            // Show the progress wheel with animation depending on the show variable (false). Opposite, if true
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            mProgressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
+        } else { // otherwise animation not supported
+            // The ViewPropertyAnimator APIs are not available, so simply show and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }

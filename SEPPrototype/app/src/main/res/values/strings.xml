@@ -2,20 +2,25 @@
     <string name="app_name">Tutor Consultation Booker</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_ID">Student ID</string>
+    <string name="prompt_ID">UTS ID</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Log In</string>
     <string name="action_sign_in_short">Log In</string>
     <string name="error_invalid_ID">Invalid ID number</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+
+    <!-- Field validation -->
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+
+    <!-- Title strings -->
     <string name="title_activity_studentmenu">Consulation Booker</string>
     <string name="title_bookings">Bookings</string>
     <string name="title_subjects">Subjects</string>
     <string name="title_availabilities">Availabilities</string>
     <string name="title_notifications">Notifications</string>
+
+    <!-- List empty -->
     <string name="bookings_placeholder">No bookings to show</string>
     <string name="subjects_placeholder">Not enrolled in any subjects</string>
     <string name="availabilites_placeholder">"No availabilities added.\n\nClick the button in the bottom right of the screen to add an availability."</string>

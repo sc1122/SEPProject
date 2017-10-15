@@ -27,7 +27,8 @@
 
             android:name=".Controller_MakeBooking"
             android:label="@string/title_activity_makebooking"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".Controller_TutorMenu"
             android:label="@string/title_activity_controller__tutor_menu"
@@ -49,9 +50,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".Controller_ViewAvailability"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

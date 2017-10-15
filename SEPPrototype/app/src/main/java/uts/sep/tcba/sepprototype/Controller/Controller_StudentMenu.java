@@ -93,7 +93,6 @@ private boolean newBooking = true;
         // Fetch user from previous activity
         Intent intent = getIntent();
         int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
-        String loggedInUserType = intent.getStringExtra("type");
         currentStudent = new Student(loggedInUserID);
 
         initFirebase();
