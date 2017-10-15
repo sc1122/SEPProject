@@ -132,8 +132,10 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 }else if(availTabSelected) { // if availability selected
                     Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewAvailability.class); // set destination to ViewAvailability activity
                     Availability selectedAvailability = availabilities.get(position); // get availability selected
-                    intent.putExtra("availability", selectedAvailability); // Pass selected booking
-                    intent.putExtra("userID",currentTutor.getID()+""); // Pass user ID
+                    Bundle b = new Bundle();
+                    b.putSerializable("user", currentTutor); // Pass current user
+                    b.putSerializable("availability", selectedAvailability); // Pass selected availability
+                    intent.putExtras(b); // add data to intent
                     startActivityForResult(intent, 3); // transition to MakeBooking activity with the intent
                 }
             }
@@ -158,7 +160,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("FirebaseFailure", databaseError.toString());
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
 
@@ -168,10 +170,11 @@ public class Controller_TutorMenu extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 getAvailabilities(dataSnapshot); // Populate user availabilities
+                currentTutor.setAvailabilities(availabilities);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("FirebaseFailure", databaseError.toString());
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
 
@@ -188,7 +191,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
     }

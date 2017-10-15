@@ -134,7 +134,7 @@ public class Controller_Authentication extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
     }

@@ -154,7 +154,7 @@ public class Controller_StudentMenu extends AppCompatActivity{
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("FirebaseFailure", databaseError.toString());
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
 
@@ -172,7 +172,7 @@ public class Controller_StudentMenu extends AppCompatActivity{
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
     }

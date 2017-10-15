@@ -27,7 +27,6 @@ public class Booking implements Serializable {
 
     public Booking(DataSnapshot booking) { // Constructor for fetching the Booking from Firebase
         this.bookingID = booking.getKey();
-        Log.d("KEY IS", bookingID);
         this.date = booking.child("date").getValue(String.class);
         this.startTime = Double.valueOf(booking.child("startTime").getValue(String.class).replace(':','.'));
         this.endTime = Double.valueOf(booking.child("endTime").getValue(String.class).replace(':','.'));
@@ -143,46 +142,40 @@ public class Booking implements Serializable {
     }
 
     @Exclude
-    public String getAllNotes() {
+    public String getAllNotes() { // gets the notes for all students to be loaded into the Notes field in ViewBooking
         String allNotes = "";
         for (int i = 0; i < getStudents().size(); i++) {
-            allNotes = getStudentNames().get(i) + " (" + getStudents().get(i) + ")" + " - " + getStudentNotes().get(i);
-            if (i < getStudents().size() - 1) {
-                allNotes = allNotes + "\n\n";
+            allNotes = getStudentNames().get(i) + " (" + getStudents().get(i) + ")" + " - " + getStudentNotes().get(i); // concat students name, id and notes
+            if (i < getStudents().size() - 1) { // if there are more students
+                allNotes = allNotes + "\n\n"; // add a line break
             }
         }
         return allNotes;
     }
 
     public void remove(String userType, Booking currentBooking, String userID) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference().child("Bookings/" + currentBooking.getBookingID());
-        if (userType.equals("Student")) {
-            if (currentBooking.getStudents().size() > 1) {
-                ref.child("students").child(userID).setValue(null);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Bookings/" + currentBooking.getBookingID());
+        if (userType.equals("Student")) { // if its a student
+            if (currentBooking.getStudents().size() > 1) { // if not the only student attending
+                ref.child("students").child(userID).setValue(null); // remove that student from the booking
             } else {
-                ref.setValue(null);
+                ref.setValue(null); // remove the booking
             }
-        } else if (userType.equals("Tutor")) {
-            sendCancellationNotifications(new Notification(currentBooking));
-            ref.setValue(null);
+        } else if (userType.equals("Tutor")) { // if its a tutor
+            sendCancellationNotifications(new Notification(currentBooking)); // send cancellation notification
+            ref.setValue(null); // // remove the booking
         }
     }
 
-    public DatabaseReference userNotification(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users");
-        return ref;
-    }
-
-    public void sendCreateNotification(Notification notification) {
-        DatabaseReference ref = userNotification();
-        ref.child(String.valueOf(tutor)).child("Notifications").push().setValue(notification);
+    public void sendCreateNotification(Notification notification) { // notify tutor on student booking a timeslot of their availability
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(String.valueOf(tutor)).child("Notifications"); // set reference to the Notifications of the tutor of the booking
+        ref.push().setValue(notification); // save the notification to Firebase
     }
 
     public void sendCancellationNotifications(Notification notification) {
-        DatabaseReference ref = userNotification();
-        for (String s : students) {
-            ref.child(s).child("Notifications").push().setValue(notification);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users"); // set reference to the Users reference
+        for (String s : getStudents()) { // for each student in the booking
+            ref.child(s).child("Notifications").push().setValue(notification); // set the reference to their Notifications and save the notification to Firebase
         }
     }
 
@@ -190,10 +183,4 @@ public class Booking implements Serializable {
     public String toString(){
         return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
     }
-
-    @Exclude
-    public boolean isFull(){ //Returns true if the booking is full, returns false otherwise
-        return (students.size() == capacity);
-    }
-
 }

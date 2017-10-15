@@ -12,23 +12,13 @@ public class Student extends User implements Serializable {
 
     public Student() { }
 
-    public Student(int ID) {
+    public Student(int ID) { // Constructor for fetching the Student from Firebase
         super(ID);
         fetchTutorsForSubject();
     }
 
-    public Student(DataSnapshot data){
+    public Student(DataSnapshot data){ // Constructor for creating a new Student to be used locally
         super(data);
-        fetchTutorsForSubject();
-    }
-
-    public Student(User user) {
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.ID = user.getID();
-        this.subjects = user.getSubjects();
-        this.type = user.getType();
-        this.email = user.getEmail();
         fetchTutorsForSubject();
     }
 

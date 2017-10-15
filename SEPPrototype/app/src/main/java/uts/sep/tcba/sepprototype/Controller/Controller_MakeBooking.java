@@ -35,57 +35,52 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private LinkedList<String> timeslots = new LinkedList<String>();
     private String existingBookingID = "";
     private String desc;
+    private EditText description;
 
-    private boolean hasChanged = false;
-
-    private Spinner consDate;
-    private Spinner consTime;
+    private Spinner consDate = (Spinner)findViewById(R.id.date);
+    private Spinner consTime = (Spinner)findViewById(R.id.time);
     private Bundle bundleSend;
     private Intent intentSend;
-    private EditText description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        final Bundle bundle = this.getIntent().getExtras();
+        // Get data from menu
+        Bundle bundle = this.getIntent().getExtras();
         currentUser = (Student) bundle.getSerializable("user");
         setContent();
 
-        intentSend = getIntent();
-        setSupportActionBar(toolbar);
+        // Initialise the Save button action on tool bar
         Button b = (Button) findViewById(R.id.save);
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                intentSend = getIntent();
                 bundleSend = new Bundle();
-                final Booking book = getDetails();
-                // iterate through all bookings for that tutor on that date at that time for that subject
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
+                final Booking book = getDetails(); // create a local booking object for comparison with the booking in Firebase
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings"); // set a reference for all bookings
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-                            // If there is a booking at the same time as selected
-                            if (book.getStartTime().equals(data.child("startTime").getValue(String.class)) &&
-                                    book.getEndTime().equals(data.child("endTime").getValue(String.class)) &&
-                                    book.getSubject() == data.child("subject").getValue(Integer.class) &&
-                                    book.getTutor() == data.child("tutor").getValue(Integer.class)) {
-                                Log.d("MATCH", "FOUND");
-                                existingBookingID = data.getKey();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) { // iterate through all bookings
+                            // If there is a booking at the same time as selected that is for the same subject and is a child of the same tutor's availability
+                            if (book.getStartTime().equals(data.child("startTime").getValue(String.class)) && book.getEndTime().equals(data.child("endTime").getValue(String.class)) &&
+                                    book.getSubject() == data.child("subject").getValue(Integer.class) && book.getAvailabilityID() == data.child("availabilityID").getValue(String.class)) {
+                                Log.i("MATCH FOUND", data.getKey()); // informational debug statement written to log to indicate a match has been found
+                                existingBookingID = data.getKey(); // store the bookingID for that match
                             }
                         }
-                        Log.d("MATCH", existingBookingID);
-                        bundleSend.putString("existingBookingID", existingBookingID);
-                        bundleSend.putSerializable("booking", book);
-                        intentSend.putExtras(bundleSend);
-                        setResult(RESULT_OK, intentSend);
-                        finish();
+                        bundleSend.putString("existingBookingID", existingBookingID); // Pass existingBookingID
+                        bundleSend.putSerializable("booking", book); // Pass booking
+                        intentSend.putExtras(bundleSend); // add data to intent
+                        setResult(RESULT_OK, intentSend); // add intent to finish
+                        finish(); // transition back back to StudentMenu
                     }
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
+                    public void onCancelled(DatabaseError databaseError) { Log.e("FirebaseFailure", databaseError.toString()); }
                 });
             }
         });
@@ -98,7 +93,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
     TODO: Create booking use cases use this method!
      */
     public Booking getDetails(){
-        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID(), desc);
+        Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID(), desc); // create a new booking object locally to be pushed to Firebase
         booking.sendCreateNotification(new Notification(booking)); // send notification to tutor notifying them of the student booking them
         return booking;
     }
@@ -131,7 +126,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         // Clear fields if no availability for selected subject
-                        Spinner consTime = (Spinner)findViewById(R.id.time);
                         consTime.setAdapter(null);
                         TextView loc = (TextView) findViewById(R.id.location);
                         loc.setText("");
@@ -143,14 +137,10 @@ public class Controller_MakeBooking extends AppCompatActivity {
                         setDateList();
                         TextView tutorName = (TextView) findViewById(R.id.tutor);
                         tutorName.setText(tutor.getFirstName() + " " + tutor.getLastName());
-
-                        //maybe put desc stuff here???
-
-
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d("RLdatabase", "Failed");
+                        Log.e("FirebaseFailure", databaseError.toString());
                     }
                 });
             }
@@ -161,7 +151,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     private void setDateList(){
-        consDate = (Spinner)findViewById(R.id.date);
         consDate.setPrompt("Select Date");
         dateAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, tutor.getAvailableDates());
         consDate.setAdapter(dateAdapter);
@@ -179,7 +168,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     private void setTimeList(){
-        consTime = (Spinner)findViewById(R.id.time);
         consTime.setPrompt("Select Time");
         timeslots.clear();
         for (Availability a : availabilities) {
@@ -203,25 +191,24 @@ public class Controller_MakeBooking extends AppCompatActivity {
     }
 
     public void removeClashingTimeslots(final LinkedList<String> startTimes, final LinkedList<String> endTimes){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Bookings"); // set a reference for all bookings
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    for (int i = 0; i < startTimes.size(); i = i + 1) {
-                        // If there is a booking at the same time as selected
+                for (DataSnapshot data : dataSnapshot.getChildren()) { // iterate through all bookings
+                    for (int i = 0; i < startTimes.size(); i = i + 1) { // for each timeslot in the availability
+
                         if (startTimes.get(i).equals(data.child("startTime").getValue(String.class).replace(':', '.')) &&
-                                endTimes.get(i).equals(data.child("endTime").getValue(String.class).replace(':', '.'))) {
-                            if (data.child("students").child(String.valueOf(currentUser.getID())).exists()) {
-                                Log.d("Student booked", "WOO");
-                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i));
-                            } else if (subject == data.child("subject").getValue(Integer.class) // If there is a booking for the same subject as selected and not full
-                                    && data.child("students").getChildrenCount() < data.child("capacity").getValue(Long.class)) {
-                                Log.d("Booked but open", "WOO");
-                            } else {
-                                // Otherwise, remove timeslot
-                                Log.d("Not free", "WOO");
-                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i));
+                                endTimes.get(i).equals(data.child("endTime").getValue(String.class).replace(':', '.'))) { // If there is a booking at the same time as selected
+                            if (data.child("students").child(String.valueOf(currentUser.getID())).exists()) { // If the student is already booked
+                                Log.i("Student already booked", "Removing timeslot"); // informational debug statement written to log to indicate student is booked for this time
+                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i)); // remove that timeslot
+                            } else if (subject == data.child("subject").getValue(Integer.class)
+                                    && data.child("students").getChildrenCount() < data.child("capacity").getValue(Long.class)) { // If there is a booking for the same subject as selected and not booking not full
+                                Log.i("Timeslot already booked", "Keeping timeslot, same subject and not full"); // informational debug statement written to log to indicate this is a bookable timeslot
+                            } else { // Otherwise, timeslot is booked for different subject or other, remove timeslot
+                                Log.d("Timeslot already booked", "Removing timeslot"); // informational debug statement written to log to indicate this is not a bookable timeslot
+                                timeslots.remove(startTimes.get(i) + " - " + endTimes.get(i)); // remove that timeslot
                             }
                         }
                     }
@@ -271,7 +258,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
         description.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                hasChanged = true;
                 desc = description.getText().toString();
             }
 

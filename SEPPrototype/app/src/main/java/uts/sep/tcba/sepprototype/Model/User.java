@@ -6,16 +6,16 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 public class User implements Serializable {
-    public int ID;
-    public String firstName;
-    public String lastName;
-    public String email;
-    public LinkedList<String> subjects = new LinkedList<String>();
-    public String type;
+    public int ID; // stores ID of user
+    public String firstName; // stores first name of user
+    public String lastName; // stores last name of user
+    public String email; // stores email of user
+    public LinkedList<String> subjects = new LinkedList<String>(); // stores subjects the user teaches/is enrolled in
+    public String type; // stores type of user
 
     public User() { }
 
-    public User(int ID) {
+    public User(int ID) {  // Constructor for fetching the User from Firebase
         this.ID = ID;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + String.valueOf(ID));
@@ -27,24 +27,22 @@ public class User implements Serializable {
                 email = dataSnapshot.child("Email").getValue(String.class);
                 extractAndAddSubjects(dataSnapshot.child("Subjects"));
                 type = dataSnapshot.child("Type").getValue(String.class);
-                Log.d("USER OBJECT", "CREATED");
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("RLdatabase", "Failed");
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
     }
 
-    public User (DataSnapshot data) {
+    public User (DataSnapshot data) { // Constructor for creating a new User to be used locally
         ID = Integer.parseInt(data.getKey());
         firstName = data.child("FirstName").getValue(String.class);
         lastName = data.child("LastName").getValue(String.class);
         email = data.child("Email").getValue(String.class);
         extractAndAddSubjects(data.child("Subjects"));
         type = data.child("Type").getValue(String.class);
-        Log.d("USER OBJECT", "CREATED");
     }
 
     public int getID() { return this.ID; }
@@ -84,10 +82,6 @@ public class User implements Serializable {
             }
         }
         return null;
-    }
-
-    public void cancelConsultation() {
-
     }
 
     @Override

@@ -16,40 +16,22 @@ public class Tutor extends User implements Serializable {
 
     public LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
-    public Tutor(int ID){
-        super(ID);
-        //fetchAvailabilities();
-    }
-
     public Tutor() { };
 
-    public Tutor(DataSnapshot data){
+    public Tutor(int ID){ // Constructor for fetching the Tutor from Firebase
+        super(ID);
+    }
+
+    public Tutor(DataSnapshot data){ // Constructor for creating a new Tutor to be used locally
         super(data);
-        fetchAvailabilities(data);
-    }
-
-    public Tutor(User user){
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.ID = user.getID();
-        this.subjects = user.getSubjects();
-        this.type = user.getType();
-        this.email = user.getEmail();
-        //fetchAvailabilities();
-    }
-
-    public void fetchAvailabilities(DataSnapshot data) {
-        for (DataSnapshot ds : data.child("Availabilities").getChildren()) {
-            availabilities.add(new Availability(ds));
-        }
-    }
-
-    public void deleteAvailability() {
-
     }
 
     public LinkedList<Availability> getAvailabilities(){
         return availabilities;
+    }
+
+    public void setAvailabilities(LinkedList<Availability> availabilities) {
+        this.availabilities = availabilities;
     }
 
     public void sortAvailabilities() {

@@ -52,7 +52,7 @@ public class Availability implements Serializable {
         return timeSlots;
     }
 
-    private String timeDivide(double time) { //TODO: Add comments to explain what this does
+    private String timeDivide(double time) { // splits a given double time into a 30 minute 'slot' which is formatted as a string
         if (String.format("%.2f", time).endsWith(".30"))
             return (String.format("%.2f", time) + " - " + String.format("%.2f", (time+0.7)));
         else
@@ -103,9 +103,8 @@ public class Availability implements Serializable {
 
     public void remove(final Availability currentAvailability, String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID());
-        //Remove the availability
-        ref.setValue(null);
+        DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID()); // target the Firebase reference for the user's availability which they wish to cancel
+        ref.setValue(null); //Remove the availability
 
         //Remove associated booking(s)
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
@@ -114,23 +113,17 @@ public class Availability implements Serializable {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Find bookings matching availability by comparing ID
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())) {
-                        //get affected booking
-                        Booking bookingAffected = new Booking(data);
-                        for (String student :bookingAffected.getStudents()) {
-                            //Send notification to each student
-                            sendNotification(new Notification(bookingAffected), student);
-                        }
-
-                        //Remove booking
-                        bookingRef.child(data.getKey()).setValue(null);
+                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())) { // if the booking is affected
+                        Booking bookingAffected = new Booking(data); // create a local booking object for the booking in Firebase
+                        bookingAffected.sendCancellationNotifications(new Notification(bookingAffected)); // send cancellation notifications to all students attending
+                        bookingRef.child(data.getKey()).setValue(null); // remove booking
                     }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
 
@@ -139,8 +132,7 @@ public class Availability implements Serializable {
     public void edit(final Availability currentAvailability, String userID, final String location) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID()).child("location");
-        //Change the location
-        ref.setValue(location);
+        ref.setValue(location); // change the location
 
         //Also change location for associated booking(s)
         final DatabaseReference bookingRef = database.getReference().child("Bookings");
@@ -148,24 +140,17 @@ public class Availability implements Serializable {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Find booking matching availability by comparing ID
-                for(DataSnapshot data: dataSnapshot.getChildren()){
-                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){
-                        //Edit all locations for the bookings
-                        bookingRef.child(data.getKey()).child("location").setValue(location);
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    if(data.child("availabilityID").getValue().equals(currentAvailability.getID())){ // if booking belongs to the availability
+                        bookingRef.child(data.getKey()).child("location").setValue(location); // change location of the booking
                     }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
-    }
-
-    public void sendNotification(Notification notification, String student) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference().child("Users");
-        ref.child(student).child("Notifications").push().setValue(notification);
     }
 }

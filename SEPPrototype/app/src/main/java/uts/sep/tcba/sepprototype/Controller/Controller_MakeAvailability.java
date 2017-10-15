@@ -236,27 +236,27 @@ public class Controller_MakeAvailability extends AppCompatActivity {
                         // if the new availability's time range will encompass the start time or end time of an existing availability
                         if (((startTime >= ssStartTime && startTime < ssEndTime) || (endTime >= ssStartTime && endTime < ssEndTime)) ||
                                 ((ssStartTime >= startTime && ssStartTime < endTime) || (ssEndTime >= startTime && ssEndTime < endTime))) {
-                            //show error if it is
-                            showErrorDialog("Availability Error", "Clashes with an existing avialability!");
-                            existingAvailability = true;
+                            showErrorDialog("Availability Error", "Clashes with an existing avialability!"); //show error
+                            existingAvailability = true; // set boolean flag to indicate clash
                             //Break out of the main loop to prevent checking for another round
                             break mainloop;
                         }
                     }
                 }
-                if(!existingAvailability) {
+                if(!existingAvailability) { // if there is not a clash in availabilities (no collision)
+                    // Send data back to TutorMenu
                     Intent intent = getIntent();
                     Bundle b = new Bundle();
-                    b.putSerializable("availability", availability);
-                    intent.putExtras(b);
-                    setResult(RESULT_OK, intent);
-                    finish();
+                    b.putSerializable("availability", availability); // Pass availability
+                    intent.putExtras(b); // add data to intent
+                    setResult(RESULT_OK, intent); // add intent to finish
+                    finish(); // transition back to TutorMenu
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("FirebaseFailure", databaseError.toString());
             }
         });
     }
