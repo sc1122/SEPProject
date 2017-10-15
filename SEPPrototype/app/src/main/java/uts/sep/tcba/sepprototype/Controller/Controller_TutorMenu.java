@@ -27,6 +27,7 @@ import java.util.LinkedList;
 
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Booking;
+import uts.sep.tcba.sepprototype.Model.Notification;
 import uts.sep.tcba.sepprototype.Model.Tutor;
 
 public class Controller_TutorMenu extends AppCompatActivity {
@@ -36,6 +37,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
     private FloatingActionButton newAvailabilityButton;
     private LinkedList<Booking> bookings = new LinkedList<Booking>();
     private LinkedList<Availability> availabilities = new LinkedList<Availability>();
+    private LinkedList<Notification> notifications = new LinkedList<Notification>();
     private LinkedList<String> pageList = new LinkedList<String>();
     private ArrayAdapter adapter;
     private FirebaseAuth mAuth;
@@ -167,19 +169,33 @@ public class Controller_TutorMenu extends AppCompatActivity {
             }
         });
 
-        // Set a listener on the user's ID reference in Firebase so that when any data is created/updated/removed (namely Notifications & Availabilities), the changes will be pulled to device
+        // Set a listener on the user's ID reference in Firebase so that when any data is created/updated/removed (namely Availabilities), the changes will be pulled to device
         DatabaseReference refUser = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID());
         refUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!getTitle().toString().contains(currentTutor.getFullName())) {
-                    setTitle(getTitle() + " - " + currentTutor.getFullName() + " (T)");
-                }
                 getAvailabilities(dataSnapshot); // Populate user availabilities
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("FirebaseFailure", databaseError.toString());
+            }
+        });
+
+        // Set a listener for when the tutor logs in to tutor's notifications since last log in
+        DatabaseReference refNot = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID());
+        refNot.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setTitle(getTitle() + " - " + currentTutor.getFullName() + " (T)");
+                for (DataSnapshot d : dataSnapshot.child("Notifications").getChildren()) {
+                    notifications.add(new Notification(d)); //  get all notifications for user
+                }
+                FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID()).child("Notifications").setValue(null); // Clear notifications from Firebase
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("RLdatabase", "Failed");
             }
         });
     }
@@ -249,7 +265,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 pageList.add(a.toString()); // load availabilities into the list
             }
         } else if (notifTab) { // if the notifications tab is the active tab
-            // load availabilities into the list
+            for (Notification not : notifications) {
+                pageList.add(not.createdMessageToTutor());  // load notifications into the list
+            }
         }
         if (pageList.size() > 0) { // if the list is not empty
             mTextMessage.setVisibility(View.GONE); // hide list empty message

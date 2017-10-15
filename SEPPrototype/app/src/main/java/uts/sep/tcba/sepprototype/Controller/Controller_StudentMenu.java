@@ -219,7 +219,7 @@ private boolean newBooking = true;
             pageList.addAll(subjects); // load subjects into the list
         } else if (notifTab) { // if the notifications tab is the active tab
             for (Notification not : notifications) {
-                pageList.add(not.toString());  // load notifications into the list
+                pageList.add(not.cancelledMessageToStudent());  // load notifications into the list
             }
         }
         if (pageList.size() > 0) { // if the list is not empty
@@ -240,13 +240,13 @@ private boolean newBooking = true;
         } else {
             targetRef = bookingsRef.child(existingBookingID);
         }
-        setAttendingBooking(targetRef);
+        setCurrentStudentInformation(targetRef, booking.getCurrentStudentNotes()); // adds current student and their notes to the booking
     }
 
-    public void setAttendingBooking(DatabaseReference bookingStudentStatus) {
-        bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).setValue(currentStudent.getFirstName() + " " + currentStudent.getLastName());
+    public void setCurrentStudentInformation(DatabaseReference bookingStudentStatus, String studentNotes) {
+        bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).child("Name").setValue(currentStudent.getFullName());
+        bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).child("Notes").setValue(studentNotes);
     }
-
 
     @Override
     public void onBackPressed(){

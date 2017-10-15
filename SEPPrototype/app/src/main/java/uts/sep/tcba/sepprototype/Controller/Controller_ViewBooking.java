@@ -94,13 +94,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
         tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");
         date.setText(currentBooking.getDate());
         time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
-        if(currentBooking.getDescription()== null){
-            descriptionText.setVisibility(View.GONE);
-            description.setVisibility(View.GONE);
-        }else{
-            description.setText(currentBooking.getDescription());
-        }
-        description.setText(currentBooking.getDescription());
+        description.setText(currentBooking.getAllNotes());
         if(currentBooking.getLocation() == "") {
             locationText.setVisibility(View.GONE);
             location.setVisibility(View.GONE);

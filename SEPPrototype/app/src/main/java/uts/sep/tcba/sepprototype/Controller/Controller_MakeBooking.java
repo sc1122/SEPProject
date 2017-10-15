@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 import uts.sep.tcba.sepprototype.Model.Availability;
 import uts.sep.tcba.sepprototype.Model.Booking;
+import uts.sep.tcba.sepprototype.Model.Notification;
 import uts.sep.tcba.sepprototype.Model.Student;
 import uts.sep.tcba.sepprototype.Model.Tutor;
 
@@ -98,6 +99,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
      */
     public Booking getDetails(){
         Booking booking = new Booking(startTime, endTime, subject, tutor, selectedAvailability, currentUser, selectedAvailability.getID(), desc);
+        booking.sendCreateNotification(new Notification(booking)); // send notification to tutor notifying them of the student booking them
         return booking;
     }
 
