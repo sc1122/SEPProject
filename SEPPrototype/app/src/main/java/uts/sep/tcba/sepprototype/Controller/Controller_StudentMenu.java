@@ -32,19 +32,19 @@ import uts.sep.tcba.sepprototype.Model.Student;
 
 public class Controller_StudentMenu extends AppCompatActivity{
 
-    private TextView mTextMessage;
-    private ListView listView;
-    private FloatingActionButton newBookingButton;
-    private LinkedList<Booking> bookings = new LinkedList<Booking>();
-    private LinkedList<String> subjects = new LinkedList<String>();
-    private LinkedList<Notification> notifications = new LinkedList<Notification>();
-    private LinkedList<String> pageList = new LinkedList<String>();
-    private ArrayAdapter adapter;
-    private FirebaseAuth mAuth;
-    private Student currentStudent;
-    private boolean bookingTabSelected = true;
-    private boolean subjectTabSelected = false;
-    private boolean notifTabSelected = false;
+    private TextView mTextMessage; // TextView UI component to indicated an empty list
+    private ListView listView; // ListView UI component to represent data
+    private FloatingActionButton newBookingButton; // Button UI component to handle creation of bookings
+    private LinkedList<Booking> bookings = new LinkedList<Booking>(); // stores user's bookings
+    private LinkedList<String> subjects = new LinkedList<String>(); // stores user's subjects
+    private LinkedList<Notification> notifications = new LinkedList<Notification>(); // stores user's notifications
+    private LinkedList<String> pageList = new LinkedList<String>(); // list used to display data from above 3 LinkedLists in UI
+    private ArrayAdapter adapter; // defines adapter which binds the pageList data to the listView UI
+    private FirebaseAuth mAuth; // stores auth state of Firebase Authentication database
+    private Student currentStudent; // stores the details of the student currently logged in
+    private boolean bookingTabSelected = true; // boolean flag for which tab is active
+    private boolean subjectTabSelected = false; // boolean flag for which tab is active
+    private boolean notifTabSelected = false; // boolean flag for which tab is active
     final Context context = this; //TODO: not sure what this is doing
     private boolean newBooking = true;
 
@@ -92,8 +92,21 @@ public class Controller_StudentMenu extends AppCompatActivity{
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_student);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        // Initialise the new booking button in the bottom right
+        newBookingButton = (FloatingActionButton) findViewById(R.id.newBooking);
+        newBookingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Pass booking data to MakeBooking activity
+                Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class); // set destination to MakeBooking activity
+                Bundle b = new Bundle();
+                b.putSerializable("user", currentStudent); // pass the current user
+                intent.putExtras(b); // add data to intent
+                startActivityForResult(intent, 1); // transition to MakeBooking activity with the intent
+            }
+        });
+
         // Data ListView initialisation
-        listView = (ListView) findViewById(R.id.list); // Set ListView UI element to display different lists based on tab selected
+        listView = (ListView) findViewById(R.id.list);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pageList) { // Define a new Adapter to bind data to UI list
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -108,29 +121,18 @@ public class Controller_StudentMenu extends AppCompatActivity{
         };
         listView.setAdapter(adapter); // Bind the adapted to the UI list
         listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // Set a listener for clicking item in the ListView to trigger the ViewBooking activity on the pressed list item
                 BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_student);
                 if (bookingTabSelected) {
-                    Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class);
-                    Booking selectedItem = bookings.get(position);
-                    intent.putExtra("booking", selectedItem);
-                    intent.putExtra("id",currentStudent.getID()+"");
-                    intent.putExtra("userType" , currentStudent.getType());
-                    intent.putExtra("subject", currentStudent.getSubjectFromSubjects(selectedItem.getSubject()));
-                    startActivityForResult(intent, 1);
+                    Booking selectedItem = bookings.get(position); // get booking selected
+                    // Pass booking data to ViewBooking activity
+                    Intent intent = new Intent(Controller_StudentMenu.this, Controller_ViewBooking.class); // set destination to ViewBooking activity
+                    Bundle b = new Bundle();
+                    b.putSerializable("user", currentStudent); // Pass current user
+                    b.putSerializable("booking", selectedItem); // Pass selected booking
+                    intent.putExtras(b); // add data to intent
+                    startActivityForResult(intent, 2); // transition to ViewBooking activity
                 }
-            }
-        });
-
-        // Initialise the new booking button in the bottom right
-        newBookingButton = (FloatingActionButton) findViewById(R.id.newBooking);
-        newBookingButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(Controller_StudentMenu.this, Controller_MakeBooking.class);
-                Bundle b = new Bundle();
-                b.putSerializable("user", currentStudent);
-                intent.putExtras(b);
-                startActivityForResult(intent, 1);
             }
         });
 
@@ -178,8 +180,8 @@ public class Controller_StudentMenu extends AppCompatActivity{
     public void getBookings(DataSnapshot dataSnapshot) {
         bookings.clear(); // clears currently stored bookings
         for (DataSnapshot booking : dataSnapshot.getChildren()) { // for each booking
-            Log.i("Booking", booking.toString()); // informational debug statement written to log indicating a booking fetched
             if (booking.child("students").child(String.valueOf(currentStudent.getID())).exists()) { // if the the logged in tutor is the tutor hosting the booking
+                Log.i("Booking", booking.toString()); // informational debug statement written to log indicating a booking fetched
                 bookings.add(new Booking(booking)); // create a new booking object to be stored locally
             }
         }
@@ -192,9 +194,9 @@ public class Controller_StudentMenu extends AppCompatActivity{
             public int compare(Booking b1, Booking b2) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
                 try {
-                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime());
-                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime());
-                    return date1.compareTo(date2);
+                    Date date1 = formatter.parse(b1.getDate() + " " + b1.getStartTime()); // convert date-time string of first booking into date object for comparison
+                    Date date2 = formatter.parse(b2.getDate() + " " + b2.getStartTime()); // convert date-time string of second booking into date object for comparison
+                    return date1.compareTo(date2); // compare the two date objects to which precedes the other and sort chronologically
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -242,9 +244,8 @@ public class Controller_StudentMenu extends AppCompatActivity{
         bookingStudentStatus.child("students").child(String.valueOf(currentStudent.getID())).child("Notes").setValue(studentNotes); // adds student's notes to booking
     }
 
-    // Handle log out
     @Override
-    public void onBackPressed(){
+    public void onBackPressed(){ // handles logging out, creates log out dialog and logs user out if they affirm
         AlertDialog alertDialog = new AlertDialog.Builder(Controller_StudentMenu.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage("Would you like to log out?");
@@ -278,7 +279,7 @@ public class Controller_StudentMenu extends AppCompatActivity{
                 } else { // otherwise there is an existing booking for the student to be added to
                     newBooking = false;
                 }
-                Booking booking = (Booking) bundle.getSerializable("booking"); // extract booking object from makeBooking controller
+                Booking booking = (Booking) bundle.getSerializable("booking"); // extract booking object from MakeBooking controller
                 addBookingToFirebase(booking, existingBookingID); // save the relevant information to Firebase
                 sortBookings(); // sort the bookings chronologically
                 adapter.notifyDataSetChanged(); // notify the listview to refresh the UI

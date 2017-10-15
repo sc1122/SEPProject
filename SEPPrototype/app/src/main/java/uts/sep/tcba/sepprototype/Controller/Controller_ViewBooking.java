@@ -12,14 +12,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import uts.sep.tcba.sepprototype.Model.Booking;
+import uts.sep.tcba.sepprototype.Model.User;
 
 public class Controller_ViewBooking extends AppCompatActivity {
 
     public Booking currentBooking;
-    private String userID;
-    private String userType;
+    private User currentUser;
     private Button cancelButton, editButton;
-    private TextView subject , tutor, date, time, locationText, location, capacity, description, descriptionText;
+    private TextView subject , tutor, date, time, locationText, location, capacity, description;
 
 
     @Override
@@ -30,18 +30,17 @@ public class Controller_ViewBooking extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         currentBooking = (Booking) bundle.getSerializable("booking");
-        userID = bundle.getString("id");
-        userType = bundle.getString("userType");
+        currentUser = (User) bundle.getSerializable("user");
 
         //Toolbar setting, disable edit button for student
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if(userType.equals("Student")) {
+        if(currentUser.getType().equals("Student")) {
             editButton = (Button) findViewById(R.id.edit);
             editButton.setVisibility(View.GONE);
         }
 
-        setContent(bundle.getString("subject"));
+        setContent(currentUser.getSubjectFromSubjects(currentBooking.getSubject()));
 
         //Cancel Button Code
         cancelButton = (Button) findViewById(R.id.cancel);
@@ -61,7 +60,7 @@ public class Controller_ViewBooking extends AppCompatActivity {
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                currentBooking.remove(userType, currentBooking, userID);
+                                currentBooking.remove(currentUser.getType(), currentBooking, String.valueOf(currentUser.getID()));
                                 finish();
                             }
                         });
@@ -88,7 +87,6 @@ public class Controller_ViewBooking extends AppCompatActivity {
         this.location = (TextView) findViewById(R.id.location);
         this.capacity = (TextView) findViewById(R.id.capacity);
         this.description = (TextView) findViewById(R.id.description);
-        this.descriptionText = (TextView) findViewById(R.id.descriptionText);
 
         subject.setText(subjectString);
         tutor.setText(currentBooking.getTutorName() + " (" + currentBooking.getTutor() + ")");

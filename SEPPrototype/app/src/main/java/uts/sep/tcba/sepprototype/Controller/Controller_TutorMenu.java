@@ -32,48 +32,47 @@ import uts.sep.tcba.sepprototype.Model.Tutor;
 
 public class Controller_TutorMenu extends AppCompatActivity {
 
-    private TextView mTextMessage;
-    private ListView listView;
-    private FloatingActionButton newAvailabilityButton;
-    private LinkedList<Booking> bookings = new LinkedList<Booking>();
-    private LinkedList<Availability> availabilities = new LinkedList<Availability>();
-    private LinkedList<Notification> notifications = new LinkedList<Notification>();
-    private LinkedList<String> pageList = new LinkedList<String>();
-    private ArrayAdapter adapter;
-    private FirebaseAuth mAuth;
-    private Tutor currentTutor;
-    private boolean bookingTab = true;
-    private boolean availTab = false;
-    private boolean notifTab = false;
-
+    private TextView mTextMessage; // TextView UI component to indicated an empty list
+    private ListView listView; // ListView UI component to represent data
+    private FloatingActionButton newAvailabilityButton; // Button UI component to handle creation of availabilities
+    private LinkedList<Booking> bookings = new LinkedList<Booking>(); // stores user's bookings
+    private LinkedList<Availability> availabilities = new LinkedList<Availability>(); // stores user's subjects
+    private LinkedList<Notification> notifications = new LinkedList<Notification>(); // stores user's notifications
+    private LinkedList<String> pageList = new LinkedList<String>(); // list used to display data from above 3 LinkedLists in UI
+    private ArrayAdapter adapter; // defines adapter which binds the pageList data to the listView UI
+    private FirebaseAuth mAuth; // stores auth state of Firebase Authentication database
+    private Tutor currentTutor; // stores the details of the tutor currently logged in
+    private boolean bookingTabSelected = true; // boolean flag for which tab is active
+    private boolean availTabSelected = false; // boolean flag for which tab is active
+    private boolean notifTabSelected = false; // boolean flag for which tab is active
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                    bookingTab = false;
-                    availTab = false;
-                    notifTab = false;
+                    // Reset tab selected boolean flags
+                    bookingTabSelected = false;
+                    availTabSelected = false;
+                    notifTabSelected = false;
+                    // Depending on the tab selected
                     switch(item.getItemId()){
-                        case R.id.navigation_home:
-                            bookingTab = true;
-                            mTextMessage.setText(R.string.bookings_placeholder);
-                            newAvailabilityButton.setVisibility(View.GONE);
-                            refreshListView();
+                        case R.id.navigation_home: // if the booking tab is selected
+                            bookingTabSelected = true; // set booking tab flag
+                            mTextMessage.setText(R.string.bookings_placeholder); // set placeholder text if no bookings to show
+                            newAvailabilityButton.setVisibility(View.GONE); // disable new availability
+                            refreshListView(); // refresh list UI
                             return true;
-                        case R.id.navigation_dashboard:
-                            availTab = true;
-                            mTextMessage.setText(R.string.availabilites_placeholder);
-                            newAvailabilityButton.setVisibility(View.VISIBLE);
-                            refreshListView();
+                        case R.id.navigation_dashboard: // if the subject tab is selected
+                            availTabSelected = true; // set availabilities tab flag
+                            mTextMessage.setText(R.string.availabilites_placeholder); // set placeholder text if no availabilities to show
+                            newAvailabilityButton.setVisibility(View.VISIBLE); // enable new availability
+                            refreshListView(); // refresh list UI
                             return true;
                         case R.id.navigation_notifications:
-                            notifTab = true;
-                            mTextMessage.setText(R.string.notifications_placeholder);
-                            bookingTab = false;
-                            availTab = false;
-                            newAvailabilityButton.setVisibility(View.GONE);
-                            refreshListView();
+                            notifTabSelected = true; // set notification tab flag
+                            mTextMessage.setText(R.string.notifications_placeholder); // set placeholder text if notifications to show
+                            newAvailabilityButton.setVisibility(View.GONE); // disable new availability
+                            refreshListView(); // refresh list UI
                             return true;
                     }
                     return false;
@@ -91,19 +90,22 @@ public class Controller_TutorMenu extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation_tutor);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        // Fetch user from previous activity
-        Intent intent = getIntent();
-        int loggedInUserID = Integer.parseInt(intent.getStringExtra("user"));
-        currentTutor = new Tutor(loggedInUserID);
+        // Initialise the new availability button in the bottom right
+        newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
+        newAvailabilityButton.setVisibility(View.GONE);
+        newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeAvailability.class); // set destination to MakeAvailability activity
+                Bundle b = new Bundle();
+                b.putSerializable("user", currentTutor); // Pass current user
+                intent.putExtras(b); // add data to intent
+                startActivityForResult(intent, 1); // transition to MakeAvailability activity with the intent
+            }
+        });
 
-        // Configure Firebase listeners
-        initFirebase();
-
-        // Set ListView UI element to display different lists based on tab selected
+        // Data ListView initialisation
         listView = (ListView) findViewById(R.id.list);
-
-        // Define a new Adapter to bind data to UI list
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pageList) {
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pageList) { // Define a new Adapter to bind data to UI list
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
@@ -115,44 +117,35 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 return view;
             }
         };
-
-        // Bind the adapted to the UI list
-        listView.setAdapter(adapter);
-
-        // Set a listener for clicking item in the ListView to trigger the view booking screen on the pressed list item
+        listView.setAdapter(adapter); // Bind the adapted to the UI list
         listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (bookingTab) {
-                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class);
-                    Booking selectedItem = bookings.get(position);
-                    Log.d("BOOKING", selectedItem.toString());
-                    intent.putExtra("booking", selectedItem);
-                    intent.putExtra("subject", currentTutor.getSubjects());
-                    intent.putExtra("userType", currentTutor.getType());
-                    intent.putExtra("subject", currentTutor.getSubjectFromSubjects(selectedItem.getSubject()));
-                    startActivityForResult(intent, 2);
-                }else if(availTab){
-                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewAvailability.class);
-                    Availability selectedAvailability = availabilities.get(position);
-                    intent.putExtra("availability", selectedAvailability);
-                    intent.putExtra("userID",currentTutor.getID()+"");
-                    startActivityForResult(intent, 3);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // Set a listener for clicking item in the ListView to trigger the ViewBooking or ViewAvailability activity on the pressed list item
+                if (bookingTabSelected) { // if booking selected
+                    Booking selectedItem = bookings.get(position); // get booking selected
+                    // Pass booking data to ViewBooking activity
+                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewBooking.class); // set destination to ViewBooking activity
+                    Bundle b = new Bundle();
+                    b.putSerializable("user", currentTutor); // Pass current user
+                    b.putSerializable("booking", selectedItem); // Pass selected booking
+                    intent.putExtras(b); // add data to intent
+                    startActivityForResult(intent, 2); // transition to ViewBooking activity with the intent
+                }else if(availTabSelected) { // if availability selected
+                    Intent intent = new Intent(Controller_TutorMenu.this, Controller_ViewAvailability.class); // set destination to ViewAvailability activity
+                    Availability selectedAvailability = availabilities.get(position); // get availability selected
+                    intent.putExtra("availability", selectedAvailability); // Pass selected booking
+                    intent.putExtra("userID",currentTutor.getID()+""); // Pass user ID
+                    startActivityForResult(intent, 3); // transition to MakeBooking activity with the intent
                 }
             }
         });
 
-        // Button press now creates a new availability
-        newAvailabilityButton = (FloatingActionButton) findViewById(R.id.newAvailability);
-        newAvailabilityButton.setVisibility(View.GONE);
-        newAvailabilityButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(Controller_TutorMenu.this, Controller_MakeAvailability.class);
-                Bundle b = new Bundle();
-                b.putSerializable("user", currentTutor);
-                intent.putExtras(b);
-                startActivityForResult(intent, 1);
-            }
-        });
+        // User initialisation
+        int loggedInUserID = Integer.parseInt(getIntent().getStringExtra("user")); // Fetch user from previous activity
+        currentTutor = new Tutor(loggedInUserID); // create tutor object from user ID (constructor pulls data directly from Firebase)
+
+        // Firebase data change listeners initialised and data fetched
+        initFirebase();
+
     }
 
     public void initFirebase() {
@@ -187,7 +180,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         refNot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setTitle(getTitle() + " - " + currentTutor.getFullName() + " (T)");
+                setTitle(getTitle() + " - " + currentTutor.getFullName() + " (T)"); // set title of menu to include user's name
                 for (DataSnapshot d : dataSnapshot.child("Notifications").getChildren()) {
                     notifications.add(new Notification(d)); //  get all notifications for user
                 }
@@ -203,8 +196,8 @@ public class Controller_TutorMenu extends AppCompatActivity {
     public void getBookings(DataSnapshot dataSnapshot) {
         bookings.clear(); // clears currently stored bookings
         for (DataSnapshot booking : dataSnapshot.getChildren()) { // for each booking
-            //Log.d("GetBooking", booking.toString());
             if (booking.child("tutor").getValue(Integer.class) == (currentTutor.getID())) { // if the the logged in tutor is the tutor hosting the booking
+                Log.i("Booking", booking.toString()); // informational debug statement written to log indicating a booking fetched
                 bookings.add(new Booking(booking)); // create a new booking object to be stored locally
             }
         }
@@ -212,7 +205,7 @@ public class Controller_TutorMenu extends AppCompatActivity {
         refreshListView(); // refresh list UI
     }
 
-    public void sortBookings() {
+    public void sortBookings() { // chronologically sorts bookings based on start time
         Collections.sort(bookings, new Comparator<Booking>() {
             public int compare(Booking b1, Booking b2) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
@@ -229,15 +222,16 @@ public class Controller_TutorMenu extends AppCompatActivity {
     }
 
     public void getAvailabilities(DataSnapshot dataSnapshot) {
-        availabilities.clear();
-        for (DataSnapshot data : dataSnapshot.child("Availabilities").getChildren()) {
-            availabilities.add(new Availability(data)); // create a new availability object to be stored locally
+        availabilities.clear(); // clears currently stored availabilities
+        for (DataSnapshot availabiliy : dataSnapshot.child("Availabilities").getChildren()) { // for each availability
+            Log.i("Availability", availabiliy.toString()); // informational debug statement written to log indicating an availability has been fetched
+            availabilities.add(new Availability(availabiliy)); // create a new availability object to be stored locally
         }
         sortAvailabilities(); // sorts availabilities chronologically
         refreshListView(); // refresh list UI
     }
 
-    public void sortAvailabilities() {
+    public void sortAvailabilities() { // chronologically sorts availabilities based on start time
         Collections.sort(availabilities, new Comparator<Availability>() {
             @Override
             public int compare(Availability a1, Availability a2) {
@@ -256,15 +250,15 @@ public class Controller_TutorMenu extends AppCompatActivity {
 
     public void refreshListView() {
         pageList.clear(); // clear the list
-        if (bookingTab) { // if the booking tab is the active tab
+        if (bookingTabSelected) { // if the booking tab is the active tab
             for (Booking b : bookings) {
                 pageList.add(b.toString()); // load bookings into the list
             }
-        } else if (availTab) { // if the availabilities tab is the active tab
+        } else if (availTabSelected) { // if the availabilities tab is the active tab
             for (Availability a : availabilities) {
                 pageList.add(a.toString()); // load availabilities into the list
             }
-        } else if (notifTab) { // if the notifications tab is the active tab
+        } else if (notifTabSelected) { // if the notifications tab is the active tab
             for (Notification not : notifications) {
                 pageList.add(not.createdMessageToTutor());  // load notifications into the list
             }
@@ -277,21 +271,9 @@ public class Controller_TutorMenu extends AppCompatActivity {
         adapter.notifyDataSetChanged(); // notify the list that the data has changed
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) { // Return method from make availability and from view booking
-        if (requestCode == 1 && data != null) { // if returning from the new availability screen
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras(); // get data parsed in Intent
-                Availability availability = (Availability) bundle.getSerializable("availability"); // extract Availability object from data
-                addAvailabilityToFirebase(availability); // add the availability to Firebase
-            }
-            BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
-            view.setSelectedItemId(R.id.navigation_dashboard);
-        }
-    }
-
     public void addAvailabilityToFirebase(Availability availability) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + currentTutor.getID() + "/Availabilities"); // gets the tutor's availabilities reference in Firebase
-        ref.push().setValue(availability); // pushes the object to a new reference child to the selected reference in Firebase
+        ref.push().setValue(availability); // pushes the availability object to a new reference child to the tutor's Availabilities reference in Firebase
     }
 
     @Override
@@ -311,10 +293,22 @@ public class Controller_TutorMenu extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         mAuth = FirebaseAuth.getInstance();
-                        mAuth.signOut();
-                        finish();
+                        mAuth.signOut(); // sign user out of application
+                        finish(); // return to login activity
                     }
                 });
         alertDialog.show();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) { // Return method from MakeAvailability and from ViewBooking
+        if (requestCode == 1 && data != null) {  // if the activity returning to the TutorMenu is MakeAvailability
+            if (resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras(); // get data parsed in Intent
+                Availability availability = (Availability) bundle.getSerializable("availability"); // extract Availability object from MakeAvailability controller
+                addAvailabilityToFirebase(availability); // save the availability to Firebase
+            }
+            BottomNavigationView view = (BottomNavigationView) findViewById(R.id.navigation_tutor);
+            view.setSelectedItemId(R.id.navigation_dashboard); // display availabilities tab
+        }
     }
 }
