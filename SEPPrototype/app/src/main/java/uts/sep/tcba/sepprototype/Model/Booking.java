@@ -193,8 +193,16 @@ public class Booking implements Serializable {
         }
     }
 
+    public void edit(final Booking booking, String location) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("Bookings").child(booking.getBookingID()).child("location");
+        ref.setValue(location); // change the location
+    }
+
     @Override
     public String toString(){
         return this.date + " " + getStartTime() + " - " + tutorName + " (" + this.subject + ")\n" + this.location;
     }
+
+
 }

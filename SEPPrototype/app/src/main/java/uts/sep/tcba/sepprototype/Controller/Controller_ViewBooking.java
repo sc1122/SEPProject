@@ -50,6 +50,10 @@ public class Controller_ViewBooking extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 Intent intent = new Intent(getApplicationContext(),Controller_EditBooking.class);
+                Bundle b = new Bundle();
+                b.putSerializable("booking",currentBooking);
+                b.putSerializable("user",currentUser);
+                intent.putExtras(b);
                 startActivityForResult(intent, 2);
             }
         });

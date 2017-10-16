@@ -29,7 +29,7 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
             <Button
-                android:id="@+id/edit"
+                android:id="@+id/save"
                 style="@style/AppTheme.AppBarOverlay"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
