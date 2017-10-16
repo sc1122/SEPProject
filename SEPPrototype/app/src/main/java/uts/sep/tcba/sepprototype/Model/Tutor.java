@@ -24,27 +24,27 @@ public class Tutor extends User implements Serializable {
 
     public Tutor(DataSnapshot data){ // Constructor for creating a new Tutor to be used locally
         super(data);
+        fetchAvailabilites(data);
+    }
+    public void fetchAvailabilites(DataSnapshot data) { // statically fetches tutor's availabilities from Firebase for making a booking
+        for (DataSnapshot ds : data.child("Availabilities").getChildren()) {
+            availabilities.add(new Availability(ds));
+        }
     }
 
     public LinkedList<Availability> getAvailabilities(){
         return availabilities;
     }
 
-    public void setAvailabilities(LinkedList<Availability> availabilities) {
-        this.availabilities = availabilities;
-    }
-
-    public void sortAvailabilities() {
+    public void sortAvailabilities() { // chronologically sorts availabilities based on start time
         Collections.sort(availabilities, new Comparator<Availability>() {
+            @Override
             public int compare(Availability a1, Availability a2) {
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
                 try {
-                    Date date1 = formatter.parse(a1.getDate());
-                    Log.d("DATE1", date1.toString());
-                    Date date2 = formatter.parse(a2.getDate());
-                    Log.d("DATE2", date2.toString());
-                    Log.d("COMPARE", String.valueOf(date1.compareTo(date2)));
-                    return date1.compareTo(date2);
+                    Date date1 = formatter.parse(a1.getDate() + " " + a1.getStartTime()); // convert date-time string of first availability into date object for comparison
+                    Date date2 = formatter.parse(a2.getDate() + " " + a2.getStartTime()); // convert date-time string of second availabilty into date object for comparison
+                    return date1.compareTo(date2); // compare the two date objects to which precedes the other and sort chronologically
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +58,6 @@ public class Tutor extends User implements Serializable {
      */
     public LinkedList<String> getAvailableDates(){
         LinkedList<String> availDates = new LinkedList<String>();
-        LinkedList<String> alreadyAdded = new LinkedList<String>();
         sortAvailabilities();
         for (Availability a : availabilities) {
             if (!availDates.contains(a.getDate())) {

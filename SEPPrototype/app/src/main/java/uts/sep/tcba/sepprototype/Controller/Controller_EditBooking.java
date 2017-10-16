@@ -14,8 +14,6 @@ public class Controller_EditBooking extends AppCompatActivity {
     private TextView subject , tutor;
     private Spinner date, time;
 
-    //private double time;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +43,6 @@ public class Controller_EditBooking extends AppCompatActivity {
         handleSTime();
         handleETime();
     }
-
-
 
     public void handleSTime() {
         String sTime = time.getSelectedItem().toString();

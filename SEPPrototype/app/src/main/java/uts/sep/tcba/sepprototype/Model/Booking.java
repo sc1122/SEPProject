@@ -153,6 +153,20 @@ public class Booking implements Serializable {
         return allNotes;
     }
 
+    public void add(User user, String existingBookingID, boolean newBooking) {
+        DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings"); // get reference of bookings in Firebase
+        DatabaseReference newBookingRef = bookingsRef.push(); // get the database reference for new booking
+        DatabaseReference targetRef;
+        if (newBooking) { // if its a new booking (user not being added to an existing booking object in Firebase)
+            newBookingRef.setValue(this); // push the booking object to Firebase
+            targetRef = newBookingRef; // set the target ref to the location of the new booking object
+        } else { // otherwise being added to an existing booking object in Firebase
+            targetRef = bookingsRef.child(existingBookingID); // set the target ref to the location of the existing booking
+        }
+        targetRef.child("students").child(String.valueOf(user.getID())).child("Name").setValue(user.getFullName()); // adds student to booking
+        targetRef.child("students").child(String.valueOf(user.getID())).child("Notes").setValue(studentNotes); // adds student's notes to booking
+    }
+
     public void remove(String userType, Booking currentBooking, String userID) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Bookings/" + currentBooking.getBookingID());
         if (userType.equals("Student")) { // if its a student

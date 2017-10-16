@@ -19,7 +19,7 @@ public class Student extends User implements Serializable {
 
     public Student(DataSnapshot data){ // Constructor for creating a new Student to be used locally
         super(data);
-        fetchTutorsForSubject();
+        fetchTutorsForSubject(data);
     }
 
     public void fetchTutorsForSubject() {
@@ -40,6 +40,13 @@ public class Student extends User implements Serializable {
                 Log.d("RLdatabase", "Failed");
             }
         });
+    }
+
+    public void fetchTutorsForSubject(DataSnapshot data) {
+        tutors.clear();
+        for (DataSnapshot ds : data.child("Subjects").getChildren()) {
+            tutors.add(ds.child("Tutor").getValue(Integer.class));
+        }
     }
 
     public LinkedList<Integer> getTutors() {

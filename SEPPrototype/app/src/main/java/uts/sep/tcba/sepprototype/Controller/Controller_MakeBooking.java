@@ -37,8 +37,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
     private String desc;
     private EditText description;
 
-    private Spinner consDate = (Spinner)findViewById(R.id.date);
-    private Spinner consTime = (Spinner)findViewById(R.id.time);
+    private Spinner consDate;
+    private Spinner consTime;
     private Bundle bundleSend;
     private Intent intentSend;
 
@@ -48,6 +48,8 @@ public class Controller_MakeBooking extends AppCompatActivity {
         setContentView(R.layout.activity_makebooking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        consDate = (Spinner)findViewById(R.id.date);
+        consTime = (Spinner)findViewById(R.id.time);
 
         // Get data from menu
         Bundle bundle = this.getIntent().getExtras();

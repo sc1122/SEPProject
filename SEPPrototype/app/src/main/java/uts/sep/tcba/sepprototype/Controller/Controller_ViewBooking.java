@@ -19,8 +19,8 @@ public class Controller_ViewBooking extends AppCompatActivity {
     private User currentUser; // stores the user that is logged in
 
     // UI elements
-    private Button editButton = (Button) findViewById(R.id.edit);
-    private Button cancelButton = (Button) findViewById(R.id.cancel);
+    private Button editButton;
+    private Button cancelButton;
     private TextView subject , tutor, date, time, locationText, location, capacity, description;
 
 
@@ -28,6 +28,8 @@ public class Controller_ViewBooking extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_booking);
+        editButton = (Button) findViewById(R.id.edit);
+        cancelButton = (Button) findViewById(R.id.cancel);
 
         // Get data from menu
         Bundle bundle = this.getIntent().getExtras();

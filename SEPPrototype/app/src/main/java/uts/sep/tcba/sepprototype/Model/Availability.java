@@ -101,6 +101,11 @@ public class Availability implements Serializable {
         return this.date + " " + getStartTime() + " - " + getEndTime() + "\n" + this.location;
     }
 
+    public void add(int tutorID) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users/" + tutorID + "/Availabilities"); // gets the tutor's availabilities reference in Firebase
+        ref.push().setValue(this); // pushes the availability object to a new reference child to the tutor's Availabilities reference in Firebase
+    }
+
     public void remove(final Availability currentAvailability, String userID) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("Users").child(userID).child("Availabilities/" + currentAvailability.getID()); // target the Firebase reference for the user's availability which they wish to cancel
