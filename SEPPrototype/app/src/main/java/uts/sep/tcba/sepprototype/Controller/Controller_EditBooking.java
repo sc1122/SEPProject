@@ -11,8 +11,10 @@ public class Controller_EditBooking extends AppCompatActivity {
 
     public Booking currentBooking;
 
-    private TextView subject , tutor;
-    private Spinner date, time;
+
+    private TextView subject , time, date, tutor;
+    private EditText location;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,41 +23,24 @@ public class Controller_EditBooking extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        setContent(currentBooking);
     }
 
     private void setContent(Booking currentBooking) {
         this.subject = (TextView) findViewById(R.id.subject);
         this.tutor = (TextView) findViewById(R.id.tutor);
-        this.date = (Spinner) findViewById(R.id.dateSpinner);
-        this.time = (Spinner) findViewById(R.id.timeSpinner);
+        this.date = (TextView) findViewById(R.id.date);
+        this.time = (TextView) findViewById(R.id.time);
+        this.location = (EditText) findViewById(R.id.location);
 
         subject.setText(String.valueOf(currentBooking.getSubject()) );
-
-
         tutor.setText(currentBooking.getTutor() + currentBooking.getTutorName());
-        //date.setSpinner(currentBooking.getDate());
-        time.setPrompt(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
+        date.setText(currentBooking.getDate());
+        time.setText(currentBooking.getStartTime() + " - " + currentBooking.getEndTime());
+        location.setText(currentBooking.getLocation());
+
+
     }
-
-
-    //method for when time is changed
-    public void changeTime() {
-        handleSTime();
-        handleETime();
-    }
-
-    public void handleSTime() {
-        String sTime = time.getSelectedItem().toString();
-        String[] splited_sTime = sTime.split(" - ");
-        sTime = splited_sTime[0];
-        currentBooking.setStartTime(Double.parseDouble(sTime));
-    }
-
-    public void handleETime() {
-        String eTime = time.getSelectedItem().toString();
-        String[] splited_eTime = eTime.split(" - ");
-        eTime = splited_eTime[1];
-        currentBooking.setEndTime(Double.parseDouble(eTime));
-    }
-
 }
