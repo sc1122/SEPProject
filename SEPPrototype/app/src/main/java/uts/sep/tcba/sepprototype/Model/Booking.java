@@ -145,7 +145,7 @@ public class Booking implements Serializable {
     public String getAllNotes() { // gets the notes for all students to be loaded into the Notes field in ViewBooking
         String allNotes = "";
         for (int i = 0; i < getStudents().size(); i++) {
-            allNotes = getStudentNames().get(i) + " (" + getStudents().get(i) + ")" + " - " + getStudentNotes().get(i); // concat students name, id and notes
+            allNotes = allNotes + getStudentNames().get(i) + " (" + getStudents().get(i) + ")" + " - " + getStudentNotes().get(i); // concat students name, id and notes
             if (i < getStudents().size() - 1) { // if there are more students
                 allNotes = allNotes + "\n\n"; // add a line break
             }

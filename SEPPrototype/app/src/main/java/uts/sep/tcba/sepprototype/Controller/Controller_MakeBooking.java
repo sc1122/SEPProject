@@ -70,7 +70,7 @@ public class Controller_MakeBooking extends AppCompatActivity {
                         for (DataSnapshot data : dataSnapshot.getChildren()) { // iterate through all bookings
                             // If there is a booking at the same time as selected that is for the same subject and is a child of the same tutor's availability
                             if (book.getStartTime().equals(data.child("startTime").getValue(String.class)) && book.getEndTime().equals(data.child("endTime").getValue(String.class)) &&
-                                    book.getSubject() == data.child("subject").getValue(Integer.class) && book.getAvailabilityID() == data.child("availabilityID").getValue(String.class)) {
+                                    book.getSubject() == data.child("subject").getValue(Integer.class) && book.getAvailabilityID().equals(data.child("availabilityID").getValue(String.class))) {
                                 Log.i("MATCH FOUND", data.getKey()); // informational debug statement written to log to indicate a match has been found
                                 existingBookingID = data.getKey(); // store the bookingID for that match
                             }
@@ -199,7 +199,6 @@ public class Controller_MakeBooking extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data : dataSnapshot.getChildren()) { // iterate through all bookings
                     for (int i = 0; i < startTimes.size(); i = i + 1) { // for each timeslot in the availability
-
                         if (startTimes.get(i).equals(data.child("startTime").getValue(String.class).replace(':', '.')) &&
                                 endTimes.get(i).equals(data.child("endTime").getValue(String.class).replace(':', '.'))) { // If there is a booking at the same time as selected
                             if (data.child("students").child(String.valueOf(currentUser.getID())).exists()) { // If the student is already booked
