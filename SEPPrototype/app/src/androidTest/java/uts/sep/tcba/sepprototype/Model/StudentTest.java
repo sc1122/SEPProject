@@ -34,7 +34,6 @@ public class StudentTest {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/" + ID);
-        Thread.sleep(5000);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -62,7 +61,7 @@ public class StudentTest {
     @Test
     public void getTutors() throws Exception {
         tutors.clear();
-        tutors.add(123);
+        tutors.add(789);
         tutors.add(123);
 
         assertEquals(tutors , testStudent.getTutors());
@@ -78,7 +77,7 @@ public class StudentTest {
     public void getTutorsForIndex() throws Exception {
         tutors.clear();
         Thread.sleep(5000);
-        tutors.add(123);
+        tutors.add(789);
         tutors.add(123);
         assertEquals(getTutors(0), testStudent.getTutorsForIndex(0));
     }

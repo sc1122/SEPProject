@@ -91,7 +91,7 @@ public class UserTest {
     @Test
     public void getSubjects() throws Exception {
         LinkedList<String> sbj = new LinkedList<String>();
-        sbj.add("Test Subject One (13418)");
+        sbj.add("Information Systems Testing (13418)");
         sbj.add("Fundamentals of Security (41900)");
         assertEquals(testUser.getSubjects(), sbj);
     }

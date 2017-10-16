@@ -62,7 +62,9 @@ public class NotificationTest {
 
     @Test
     public void getTutor() throws Exception {
-
+        t.ID = 456;
+        t.firstName = "Seven";
+        t.lastName = "Nine";
         Booking testBook = new Booking(startTime, endTime, subject, t, a , s, availabilityID, description);
         Notification testNotification = new Notification(testBook);
 
