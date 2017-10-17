@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class Tutor extends User implements Serializable {
 
-    public LinkedList<Availability> availabilities = new LinkedList<Availability>();
+    private LinkedList<Availability> availabilities = new LinkedList<Availability>();
 
     public Tutor() { };
 

@@ -8,7 +8,7 @@ import com.google.firebase.database.*;
 
 public class Student extends User implements Serializable {
 
-    public LinkedList<Integer> tutors = new LinkedList<Integer>();
+    private LinkedList<Integer> tutors = new LinkedList<Integer>();
 
     public Student() { }
 

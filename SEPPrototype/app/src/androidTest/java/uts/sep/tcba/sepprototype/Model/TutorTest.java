@@ -77,7 +77,7 @@ public class TutorTest {
 
         Availability newAvail = new Availability("20/9/17", 12.30, 15.30, "here", 2);
         Availability newAvail2 = new Availability("20/10/17", 12.30, 15.30, "here", 2);
-        testTutor.availabilities.add(newAvail);
+        testTutor.getAvailabilities().add(newAvail);
         availabilities.add(newAvail);
         availabilities.add(newAvail2);
         testTutor.sortAvailabilities();

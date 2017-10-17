@@ -12,14 +12,14 @@ import java.util.Date;
 import java.util.LinkedList;
 
 public class User implements Serializable {
-    public int ID; // stores ID of user
-    public String firstName; // stores first name of user
-    public String lastName; // stores last name of user
-    public String email; // stores email of user
-    public LinkedList<Booking> bookings = new LinkedList<Booking>(); // stores user's bookings
-    public LinkedList<String> subjects = new LinkedList<String>(); // stores subjects the user teaches/is enrolled in
-    public LinkedList<Notification> notifications = new LinkedList<Notification>(); // stores user's notifications
-    public String type; // stores type of user
+    protected int ID; // stores ID of user
+    protected String firstName; // stores first name of user
+    protected String lastName; // stores last name of user
+    protected String email; // stores email of user
+    protected LinkedList<Booking> bookings = new LinkedList<Booking>(); // stores user's bookings
+    protected LinkedList<String> subjects = new LinkedList<String>(); // stores subjects the user teaches/is enrolled in
+    protected LinkedList<Notification> notifications = new LinkedList<Notification>(); // stores user's notifications
+    protected String type; // stores type of user
 
     public User() { }
 
