@@ -164,7 +164,7 @@ public class Booking implements Serializable {
             targetRef = bookingsRef.child(existingBookingID); // set the target ref to the location of the existing booking
         }
         targetRef.child("students").child(String.valueOf(user.getID())).child("Name").setValue(user.getFullName()); // adds student to booking
-        targetRef.child("students").child(String.valueOf(user.getID())).child("Notes").setValue(studentNotes); // adds student's notes to booking
+        targetRef.child("students").child(String.valueOf(user.getID())).child("Notes").setValue(currentStudentNotes); // adds student's notes to booking
     }
 
     public void remove(String userType, Booking currentBooking, String userID) {
