@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="15dp"
                     android:paddingTop="15dp"
-                    android:text="Capacity ( Attending / Maximum )"
+                    android:text="Capacity (Maximum)"
                     android:textSize="22sp" />
 
                 <TextView
@@ -127,7 +127,8 @@
                     android:ems="10"
                     android:hint="Location Unspecified"
                     android:inputType="textPersonName"
-                    android:paddingLeft="20dp"
+                    android:paddingLeft="5dp"
+                    android:layout_margin="10dp"
                     android:text="CB11.04.629"
                     android:textColorLink="@color/colorAccent" />
 
@@ -138,6 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="50dp"
                     android:text="Delete Availability"
+                    android:layout_margin="10dp"
                     android:textStyle="bold" />
 
             </LinearLayout>
